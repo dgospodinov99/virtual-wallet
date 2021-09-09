@@ -28,7 +28,7 @@ public class HibernateConfig {
     public LocalSessionFactoryBean sessionFactory() {
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
-        sessionFactory.setPackagesToScan("com.team01.web.deliverit.models");
+        sessionFactory.setPackagesToScan("com.team01.web.virtualwallet.models");
         sessionFactory.setHibernateProperties(hibernateProperties());
         return sessionFactory;
     }

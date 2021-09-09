@@ -29,7 +29,7 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("DeliverIT API")
-                .description("This API was created by Team01 and can be used to get information for the DeliverIT system")
+                .description("This API was created by Team01 and can be used to get information for the Virtual Wallet application")
                 .version("V1.0.0")
                 .build();
     }
