@@ -24,6 +24,7 @@ public class CardModelMapper {
         card.setCardNumber(dto.getCardNumber());
         card.setCheckNumber(dto.getCheckNumber());
         card.setHolder(dto.getHolder());
+
         card.setUser(userService.getById(4));
 
         //todo fix - db card user_id has defaulf value
@@ -31,4 +32,14 @@ public class CardModelMapper {
         //set card userId from userService
         return card;
     }
+
+    public CardDto toDto(Card card) {
+        CardDto dto = new CardDto();
+        dto.setCardNumber(card.getCardNumber());
+        dto.setCheckNumber(card.getCheckNumber());
+        dto.setHolder(card.getHolder());
+
+        return dto;
+    }
+
 }
