@@ -44,33 +44,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void create(User user) {
-        boolean duplicateUsernameExists = true;
-        boolean duplicateEmailExists = true;
-        boolean duplicatePhoneExists = true;
-        try {
-            userRepository.getByUsername(user.getUsername());
-        } catch (EntityNotFoundException e) {
-            duplicateUsernameExists = false;
-        }
-        try {
-            userRepository.getByEmail(user.getEmail());
-        } catch (EntityNotFoundException e) {
-            duplicateEmailExists = false;
-        }
-        try {
-            userRepository.getByPhoneNumber(user.getPhoneNumber());
-        } catch (EntityNotFoundException e) {
-            duplicatePhoneExists = false;
-        }
-        if (duplicateUsernameExists) {
-            throw new DuplicateEntityException("User", "username", user.getUsername());
-        }
-        if (duplicateEmailExists) {
-            throw new DuplicateEntityException("User", "email", user.getEmail());
-        }
-        if (duplicatePhoneExists) {
-            throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
-        }
+        verifyUniqueEmail(user.getEmail());
+        verifyUniqueUsername(user.getUsername());
+        verifyUniquePhoneNumber(user.getPhoneNumber());
         isPasswordValid(user.getPassword());
         userRepository.create(user);
     }
@@ -120,4 +96,39 @@ public class UserServiceImpl implements UserService {
             throw new InvalidPasswordException("Password must contain a number!");
         }
     }
+
+    public void verifyUniqueEmail(String email) {
+        boolean duplicateExists = true;
+        try {
+            userRepository.getByEmail(email);
+        } catch (EntityNotFoundException e) {
+            duplicateExists = false;
+        }
+        if (duplicateExists) {
+            throw new DuplicateEntityException("User", "email", email);
+        }
+    }
+    public void verifyUniqueUsername(String username) {
+        boolean duplicateExists = true;
+        try {
+            userRepository.getByUsername(username);
+        } catch (EntityNotFoundException e) {
+            duplicateExists = false;
+        }
+        if (duplicateExists) {
+            throw new DuplicateEntityException("User", "username", username);
+        }
+    }
+    public void verifyUniquePhoneNumber(String phoneNumber) {
+        boolean duplicateExists = true;
+        try {
+            userRepository.getByPhoneNumber(phoneNumber);
+        } catch (EntityNotFoundException e) {
+            duplicateExists = false;
+        }
+        if (duplicateExists) {
+            throw new DuplicateEntityException("User", "phone number", phoneNumber);
+        }
+    }
+
 }
