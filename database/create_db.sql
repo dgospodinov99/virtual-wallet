@@ -16,7 +16,7 @@ create or replace table users
 	phone_number varchar(10) not null,
 	password varchar(100) not null,
 	photo_url text null,
-	balance double default 0 not null,
+	wallet_id int not null,
 	constraint users_email_uindex
 		unique (email),
 	constraint users_phone_number_uindex
@@ -39,19 +39,6 @@ create or replace table cards
 		foreign key (user_id) references users (user_id)
 );
 
-create or replace table transfers
-(
-	transfer_id int auto_increment
-		primary key,
-	sender_id int not null,
-	receiver_id int not null,
-	amount double not null,
-	constraint transfers_receiver_user_id_fk
-		foreign key (receiver_id) references users (user_id),
-	constraint transfers_sender_user_id_fk
-		foreign key (sender_id) references users (user_id)
-);
-
 create or replace table users_cards
 (
 	user_id int not null,
@@ -72,5 +59,25 @@ create or replace table users_roles
 		foreign key (role_id) references roles (role_id),
 	constraint users_roles_users_user_id_fk
 		foreign key (user_id) references users (user_id)
+);
+
+create or replace table wallets
+(
+	wallet_id int auto_increment
+		primary key,
+	balance double default 0 null
+);
+
+create or replace table transfers
+(
+	transfer_id int auto_increment
+		primary key,
+	sender_id int not null,
+	receiver_id int not null,
+	amount double not null,
+	constraint transfers_receiver_wallet_id_fk
+		foreign key (receiver_id) references wallets (wallet_id),
+	constraint transfers_sender_wallet_id_fk
+		foreign key (sender_id) references wallets (wallet_id)
 );
 
