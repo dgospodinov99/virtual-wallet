@@ -23,7 +23,6 @@ public class UserDto {
     @Size(min = 8,max = 100, message = "Password must be at least 8 symbols!")
     private String password;
 
-    @NotBlank
     private String photoURL;
 
     @Positive

@@ -4,6 +4,8 @@ import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
 import com.team01.web.virtualwallet.models.User;
+import com.team01.web.virtualwallet.models.dto.CreateUserDto;
+import com.team01.web.virtualwallet.models.dto.UpdateUserDto;
 import com.team01.web.virtualwallet.models.dto.UserDto;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
@@ -22,6 +24,7 @@ public class UserRestController {
 
     private final UserService service;
     private final UserModelMapper modelMapper;
+
 
     @Autowired
     public UserRestController(UserService service, UserModelMapper modelMapper) {
@@ -46,9 +49,9 @@ public class UserRestController {
     }
 
     @PostMapping
-    public UserDto create(@Valid @RequestBody UserDto dto) {
+    public UserDto create(@Valid @RequestBody CreateUserDto dto) {
         try {
-            User user = modelMapper.fromDto(dto);
+            User user = modelMapper.fromCreateDto(dto);
             service.create(user);
             return modelMapper.toDto(user);
         } catch (DuplicateEntityException | InvalidPasswordException e) {
@@ -57,9 +60,9 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}")
-    public UserDto update(@PathVariable int id, @Valid @RequestBody UserDto dto) {
+    public UserDto update(@PathVariable int id, @Valid @RequestBody UpdateUserDto dto) {
         try {
-            User user = modelMapper.fromDto(dto, id);
+            User user = modelMapper.fromUpdateDto(dto, id);
             service.update(user);
             return modelMapper.toDto(user);
         } catch (DuplicateEntityException | InvalidPasswordException e) {

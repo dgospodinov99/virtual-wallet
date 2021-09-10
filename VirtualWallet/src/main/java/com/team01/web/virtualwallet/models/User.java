@@ -33,8 +33,9 @@ public class User {
     @Column(name = "photo_url")
     private String photoURL;
 
-    @Column(name = "balance")
-    private double balance;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "wallet_id")
+    private Wallet wallet;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -53,7 +54,6 @@ public class User {
     private Set<Role> roles;
 
     public User(){
-
     }
 
     public int getId() {
@@ -104,12 +104,12 @@ public class User {
         this.photoURL = photoURL;
     }
 
-    public double getBalance() {
-        return balance;
+    public Wallet getWallet() {
+        return wallet;
     }
 
-    public void setBalance(double balance) {
-        this.balance = balance;
+    public void setWallet(Wallet walletId) {
+        this.wallet = walletId;
     }
 
     public Set<Card> getCards() {
