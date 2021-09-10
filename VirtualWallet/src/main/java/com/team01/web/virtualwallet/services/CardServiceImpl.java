@@ -14,6 +14,8 @@ import java.util.List;
 @Service
 public class CardServiceImpl implements CardService {
 
+    private static final String ONLY_DIGITS = "[0-9]+";
+
     private final CardRepository cardRepository;
 
     @Autowired
@@ -64,7 +66,7 @@ public class CardServiceImpl implements CardService {
     }
 
     private void validateCardNumber(String cardNumber) {
-        if (!cardNumber.matches("[0-9]+") || cardNumber.length() != 16) { //validates card number is only digits
+        if (!cardNumber.matches(ONLY_DIGITS) || cardNumber.length() != 16) { //validates card number is only digits
             throw new InvalidCardInformation("Card","number", cardNumber);
         }
     }
