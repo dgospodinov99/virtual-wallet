@@ -1,4 +1,4 @@
-package com.team01.web.virtualwallet.Controllers.REST;
+package com.team01.web.virtualwallet.controllers.REST;
 
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
@@ -14,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
