@@ -9,7 +9,7 @@ create or replace table roles
 
 create or replace table users
 (
-	user_id int(10) auto_increment
+	user_id int auto_increment
 		primary key,
 	username varchar(20) not null,
 	email varchar(100) not null,
@@ -27,7 +27,7 @@ create or replace table users
 
 create or replace table cards
 (
-	card_id int not null
+	card_id int auto_increment
 		primary key,
 	card_number varchar(16) not null,
 	holder varchar(30) not null,

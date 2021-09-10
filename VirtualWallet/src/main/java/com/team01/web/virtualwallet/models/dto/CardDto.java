@@ -1,38 +1,23 @@
-package com.team01.web.virtualwallet.models;
+package com.team01.web.virtualwallet.models.dto;
 
-import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
-@Entity
-@Table(name = "cards")
-public class Card {
+public class CardDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "card_id")
-    private int id;
-
-    @Column(name = "card_number")
+    @NotBlank
+    @Size(min = 16, max = 16, message = "Card number be between 16 digits")
     private String cardNumber;
 
-    @Column(name = "holder")
+    @NotBlank
+    @Size(min = 2, max = 20, message = "Card holder must be between 2 and 20 symbols")
     private String holder;
 
-    @Column(name = "check_number")
+    @NotBlank
+    @Size(min = 3, max = 3, message = "Card check number must be between 3 digits")
     private String checkNumber;
 
-//    @OneToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "user_id")
-//    private User user;
-
-    public Card() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public CardDto() {
     }
 
     public String getCardNumber() {
