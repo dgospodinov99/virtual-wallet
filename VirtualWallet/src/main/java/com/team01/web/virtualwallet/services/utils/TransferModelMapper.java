@@ -22,8 +22,9 @@ public class TransferModelMapper {
     public Transfer fromDto(TransferDto dto) {
         Transfer transfer = new Transfer();
         transfer.setAmount(dto.getAmount());
-        transfer.setSender(userService.getById(dto.getSenderId()));
-        transfer.setReceiver(userService.getById(dto.getReceiverId()));
+//        todo refactor to use walletService**
+//        transfer.setSender(userService.getById(dto.getSenderId()));
+//        transfer.setReceiver(userService.getById(dto.getReceiverId()));
 
         return transfer;
     }

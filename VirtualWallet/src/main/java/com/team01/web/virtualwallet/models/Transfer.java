@@ -1,7 +1,5 @@
 package com.team01.web.virtualwallet.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 
 @Entity
@@ -16,14 +14,13 @@ public class Transfer {
     @Column(name = "amount")
     private Double amount;
 
-    //connections, users = wallets?
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sender_id")
-    private User sender;
+    private Wallet sender;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "receiver_id")
-    private User receiver;
+    private Wallet receiver;
 
     public Transfer() {
     }
@@ -44,19 +41,19 @@ public class Transfer {
         this.amount = amount;
     }
 
-    public User getSender() {
+    public Wallet getSender() {
         return sender;
     }
 
-    public void setSender(User sender) {
+    public void setSender(Wallet sender) {
         this.sender = sender;
     }
 
-    public User getReceiver() {
+    public Wallet getReceiver() {
         return receiver;
     }
 
-    public void setReceiver(User receiver) {
+    public void setReceiver(Wallet receiver) {
         this.receiver = receiver;
     }
 }
