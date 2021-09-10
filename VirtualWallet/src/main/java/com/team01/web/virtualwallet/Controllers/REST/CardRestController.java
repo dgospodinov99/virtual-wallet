@@ -18,13 +18,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/cards")
-public class CardController {
+public class CardRestController {
 
     private final CardService cardService;
     private final CardModelMapper modelMapper;
 
     @Autowired
-    public CardController(CardService cardService, CardModelMapper modelMapper) {
+    public CardRestController(CardService cardService, CardModelMapper modelMapper) {
         this.cardService = cardService;
         this.modelMapper = modelMapper;
     }
