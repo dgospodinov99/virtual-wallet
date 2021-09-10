@@ -1,4 +1,4 @@
-package com.team01.web.virtualwallet.controllers;
+package com.team01.web.virtualwallet.controllers.REST;
 
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
@@ -12,9 +12,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/cards")
@@ -30,14 +30,16 @@ public class CardController {
     }
 
     @GetMapping()
-    public List<Card> getAll() {
-        return cardService.getAll();
+    public List<CardDto> getAll() {
+        return cardService.getAll().stream()
+                .map(card -> modelMapper.toDto(card))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Card getById(@PathVariable int id) {
+    public CardDto getById(@PathVariable int id) {
         try {
-            return cardService.getById(id);
+            return modelMapper.toDto(cardService.getById(id));
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
