@@ -65,6 +65,18 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public User getByPhoneNumber(String phoneNumber) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery("from User where phoneNumber = :phoneNumber", User.class);
+            query.setParameter("phoneNumber", phoneNumber);
+            if (query.list().size() == 0) {
+                throw new EntityNotFoundException("User", "phone number", phoneNumber);
+            }
+            return query.getSingleResult();
+        }
+    }
+
+    @Override
     public void create(User user) {
         try (Session session = sessionFactory.openSession()) {
             session.save(user);

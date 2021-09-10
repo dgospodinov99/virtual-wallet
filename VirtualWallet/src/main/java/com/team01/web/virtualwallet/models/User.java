@@ -36,7 +36,7 @@ public class User {
     @Column(name = "balance")
     private double balance;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_cards",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -44,7 +44,7 @@ public class User {
     )
     private Set<Card> cards;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),

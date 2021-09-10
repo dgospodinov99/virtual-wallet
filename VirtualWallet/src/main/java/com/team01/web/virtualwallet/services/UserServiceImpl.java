@@ -46,6 +46,7 @@ public class UserServiceImpl implements UserService {
     public void create(User user) {
         boolean duplicateUsernameExists = true;
         boolean duplicateEmailExists = true;
+        boolean duplicatePhoneExists = true;
         try {
             userRepository.getByUsername(user.getUsername());
         } catch (EntityNotFoundException e) {
@@ -56,11 +57,19 @@ public class UserServiceImpl implements UserService {
         } catch (EntityNotFoundException e) {
             duplicateEmailExists = false;
         }
+        try {
+            userRepository.getByPhoneNumber(user.getPhoneNumber());
+        } catch (EntityNotFoundException e) {
+            duplicatePhoneExists = false;
+        }
         if (duplicateUsernameExists) {
             throw new DuplicateEntityException("User", "username", user.getUsername());
         }
         if (duplicateEmailExists) {
             throw new DuplicateEntityException("User", "email", user.getEmail());
+        }
+        if (duplicatePhoneExists) {
+            throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
         }
         isPasswordValid(user.getPassword());
         userRepository.create(user);

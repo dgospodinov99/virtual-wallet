@@ -44,6 +44,7 @@ public class RoleRepositoryImpl implements RoleRepository {
     public Role getByName(String name) {
         try (Session session = sessionFactory.openSession()) {
             Query<Role> query = session.createQuery("from Role where name = :name", Role.class);
+            query.setParameter("name", name);
             if (query.list().size() == 0) {
                 throw new EntityNotFoundException("Role", "name", name);
             }
