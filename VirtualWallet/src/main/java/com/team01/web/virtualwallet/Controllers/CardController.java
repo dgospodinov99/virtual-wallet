@@ -2,6 +2,7 @@ package com.team01.web.virtualwallet.controllers;
 
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
+import com.team01.web.virtualwallet.exceptions.InvalidCardInformation;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.dto.CardDto;
 import com.team01.web.virtualwallet.services.contracts.CardService;
@@ -49,6 +50,8 @@ public class CardController {
             Card card = modelMapper.fromDto(dto);
             cardService.create(card);
             return card;
+        } catch (InvalidCardInformation e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }

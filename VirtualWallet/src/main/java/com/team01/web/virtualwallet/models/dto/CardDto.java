@@ -6,7 +6,7 @@ import javax.validation.constraints.Size;
 public class CardDto {
 
     @NotBlank
-    @Size(min = 16, max = 16, message = "Card number be between 16 digits")
+    @Size(min = 16, max = 16, message = "Card number be 16 digits")
     private String cardNumber;
 
     @NotBlank
