@@ -1,12 +1,9 @@
 package com.team01.web.virtualwallet.models.dto;
 
-import org.springframework.stereotype.Repository;
-
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
-public class CardDto {
+public class CreateCardDto {
 
     @NotBlank
     @Size(min = 16, max = 16, message = "Card number be 16 digits")
@@ -20,11 +17,7 @@ public class CardDto {
     @Size(min = 3, max = 3, message = "Card check number must be between 3 digits")
     private String checkNumber;
 
-    //userId = walletId
-    @Positive
-    private int userId;
-
-    public CardDto() {
+    public CreateCardDto() {
     }
 
     public String getCardNumber() {
@@ -49,13 +42,5 @@ public class CardDto {
 
     public void setCheckNumber(String checkNumber) {
         this.checkNumber = checkNumber;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 }

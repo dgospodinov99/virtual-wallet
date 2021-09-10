@@ -1,7 +1,9 @@
 package com.team01.web.virtualwallet.services.utils;
 
 import com.team01.web.virtualwallet.models.Card;
+import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.CardDto;
+import com.team01.web.virtualwallet.models.dto.CreateCardDto;
 import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +21,13 @@ public class CardModelMapper {
         this.userService = userService;
     }
 
-    public Card fromDto(CardDto dto) {
+    public Card fromCreateDto(CreateCardDto dto, User user) {
         Card card = new Card();
         card.setCardNumber(dto.getCardNumber());
         card.setCheckNumber(dto.getCheckNumber());
         card.setHolder(dto.getHolder());
+        card.setUser(user);
 
-        card.setUser(userService.getById(4));
-
-        //todo fix - db card user_id has defaulf value
-
-        //set card userId from userService
         return card;
     }
 
@@ -38,7 +36,7 @@ public class CardModelMapper {
         dto.setCardNumber(card.getCardNumber());
         dto.setCheckNumber(card.getCheckNumber());
         dto.setHolder(card.getHolder());
-
+        dto.setUserId(card.getUser().getId());
         return dto;
     }
 
