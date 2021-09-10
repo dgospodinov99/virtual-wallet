@@ -1,5 +1,7 @@
 package com.team01.web.virtualwallet.services;
 
+import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
+import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidCardInformation;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.repositories.contracts.CardRepository;
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Service
 public class CardServiceImpl implements CardService {
+
+    private static final String ONLY_DIGITS = "[0-9]+";
 
     private final CardRepository cardRepository;
 
@@ -31,15 +35,23 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public Card getByCardNumber(String cardNumber) {
-        //validate card number is only digits
-        if (cardNumber.matches("[0-9]+") && cardNumber.length() != 16) {
-            throw new InvalidCardInformation("Card","number",cardNumber);
-        }
+        validateCardNumber(cardNumber);
         return cardRepository.getByCardNumber(cardNumber);
     }
 
+
     @Override
     public void create(Card card) {
+        boolean duplicateCardNumberExists = true;
+        try {
+            getByCardNumber(card.getCardNumber());
+        }catch (EntityNotFoundException e){
+            duplicateCardNumberExists = false;
+        }
+
+        if(duplicateCardNumberExists){
+            throw new DuplicateEntityException("Card","number",card.getCardNumber());
+        }
         cardRepository.create(card);
     }
 
@@ -51,5 +63,11 @@ public class CardServiceImpl implements CardService {
     @Override
     public void delete(int id) {
         cardRepository.delete(id);
+    }
+
+    private void validateCardNumber(String cardNumber) {
+        if (!cardNumber.matches(ONLY_DIGITS) || cardNumber.length() != 16) { //validates card number is only digits
+            throw new InvalidCardInformation("Card","number", cardNumber);
+        }
     }
 }

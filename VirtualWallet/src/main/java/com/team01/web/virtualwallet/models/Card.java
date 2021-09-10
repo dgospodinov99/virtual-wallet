@@ -1,5 +1,7 @@
 package com.team01.web.virtualwallet.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -20,9 +22,10 @@ public class Card {
     @Column(name = "check_number")
     private String checkNumber;
 
-//    @OneToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "user_id")
-//    private User user;
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Card() {
     }
@@ -57,5 +60,13 @@ public class Card {
 
     public void setCheckNumber(String checkNumber) {
         this.checkNumber = checkNumber;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
