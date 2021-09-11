@@ -1,5 +1,6 @@
 package com.team01.web.virtualwallet.services;
 
+import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.repositories.contracts.WalletRepository;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
@@ -27,6 +28,23 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public Wallet getById(int id) {
         return walletRepository.getById(id);
+    }
+
+    @Override
+    public void update(Wallet wallet) {
+        walletRepository.update(wallet);
+    }
+
+    @Override
+    public void withdraw(Wallet wallet, double amount) {
+        wallet.setBalance(wallet.getBalance() - amount);
+        walletRepository.update(wallet);
+    }
+
+    @Override
+    public void deposit(Wallet wallet, double amount) {
+        wallet.setBalance(wallet.getBalance() + amount);
+        walletRepository.update(wallet);
     }
 
     @Override

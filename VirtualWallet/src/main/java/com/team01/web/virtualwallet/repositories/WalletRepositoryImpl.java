@@ -1,6 +1,7 @@
 package com.team01.web.virtualwallet.repositories;
 
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
+import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.repositories.contracts.WalletRepository;
 import org.hibernate.Session;
@@ -37,6 +38,15 @@ public class WalletRepositoryImpl implements WalletRepository {
                 throw new EntityNotFoundException("Wallet", id);
             }
             return wallet;
+        }
+    }
+
+    @Override
+    public void update(Wallet wallet) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.update(wallet);
+            session.getTransaction().commit();
         }
     }
 
