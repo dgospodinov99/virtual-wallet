@@ -56,4 +56,13 @@ public class WalletRepositoryImpl implements WalletRepository {
             session.save(wallet);
         }
     }
+
+    @Override
+    public void delete(Wallet wallet) {
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.delete(wallet);
+            session.getTransaction().commit();
+        }
+    }
 }

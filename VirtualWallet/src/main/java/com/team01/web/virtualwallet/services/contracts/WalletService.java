@@ -17,4 +17,6 @@ public interface WalletService {
     void deposit(Wallet wallet, double amount);
 
     Wallet create(Wallet wallet);
+
+    void delete(Wallet wallet);
 }

@@ -4,8 +4,11 @@ import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
 import com.team01.web.virtualwallet.models.User;
+import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.repositories.contracts.UserRepository;
+import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
+import com.team01.web.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +19,14 @@ import java.util.regex.Pattern;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final WalletService walletService;
+    private final CardService cardService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, WalletService walletService, CardService cardService) {
         this.userRepository = userRepository;
+        this.walletService = walletService;
+        this.cardService = cardService;
     }
 
     @Override
@@ -48,6 +55,8 @@ public class UserServiceImpl implements UserService {
         verifyUniqueUsername(user.getUsername());
         verifyUniquePhoneNumber(user.getPhoneNumber());
         isPasswordValid(user.getPassword());
+        Wallet wallet = walletService.create(new Wallet());
+        user.setWallet(wallet);
         userRepository.create(user);
     }
 

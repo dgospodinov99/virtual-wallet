@@ -52,4 +52,9 @@ public class WalletServiceImpl implements WalletService {
        walletRepository.create(wallet);
        return wallet;
     }
+
+    @Override
+    public void delete(Wallet wallet) {
+        walletRepository.delete(wallet);
+    }
 }

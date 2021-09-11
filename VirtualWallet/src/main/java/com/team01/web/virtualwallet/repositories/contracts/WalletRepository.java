@@ -13,4 +13,6 @@ public interface WalletRepository {
     void update(Wallet wallet);
 
     void create(Wallet wallet);
+
+    void delete(Wallet wallet);
 }

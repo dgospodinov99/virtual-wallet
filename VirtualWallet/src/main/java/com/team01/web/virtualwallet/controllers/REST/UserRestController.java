@@ -53,6 +53,7 @@ public class UserRestController {
         try {
             User user = modelMapper.fromCreateDto(dto);
             service.create(user);
+
             return modelMapper.toDto(user);
         } catch (DuplicateEntityException | InvalidPasswordException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
