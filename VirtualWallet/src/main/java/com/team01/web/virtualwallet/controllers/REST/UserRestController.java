@@ -1,15 +1,19 @@
 package com.team01.web.virtualwallet.controllers.REST;
 
+import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
+import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.User;
+import com.team01.web.virtualwallet.models.dto.BlockUserDto;
 import com.team01.web.virtualwallet.models.dto.CreateUserDto;
 import com.team01.web.virtualwallet.models.dto.UpdateUserDto;
 import com.team01.web.virtualwallet.models.dto.UserDto;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,12 +28,13 @@ public class UserRestController {
 
     private final UserService service;
     private final UserModelMapper modelMapper;
-
+    private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public UserRestController(UserService service, UserModelMapper modelMapper) {
+    public UserRestController(UserService service, UserModelMapper modelMapper, AuthenticationHelper authenticationHelper) {
         this.service = service;
         this.modelMapper = modelMapper;
+        this.authenticationHelper = authenticationHelper;
     }
 
     @GetMapping
@@ -68,6 +73,32 @@ public class UserRestController {
             return modelMapper.toDto(user);
         } catch (DuplicateEntityException | InvalidPasswordException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
+
+    @PutMapping("/block")
+    public UserDto blockUser(@RequestBody BlockUserDto dto, @RequestHeader HttpHeaders headers) {
+        try {
+            User executor = authenticationHelper.tryGetUser(headers);
+            User user = service.blockUser(dto.getUsername(), executor);
+            return modelMapper.toDto(user);
+        } catch (InvalidPasswordException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (UnauthorizedOperationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
+
+    @PutMapping("/unblock")
+    public UserDto unblock(@RequestBody BlockUserDto dto, @RequestHeader HttpHeaders headers) {
+        try {
+            User executor = authenticationHelper.tryGetUser(headers);
+            User user = service.unblockUser(dto.getUsername(), executor);
+            return modelMapper.toDto(user);
+        } catch (InvalidPasswordException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (UnauthorizedOperationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 

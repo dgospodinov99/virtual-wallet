@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -74,12 +75,17 @@ public class UserModelMapper {
     }
 
     public UserDto toDto(User user) {
+        String status = "Active";
+        if(user.isBlocked()){
+            status = "Blocked";
+        }
         return new UserDto(
                 user.getUsername(),
                 user.getEmail(),
                 user.getPhoneNumber(),
                 user.getPassword(),
                 user.getPhotoURL(),
+                status,
                 user.getWallet().getBalance(),
                 user.getCards().stream()
                         .map(Card::getId)

@@ -3,6 +3,7 @@ package com.team01.web.virtualwallet.services;
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
+import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.repositories.contracts.UserRepository;
@@ -17,6 +18,8 @@ import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    private static final String USER_NOT_ADMIN_MESSAGE = "You are not an administrator!";
 
     private final UserRepository userRepository;
     private final WalletService walletService;
@@ -47,6 +50,37 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getByEmail(String email) {
         return userRepository.getByEmail(email);
+    }
+
+    @Override
+    public User getByWallet(Wallet wallet) {
+        return userRepository.getByWallet(wallet.getId());
+    }
+
+    @Override
+    public User blockUser(String usernameToBlock, User executor) {
+        User userToBlock = getByUsername(usernameToBlock);
+
+        if(!executor.isAdmin()){
+            throw new UnauthorizedOperationException(USER_NOT_ADMIN_MESSAGE);
+        }
+
+        userToBlock.setBlocked(true);
+        userRepository.update(userToBlock);
+        return userToBlock;
+    }
+
+    @Override
+    public User unblockUser(String usernameToUnBlock, User executor) {
+        User userToUnBlock = getByUsername(usernameToUnBlock);
+
+        if(!executor.isAdmin()){
+            throw new UnauthorizedOperationException(USER_NOT_ADMIN_MESSAGE);
+        }
+
+        userToUnBlock.setBlocked(false);
+        userRepository.update(userToUnBlock);
+        return userToUnBlock;
     }
 
     @Override
@@ -117,6 +151,7 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateEntityException("User", "email", email);
         }
     }
+
     public void verifyUniqueUsername(String username) {
         boolean duplicateExists = true;
         try {
@@ -128,6 +163,7 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateEntityException("User", "username", username);
         }
     }
+
     public void verifyUniquePhoneNumber(String phoneNumber) {
         boolean duplicateExists = true;
         try {
