@@ -14,8 +14,8 @@ import javax.servlet.http.HttpSession;
 @Component
 public class AuthenticationHelper {
 
-    public static final String WRONG_USERNAME_OR_PASSWORD = "Wrong username or password.";
-    public final String AUTHORIZATION_HEADER_NAME = "Authorization";
+    private static final String WRONG_USERNAME_OR_PASSWORD = "Wrong username or password.";
+    private final String AUTHORIZATION_HEADER_NAME = "Authorization";
 
     private final UserService userService;
 

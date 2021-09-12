@@ -1,17 +1,14 @@
 package com.team01.web.virtualwallet.controllers.REST;
 
-import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
-import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
-import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
-import com.team01.web.virtualwallet.exceptions.InvalidTransferException;
+import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
+import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.User;
-import com.team01.web.virtualwallet.models.dto.CreateUserDto;
 import com.team01.web.virtualwallet.models.dto.TransferDto;
-import com.team01.web.virtualwallet.models.dto.UserDto;
 import com.team01.web.virtualwallet.services.contracts.TransferService;
 import com.team01.web.virtualwallet.services.utils.TransferModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,11 +23,13 @@ public class TransferRestController {
 
     private final TransferService transferService;
     private final TransferModelMapper modelMapper;
+    private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public TransferRestController(TransferService transferService, TransferModelMapper modelMapper) {
+    public TransferRestController(TransferService transferService, TransferModelMapper modelMapper, AuthenticationHelper authenticationHelper) {
         this.transferService = transferService;
         this.modelMapper = modelMapper;
+        this.authenticationHelper = authenticationHelper;
     }
 
 
@@ -51,15 +50,19 @@ public class TransferRestController {
     }
 
     @PostMapping
-    public TransferDto create(@Valid @RequestBody TransferDto dto) {
+    public TransferDto create(@Valid @RequestBody TransferDto dto, @RequestHeader HttpHeaders headers) {
         try {
+            User executor = authenticationHelper.tryGetUser(headers);
+
             Transfer transfer = modelMapper.fromDto(dto);
-            transferService.create(transfer);
+            transferService.create(transfer,executor);
             return modelMapper.toDto(transfer);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (InvalidTransferException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (BlockedUserException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         } catch (DuplicateEntityException | InvalidPasswordException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
