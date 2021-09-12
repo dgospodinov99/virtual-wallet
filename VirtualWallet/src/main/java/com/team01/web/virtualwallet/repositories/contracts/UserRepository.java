@@ -1,6 +1,7 @@
 package com.team01.web.virtualwallet.repositories.contracts;
 
 import com.team01.web.virtualwallet.models.User;
+import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 
 import java.util.List;
 
@@ -23,4 +24,7 @@ public interface UserRepository {
     void update(User user);
 
     void delete(int id);
+
+    List<User> filterUsers(FilterUserParams params);
+
 }

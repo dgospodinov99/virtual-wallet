@@ -6,12 +6,10 @@ import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
 import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.User;
-import com.team01.web.virtualwallet.models.dto.BlockUserDto;
-import com.team01.web.virtualwallet.models.dto.CreateUserDto;
-import com.team01.web.virtualwallet.models.dto.UpdateUserDto;
-import com.team01.web.virtualwallet.models.dto.UserDto;
+import com.team01.web.virtualwallet.models.dto.*;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +18,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
+import java.util.logging.Filter;
 import java.util.stream.Collectors;
 
 @RestController
@@ -48,6 +48,28 @@ public class UserRestController {
     public UserDto getById(@PathVariable int id) {
         try {
             return modelMapper.toDto(service.getById(id));
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+
+    @GetMapping("/filter")
+    public List<UserDto> filter(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phoneNumber) {
+        try {
+            var params = new FilterUserParams()
+                    .setUsername(username)
+                    .setEmail(email)
+                    .setPhoneNumber(phoneNumber);
+
+            return service.filterUsers(params)
+                    .stream()
+                    .map(user -> modelMapper.toDto(user))
+                    .collect(Collectors.toList());
+
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

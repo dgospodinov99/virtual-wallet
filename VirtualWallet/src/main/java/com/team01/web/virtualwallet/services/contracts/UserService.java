@@ -2,6 +2,7 @@ package com.team01.web.virtualwallet.services.contracts;
 
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
+import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 
 import java.util.List;
 
@@ -20,6 +21,8 @@ public interface UserService {
     User blockUser(String usernameToBlock, User executor);
 
     User unblockUser(String usernameToBlock, User executor);
+
+    List<User> filterUsers(FilterUserParams params);
 
     void create(User user);
 

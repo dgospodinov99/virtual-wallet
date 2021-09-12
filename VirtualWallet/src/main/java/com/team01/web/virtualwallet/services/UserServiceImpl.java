@@ -6,6 +6,7 @@ import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
 import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
+import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.UserRepository;
 import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
@@ -81,6 +82,11 @@ public class UserServiceImpl implements UserService {
         userToUnBlock.setBlocked(false);
         userRepository.update(userToUnBlock);
         return userToUnBlock;
+    }
+
+    @Override
+    public List<User> filterUsers(FilterUserParams params) {
+        return userRepository.filterUsers(params);
     }
 
     @Override
