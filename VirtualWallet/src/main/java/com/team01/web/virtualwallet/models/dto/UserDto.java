@@ -28,6 +28,8 @@ public class UserDto {
     @Positive
     private double balance;
 
+    private String status;
+
     private List<Integer> cardsId;
 
     public UserDto(){}
@@ -37,6 +39,7 @@ public class UserDto {
                    String phoneNumber,
                    String password,
                    String photoURL,
+                   String status,
                    double balance,
                    List<Integer> cardsId) {
         this.username = username;
@@ -46,6 +49,7 @@ public class UserDto {
         this.photoURL = photoURL;
         this.balance = balance;
         this.cardsId = cardsId;
+        this.status = status;
     }
 
     public String getUsername() {
@@ -102,5 +106,13 @@ public class UserDto {
 
     public void setCardsId(List<Integer> cardsId) {
         this.cardsId = cardsId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

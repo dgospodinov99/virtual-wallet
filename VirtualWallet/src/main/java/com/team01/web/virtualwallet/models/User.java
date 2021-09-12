@@ -33,6 +33,9 @@ public class User {
     @Column(name = "photo_url")
     private String photoURL;
 
+    @Column(name = "blocked")
+    private boolean blocked;
+
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
@@ -126,5 +129,13 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 }
