@@ -10,5 +10,9 @@ public interface WalletRepository {
 
     Wallet getById(int id);
 
+    void update(Wallet wallet);
+
     void create(Wallet wallet);
+
+    void delete(Wallet wallet);
 }

@@ -3,7 +3,6 @@ package com.team01.web.virtualwallet.services.utils;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.Role;
 import com.team01.web.virtualwallet.models.User;
-import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.models.dto.CreateUserDto;
 import com.team01.web.virtualwallet.models.dto.UpdateUserDto;
 import com.team01.web.virtualwallet.models.dto.UserDto;
@@ -54,10 +53,6 @@ public class UserModelMapper {
         Set<Role> roles = new HashSet<>();
         roles.add(role);
         user.setRoles(roles);
-
-
-        Wallet wallet = walletService.create(new Wallet());
-        user.setWallet(wallet);
 
         return user;
     }

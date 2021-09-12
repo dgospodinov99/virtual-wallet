@@ -3,6 +3,7 @@ package com.team01.web.virtualwallet.repositories;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.User;
+import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.repositories.contracts.TransferRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -38,6 +39,13 @@ public class TransferRepositoryImpl implements TransferRepository {
                 throw new EntityNotFoundException("Transfer", id);
             }
             return transfer;
+        }
+    }
+
+    @Override
+    public void create(Transfer transfer) {
+        try (Session session = sessionFactory.openSession()) {
+            session.save(transfer);
         }
     }
 }

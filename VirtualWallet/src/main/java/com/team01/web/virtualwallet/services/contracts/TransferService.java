@@ -9,4 +9,6 @@ public interface TransferService {
     List<Transfer> getAll();
 
     Transfer getById(int id);
+
+    void create(Transfer transfer);
 }
