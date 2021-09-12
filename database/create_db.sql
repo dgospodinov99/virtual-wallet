@@ -17,6 +17,7 @@ create or replace table users
 	password varchar(100) not null,
 	photo_url text null,
 	wallet_id int not null,
+	blocked tinyint(1) default 0 not null,
 	constraint users_email_uindex
 		unique (email),
 	constraint users_phone_number_uindex
