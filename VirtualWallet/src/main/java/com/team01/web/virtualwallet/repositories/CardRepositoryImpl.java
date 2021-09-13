@@ -24,7 +24,7 @@ public class CardRepositoryImpl implements CardRepository {
     @Override
     public List<Card> getAll() {
         try (Session session = sessionFactory.openSession()) {
-            Query<Card> query = session.createQuery("from Card order by id", Card.class);
+            Query<Card> query = session.createQuery("from Card where active = true order by id", Card.class);
             return query.list();
         }
     }
@@ -43,7 +43,7 @@ public class CardRepositoryImpl implements CardRepository {
     @Override
     public Card getByCardNumber(String cardNumber){
         try (Session session = sessionFactory.openSession()) {
-            Query<Card> query = session.createQuery("from Card where cardNumber = :cardNumber", Card.class);
+            Query<Card> query = session.createQuery("from Card where active = true and cardNumber = :cardNumber", Card.class);
             query.setParameter("cardNumber",cardNumber);
             List<Card> result = query.list();
             if(result.size()==0){
@@ -56,7 +56,9 @@ public class CardRepositoryImpl implements CardRepository {
     @Override
     public void create(Card card) {
         try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
             session.save(card);
+            session.getTransaction().commit();
         }
     }
 

@@ -6,9 +6,9 @@ import com.team01.web.virtualwallet.exceptions.InvalidCardInformation;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.repositories.contracts.CardRepository;
 import com.team01.web.virtualwallet.services.contracts.CardService;
+import com.team01.web.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -16,7 +16,9 @@ public class CardServiceImpl implements CardService {
 
     private static final String ONLY_DIGITS = "[0-9]+";
 
+
     private final CardRepository cardRepository;
+
 
     @Autowired
     public CardServiceImpl(CardRepository cardRepository) {
@@ -62,7 +64,10 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public void delete(int id) {
-        cardRepository.delete(id);
+        Card card = getById(id);
+        card.setActive(false);
+
+        cardRepository.update(card);
     }
 
     private void validateCardNumber(String cardNumber) {

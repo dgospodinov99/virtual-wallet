@@ -1,11 +1,15 @@
 package com.team01.web.virtualwallet.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import java.util.Set;
 
 @Entity
 @Table(name = "cards")
+//@Where(clause = "is_active=1")
 public class Card {
 
     @Id
@@ -26,7 +30,11 @@ public class Card {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "is_active")
+    private Boolean active;
+
     public Card() {
+        setActive(true);
     }
 
     public int getId() {
@@ -67,5 +75,13 @@ public class Card {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

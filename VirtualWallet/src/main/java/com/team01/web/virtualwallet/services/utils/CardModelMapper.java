@@ -26,6 +26,7 @@ public class CardModelMapper {
         card.setCardNumber(dto.getCardNumber());
         card.setCheckNumber(dto.getCheckNumber());
         card.setHolder(dto.getHolder());
+
         card.setUser(user);
 
         return card;
@@ -36,7 +37,7 @@ public class CardModelMapper {
         dto.setCardNumber(card.getCardNumber());
         dto.setCheckNumber(card.getCheckNumber());
         dto.setHolder(card.getHolder());
-        dto.setUserId(card.getUser().getId());
+//        dto.setUserId(card.getUser().getId());
         return dto;
     }
 
