@@ -25,7 +25,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> getAll() {
         try (Session session = sessionFactory.openSession()) {
-            Query<User> query = session.createQuery("from User order by id", User.class);
+            Query<User> query = session.createQuery("from User where active = true order by id", User.class);
             return query.list();
         }
     }
@@ -44,7 +44,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User getByUsername(String username) {
         try (Session session = sessionFactory.openSession()) {
-            Query<User> query = session.createQuery("from User where username = :username", User.class);
+            Query<User> query = session.createQuery("from User where active = true and username = :username", User.class);
             query.setParameter("username", username);
             if (query.list().size() == 0) {
                 throw new EntityNotFoundException("User", "username", username);
@@ -56,12 +56,24 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User getByEmail(String email) {
         try (Session session = sessionFactory.openSession()) {
-            Query<User> query = session.createQuery("from User where email = :email", User.class);
+            Query<User> query = session.createQuery("from User where active = true and email = :email", User.class);
             query.setParameter("email", email);
             if (query.list().size() == 0) {
                 throw new EntityNotFoundException("User", "email", email);
             }
             return query.list().get(0);
+        }
+    }
+
+    @Override
+    public User getByPhoneNumber(String phoneNumber) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<User> query = session.createQuery("from User where active = true and phoneNumber = :phoneNumber", User.class);
+            query.setParameter("phoneNumber", phoneNumber);
+            if (query.list().size() == 0) {
+                throw new EntityNotFoundException("User", "phone number", phoneNumber);
+            }
+            return query.getSingleResult();
         }
     }
 
@@ -78,21 +90,9 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User getByPhoneNumber(String phoneNumber) {
-        try (Session session = sessionFactory.openSession()) {
-            Query<User> query = session.createQuery("from User where phoneNumber = :phoneNumber", User.class);
-            query.setParameter("phoneNumber", phoneNumber);
-            if (query.list().size() == 0) {
-                throw new EntityNotFoundException("User", "phone number", phoneNumber);
-            }
-            return query.getSingleResult();
-        }
-    }
-
-    @Override
     public List<User> filterUsers(FilterUserParams params) {
         try (Session session = sessionFactory.openSession()){
-            String queryString = "from User where 1 = 1";
+            String queryString = "from User where active = true";
 
             if(params.getEmail().isPresent()){
                 queryString += " and email = :email";
@@ -117,14 +117,15 @@ public class UserRepositoryImpl implements UserRepository {
             }
 
             return query.list();
-
         }
     }
 
     @Override
     public void create(User user) {
         try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
             session.save(user);
+            session.getTransaction().commit();
         }
     }
 

@@ -60,6 +60,7 @@ public class UserRestController {
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String phoneNumber) {
         try {
+
             var params = new FilterUserParams()
                     .setUsername(username)
                     .setEmail(email)

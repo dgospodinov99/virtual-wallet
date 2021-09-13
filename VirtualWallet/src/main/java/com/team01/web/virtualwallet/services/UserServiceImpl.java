@@ -4,6 +4,7 @@ import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
 import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
@@ -62,9 +63,7 @@ public class UserServiceImpl implements UserService {
     public User blockUser(String usernameToBlock, User executor) {
         User userToBlock = getByUsername(usernameToBlock);
 
-        if(!executor.isAdmin()){
-            throw new UnauthorizedOperationException(USER_NOT_ADMIN_MESSAGE);
-        }
+        verifyAdmin(executor);
 
         userToBlock.setBlocked(true);
         userRepository.update(userToBlock);
@@ -75,13 +74,17 @@ public class UserServiceImpl implements UserService {
     public User unblockUser(String usernameToUnBlock, User executor) {
         User userToUnBlock = getByUsername(usernameToUnBlock);
 
-        if(!executor.isAdmin()){
-            throw new UnauthorizedOperationException(USER_NOT_ADMIN_MESSAGE);
-        }
+        verifyAdmin(executor);
 
         userToUnBlock.setBlocked(false);
         userRepository.update(userToUnBlock);
         return userToUnBlock;
+    }
+
+    private void verifyAdmin(User executor) {
+        if (!executor.isAdmin()) {
+            throw new UnauthorizedOperationException(USER_NOT_ADMIN_MESSAGE);
+        }
     }
 
     @Override
@@ -120,7 +123,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(int id) {
-        userRepository.delete(id);
+        User user = getById(id);
+        //card deletion
+        for (Card card: user.getCards()) {
+            cardService.delete(card.getId());
+        }
+
+        walletService.delete(user.getWallet());
+        user.setActive(false);
+        userRepository.update(user);
     }
 
     public void isPasswordValid(String password) {

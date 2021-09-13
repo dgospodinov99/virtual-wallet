@@ -36,11 +36,11 @@ public class User {
     @Column(name = "blocked")
     private boolean blocked;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "wallet_id")
     private Wallet wallet;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_cards",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -55,6 +55,9 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    @Column(name = "is_active")
+    private Boolean active;
 
     public User(){
     }
@@ -137,6 +140,15 @@ public class User {
 
     public void setBlocked(boolean blocked) {
         this.blocked = blocked;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public User setActive(Boolean active) {
+        this.active = active;
+        return this;
     }
 
     public boolean isAdmin() {
