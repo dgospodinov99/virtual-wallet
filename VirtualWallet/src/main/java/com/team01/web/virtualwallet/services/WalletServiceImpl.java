@@ -1,6 +1,5 @@
 package com.team01.web.virtualwallet.services;
 
-import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.repositories.contracts.WalletRepository;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
@@ -55,6 +54,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public void delete(Wallet wallet) {
-        walletRepository.delete(wallet);
+        wallet.setActive(false);
+        walletRepository.update(wallet);
     }
 }

@@ -14,7 +14,11 @@ public class Wallet {
     @Column(name = "balance")
     private double balance;
 
+    @Column(name = "is_active")
+    private Boolean active;
+
     public Wallet() {
+        setActive(true);
     }
 
     public int getId() {
@@ -31,5 +35,13 @@ public class Wallet {
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

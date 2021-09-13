@@ -25,7 +25,7 @@ public class WalletRepositoryImpl implements WalletRepository {
     @Override
     public List<Wallet> getAll() {
         try (Session session = sessionFactory.openSession()) {
-            Query<Wallet> query = session.createQuery("from Wallet order by id", Wallet.class);
+            Query<Wallet> query = session.createQuery("from Wallet where active = true order by id", Wallet.class);
             return query.list();
         }
     }
