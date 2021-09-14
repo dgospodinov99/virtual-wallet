@@ -1,6 +1,7 @@
 package com.team01.web.virtualwallet.controllers.REST;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
+import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
 import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.User;
@@ -10,6 +11,7 @@ import com.team01.web.virtualwallet.services.utils.TransferModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,12 +26,17 @@ public class TransferRestController {
     private final TransferService transferService;
     private final TransferModelMapper modelMapper;
     private final AuthenticationHelper authenticationHelper;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
     @Autowired
-    public TransferRestController(TransferService transferService, TransferModelMapper modelMapper, AuthenticationHelper authenticationHelper) {
+    public TransferRestController(TransferService transferService,
+                                  TransferModelMapper modelMapper,
+                                  AuthenticationHelper authenticationHelper,
+                                  GlobalExceptionHandler globalExceptionHandler) {
         this.transferService = transferService;
         this.modelMapper = modelMapper;
         this.authenticationHelper = authenticationHelper;
+        this.globalExceptionHandler = globalExceptionHandler;
     }
 
 
@@ -50,7 +57,8 @@ public class TransferRestController {
     }
 
     @PostMapping
-    public TransferDto create(@Valid @RequestBody TransferDto dto, @RequestHeader HttpHeaders headers) {
+    public TransferDto create(@Valid @RequestBody TransferDto dto, @RequestHeader HttpHeaders headers, BindingResult result) {
+        globalExceptionHandler.checkValidFields(result);
         try {
             User executor = authenticationHelper.tryGetUser(headers);
 

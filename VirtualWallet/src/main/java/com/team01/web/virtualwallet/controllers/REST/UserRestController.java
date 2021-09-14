@@ -1,6 +1,7 @@
 package com.team01.web.virtualwallet.controllers.REST;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
+import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
@@ -9,17 +10,15 @@ import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.*;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
-import java.util.logging.Filter;
 import java.util.stream.Collectors;
 
 @RestController
@@ -29,12 +28,17 @@ public class UserRestController {
     private final UserService service;
     private final UserModelMapper modelMapper;
     private final AuthenticationHelper authenticationHelper;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
     @Autowired
-    public UserRestController(UserService service, UserModelMapper modelMapper, AuthenticationHelper authenticationHelper) {
+    public UserRestController(UserService service,
+                              UserModelMapper modelMapper,
+                              AuthenticationHelper authenticationHelper,
+                              GlobalExceptionHandler globalExceptionHandler) {
         this.service = service;
         this.modelMapper = modelMapper;
         this.authenticationHelper = authenticationHelper;
+        this.globalExceptionHandler = globalExceptionHandler;
     }
 
     @GetMapping
@@ -77,8 +81,10 @@ public class UserRestController {
     }
 
     @PostMapping
-    public UserDto create(@Valid @RequestBody CreateUserDto dto) {
+    public UserDto create(@Valid @RequestBody CreateUserDto dto, BindingResult result) {
+        globalExceptionHandler.checkValidFields(result);
         try {
+
             User user = modelMapper.fromCreateDto(dto);
             service.create(user);
 
@@ -89,7 +95,8 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}")
-    public UserDto update(@PathVariable int id, @Valid @RequestBody UpdateUserDto dto) {
+    public UserDto update(@PathVariable int id, @Valid @RequestBody UpdateUserDto dto, BindingResult result) {
+        globalExceptionHandler.checkValidFields(result);
         try {
             User user = modelMapper.fromUpdateDto(dto, id);
             service.update(user);

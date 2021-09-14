@@ -1,6 +1,7 @@
 package com.team01.web.virtualwallet.controllers.REST;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
+import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidCardInformation;
@@ -14,6 +15,7 @@ import com.team01.web.virtualwallet.services.utils.CardModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
@@ -28,13 +30,19 @@ public class CardRestController {
     private final UserService userService;
     private final CardModelMapper modelMapper;
     private final AuthenticationHelper authenticationHelper;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
     @Autowired
-    public CardRestController(CardService cardService, UserService userService, CardModelMapper modelMapper, AuthenticationHelper authenticationHelper) {
+    public CardRestController(CardService cardService,
+                              UserService userService,
+                              CardModelMapper modelMapper,
+                              AuthenticationHelper authenticationHelper,
+                              GlobalExceptionHandler globalExceptionHandler) {
         this.cardService = cardService;
         this.userService = userService;
         this.modelMapper = modelMapper;
         this.authenticationHelper = authenticationHelper;
+        this.globalExceptionHandler = globalExceptionHandler;
     }
 
     @GetMapping()
@@ -54,7 +62,8 @@ public class CardRestController {
     }
 
     @PostMapping
-    public CardDto create(@RequestHeader HttpHeaders headers, @Valid @RequestBody CreateCardDto dto) {
+    public CardDto create(@RequestHeader HttpHeaders headers, @Valid @RequestBody CreateCardDto dto, BindingResult result) {
+        globalExceptionHandler.checkValidFields(result);
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Card card = modelMapper.fromCreateDto(dto, user);

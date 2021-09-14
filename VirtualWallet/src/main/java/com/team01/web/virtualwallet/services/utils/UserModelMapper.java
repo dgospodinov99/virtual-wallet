@@ -48,7 +48,7 @@ public class UserModelMapper {
             cards.add(cardService.getById(cardId));
         }
         user.setCards(cards);
-
+        user.setActive(true);
 
         Role role = roleService.getByName("User");
         Set<Role> roles = new HashSet<>();
