@@ -2,17 +2,20 @@ package com.team01.web.virtualwallet.models.dto;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.time.LocalDateTime;
 
 public class TransferDto {
 
-    @NotNull
+    @Positive(message = "Sender ID is invalid!")
     private int senderId;
 
-    @NotNull
+    @Positive(message = "Receiver ID is invalid!")
     private int receiverId;
 
-    @Positive
+    @Positive(message = "Transaction amount must be positive!")
     private Double amount;
+
+    private LocalDateTime timestamp;
 
     public TransferDto() {
     }
@@ -39,5 +42,13 @@ public class TransferDto {
 
     public void setAmount(Double amount) {
         this.amount = amount;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 }

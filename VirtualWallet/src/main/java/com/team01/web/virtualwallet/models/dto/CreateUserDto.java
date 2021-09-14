@@ -7,24 +7,25 @@ import java.util.List;
 
 public class CreateUserDto {
 
-    @NotBlank
-    @Size(min = 2,max = 20,message = "Username must be between 2 and 20 symbols!")
+    @NotBlank(message = "Username can't be blank!")
+    @Size(min = 2, max = 20, message = "Username must be between 2 and 20 symbols!")
     private String username;
 
-    @Email
+    @Email(message = "Please enter a valid email!")
     private String email;
 
-    @NotBlank
-    @Size(min = 10, max = 10,message = "Phone number must be 10 digits long!")
+    @NotBlank(message = "Phone Number can't be blank!")
+    @Size(min = 10, max = 10, message = "Phone number must be 10 digits long!")
     private String phoneNumber;
 
-    @NotBlank
-    @Size(min = 8,max = 100, message = "Password must be at least 8 symbols!")
+    @NotBlank(message = "Password can't be blank!")
+    @Size(min = 8, max = 100, message = "Password must be at least 8 symbols!")
     private String password;
 
     private List<Integer> cardsId;
 
-    public CreateUserDto(){}
+    public CreateUserDto() {
+    }
 
 
     public String getUsername() {
