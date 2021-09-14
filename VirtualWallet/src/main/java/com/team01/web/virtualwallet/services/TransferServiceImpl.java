@@ -23,13 +23,11 @@ public class TransferServiceImpl implements TransferService {
 
     private final TransferRepository transferRepository;
     private final WalletService walletService;
-    private final UserService userService;
 
     @Autowired
-    public TransferServiceImpl(TransferRepository transferRepository, WalletService walletService, UserService userService) {
+    public TransferServiceImpl(TransferRepository transferRepository, WalletService walletService) {
         this.transferRepository = transferRepository;
         this.walletService = walletService;
-        this.userService = userService;
     }
 
     @Override
@@ -43,10 +41,15 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
+    public List<Transfer> getUserTransfers(User user) {
+        return transferRepository.getAllWalletTransfers(user.getWallet());
+    }
+
+    @Override
     public void create(Transfer transfer, User executor) {
         //connect to dummy api?
         validateUser(executor, transfer.getSender());
-        validateUserStatus(transfer.getSender());
+        validateUserStatus(executor);
         validateTransfer(transfer.getSender(), transfer.getAmount());
 
         walletService.deposit(transfer.getReceiver(), transfer.getAmount()); //add money to receiver
@@ -61,8 +64,8 @@ public class TransferServiceImpl implements TransferService {
         }
     }
 
-    private void validateUserStatus(Wallet sender) {
-        if (userService.getByWallet(sender).isBlocked()) {
+    private void validateUserStatus(User user) {
+        if (user.isBlocked()) {
             throw new BlockedUserException(USER_BLOCKED_MESSAGE);
         }
     }

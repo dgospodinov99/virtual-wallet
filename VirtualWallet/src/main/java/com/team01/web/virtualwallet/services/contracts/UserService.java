@@ -1,5 +1,6 @@
 package com.team01.web.virtualwallet.services.contracts;
 
+import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
@@ -23,6 +24,8 @@ public interface UserService {
     User unblockUser(String usernameToBlock, User executor);
 
     List<User> filterUsers(FilterUserParams params);
+
+    List<Transfer> getUserTransfers(int id, User executor);
 
     void create(User user);
 

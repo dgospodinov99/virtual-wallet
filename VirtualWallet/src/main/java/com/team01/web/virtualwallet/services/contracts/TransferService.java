@@ -11,5 +11,7 @@ public interface TransferService {
 
     Transfer getById(int id);
 
+    List<Transfer> getUserTransfers(User user);
+
     void create(Transfer transfer, User executor);
 }

@@ -1,15 +1,14 @@
 package com.team01.web.virtualwallet.services;
 
-import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
-import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
-import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
-import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Card;
+import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.UserRepository;
 import com.team01.web.virtualwallet.services.contracts.CardService;
+import com.team01.web.virtualwallet.services.contracts.TransferService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +21,20 @@ import java.util.regex.Pattern;
 public class UserServiceImpl implements UserService {
 
     private static final String USER_NOT_ADMIN_MESSAGE = "You are not an administrator!";
+    private static final String USER_AND_WALLET_DONT_MATCH = "You can only list your own transactions!";
 
     private final UserRepository userRepository;
     private final WalletService walletService;
     private final CardService cardService;
+    private final TransferService transferService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, WalletService walletService, CardService cardService) {
+    public UserServiceImpl(UserRepository userRepository, WalletService walletService, CardService cardService, TransferService transferService) {
         this.userRepository = userRepository;
         this.walletService = walletService;
         this.cardService = cardService;
+
+        this.transferService = transferService;
     }
 
     @Override
@@ -93,6 +96,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<Transfer> getUserTransfers(int id, User executor) {
+        User user = getById(id);
+        validateUser(executor,user.getWallet());
+
+        return transferService.getUserTransfers(user);
+    }
+
+    @Override
     public void create(User user) {
         verifyUniqueEmail(user.getEmail());
         verifyUniqueUsername(user.getUsername());
@@ -134,7 +145,7 @@ public class UserServiceImpl implements UserService {
         userRepository.update(user);
     }
 
-    public void isPasswordValid(String password) {
+    private void isPasswordValid(String password) {
         Pattern specialSymbolPattern = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
         Pattern upperCasePattern = Pattern.compile("[A-Z ]");
         Pattern lowerCasePattern = Pattern.compile("[a-z ]");
@@ -157,7 +168,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void verifyUniqueEmail(String email) {
+    private void verifyUniqueEmail(String email) {
         boolean duplicateExists = true;
         try {
             userRepository.getByEmail(email);
@@ -169,7 +180,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void verifyUniqueUsername(String username) {
+    private void verifyUniqueUsername(String username) {
         boolean duplicateExists = true;
         try {
             userRepository.getByUsername(username);
@@ -181,7 +192,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public void verifyUniquePhoneNumber(String phoneNumber) {
+    private void verifyUniquePhoneNumber(String phoneNumber) {
         boolean duplicateExists = true;
         try {
             userRepository.getByPhoneNumber(phoneNumber);
@@ -193,4 +204,9 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    protected void validateUser(User executor,Wallet wallet) {
+        if (!executor.isAdmin() && executor.getWallet().getId() != wallet.getId()) {
+            throw new UnauthorizedOperationException(USER_AND_WALLET_DONT_MATCH);
+        }
+    }
 }

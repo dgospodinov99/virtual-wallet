@@ -43,6 +43,15 @@ public class TransferRepositoryImpl implements TransferRepository {
     }
 
     @Override
+    public List<Transfer> getAllWalletTransfers(Wallet wallet) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Transfer> query = session.createQuery("from Transfer where sender.id = :walletId or receiver.id = :walletId", Transfer.class);
+            query.setParameter("walletId", wallet.getId());
+            return query.list();
+        }
+    }
+
+    @Override
     public void create(Transfer transfer) {
         try (Session session = sessionFactory.openSession()) {
             session.save(transfer);
