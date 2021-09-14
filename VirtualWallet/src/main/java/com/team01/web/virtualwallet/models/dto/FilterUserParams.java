@@ -25,7 +25,7 @@ public class FilterUserParams {
         return phoneNumber;
     }
 
-    public FilterUserParams setUsername(String username){
+    public FilterUserParams setUsername(String username) {
         this.username = Optional.ofNullable(username);
         return this;
     }

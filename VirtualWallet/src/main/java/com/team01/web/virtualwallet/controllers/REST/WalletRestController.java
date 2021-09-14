@@ -44,18 +44,4 @@ public class WalletRestController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
-
-//    @PostMapping
-//    public Wallet create(@RequestHeader HttpHeaders headers, @Valid @RequestBody CreateCardDto dto) {
-//        try {
-//            User user = authenticationHelper.tryGetUser(headers);
-//            Card card = modelMapper.fromCreateDto(dto, user);
-//            cardService.create(card);
-//            return modelMapper.toDto(card);
-//        } catch (InvalidCardInformation e) {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-//        } catch (DuplicateEntityException e) {
-//            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-//        }
-//    }
 }

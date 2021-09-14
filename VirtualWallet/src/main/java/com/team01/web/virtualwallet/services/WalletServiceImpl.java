@@ -48,8 +48,8 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet create(Wallet wallet) {
-       walletRepository.create(wallet);
-       return wallet;
+        walletRepository.create(wallet);
+        return wallet;
     }
 
     @Override

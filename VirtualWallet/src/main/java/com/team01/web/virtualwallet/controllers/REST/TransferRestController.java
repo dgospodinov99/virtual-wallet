@@ -5,6 +5,7 @@ import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
 import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.User;
+import com.team01.web.virtualwallet.models.dto.CreateTransferDto;
 import com.team01.web.virtualwallet.models.dto.TransferDto;
 import com.team01.web.virtualwallet.services.contracts.TransferService;
 import com.team01.web.virtualwallet.services.utils.TransferModelMapper;
@@ -57,13 +58,13 @@ public class TransferRestController {
     }
 
     @PostMapping
-    public TransferDto create(@Valid @RequestBody TransferDto dto, @RequestHeader HttpHeaders headers, BindingResult result) {
+    public TransferDto create(@Valid @RequestBody CreateTransferDto dto, @RequestHeader HttpHeaders headers, BindingResult result) {
         globalExceptionHandler.checkValidFields(result);
         try {
             User executor = authenticationHelper.tryGetUser(headers);
 
             Transfer transfer = modelMapper.fromDto(dto);
-            transferService.create(transfer,executor);
+            transferService.create(transfer, executor);
             return modelMapper.toDto(transfer);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

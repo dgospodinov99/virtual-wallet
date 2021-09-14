@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
     public void delete(int id) {
         User user = getById(id);
         //card deletion
-        for (Card card: user.getCards()) {
+        for (Card card : user.getCards()) {
             cardService.delete(card.getId());
         }
 

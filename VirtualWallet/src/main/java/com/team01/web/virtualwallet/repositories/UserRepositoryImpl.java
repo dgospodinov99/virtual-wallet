@@ -44,7 +44,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User getByUsername(String username) {
         try (Session session = sessionFactory.openSession()) {
-            Query<User> query = session.createQuery("from User where active = true and username = :username", User.class);
+            Query<User> query = session.createQuery("from User where username = :username", User.class);
             query.setParameter("username", username);
             if (query.list().size() == 0) {
                 throw new EntityNotFoundException("User", "username", username);
@@ -56,7 +56,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User getByEmail(String email) {
         try (Session session = sessionFactory.openSession()) {
-            Query<User> query = session.createQuery("from User where active = true and email = :email", User.class);
+            Query<User> query = session.createQuery("from User where email = :email", User.class);
             query.setParameter("email", email);
             if (query.list().size() == 0) {
                 throw new EntityNotFoundException("User", "email", email);
@@ -68,7 +68,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User getByPhoneNumber(String phoneNumber) {
         try (Session session = sessionFactory.openSession()) {
-            Query<User> query = session.createQuery("from User where active = true and phoneNumber = :phoneNumber", User.class);
+            Query<User> query = session.createQuery("from User where phoneNumber = :phoneNumber", User.class);
             query.setParameter("phoneNumber", phoneNumber);
             if (query.list().size() == 0) {
                 throw new EntityNotFoundException("User", "phone number", phoneNumber);
@@ -91,28 +91,28 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> filterUsers(FilterUserParams params) {
-        try (Session session = sessionFactory.openSession()){
+        try (Session session = sessionFactory.openSession()) {
             String queryString = "from User where active = true";
 
-            if(params.getEmail().isPresent()){
+            if (params.getEmail().isPresent()) {
                 queryString += " and email = :email";
             }
-            if(params.getUsername().isPresent()){
+            if (params.getUsername().isPresent()) {
                 queryString += " and username = :username";
             }
-            if(params.getPhoneNumber().isPresent()){
+            if (params.getPhoneNumber().isPresent()) {
                 queryString += " and phoneNumber = :phoneNumber";
             }
 
             Query<User> query = session.createQuery(queryString, User.class);
 
-            if(params.getEmail().isPresent()){
+            if (params.getEmail().isPresent()) {
                 query.setParameter("email", params.getEmail().orElse(null));
             }
-            if(params.getUsername().isPresent()){
+            if (params.getUsername().isPresent()) {
                 query.setParameter("username", params.getUsername().orElse(null));
             }
-            if(params.getPhoneNumber().isPresent()){
+            if (params.getPhoneNumber().isPresent()) {
                 query.setParameter("phoneNumber", params.getPhoneNumber().orElse(null));
             }
 

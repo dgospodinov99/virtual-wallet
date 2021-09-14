@@ -47,27 +47,28 @@ public class TransferServiceImpl implements TransferService {
         //connect to dummy api?
         validateUser(executor, transfer.getSender());
         validateUserStatus(transfer.getSender());
-        validateTransfer(transfer.getSender(),transfer.getAmount());
+        validateTransfer(transfer.getSender(), transfer.getAmount());
 
-        walletService.deposit(transfer.getReceiver(),transfer.getAmount()); //add money to receiver
-        walletService.withdraw(transfer.getSender(),transfer.getAmount());  //remove money from sender
+        walletService.deposit(transfer.getReceiver(), transfer.getAmount()); //add money to receiver
+        walletService.withdraw(transfer.getSender(), transfer.getAmount());  //remove money from sender
 
         transferRepository.create(transfer);
     }
 
-    private void validateTransfer(Wallet sender, double amount){
-        if(amount > sender.getBalance()){
+    private void validateTransfer(Wallet sender, double amount) {
+        if (amount > sender.getBalance()) {
             throw new InvalidTransferException("Balance is not enough");
         }
     }
 
-    private void validateUserStatus(Wallet sender){
-        if(userService.getByWallet(sender).isBlocked()){
+    private void validateUserStatus(Wallet sender) {
+        if (userService.getByWallet(sender).isBlocked()) {
             throw new BlockedUserException(USER_BLOCKED_MESSAGE);
         }
     }
-    private void validateUser(User executor, Wallet wallet){
-        if(!executor.isAdmin() && executor.getWallet().getId() != wallet.getId()){
+
+    private void validateUser(User executor, Wallet wallet) {
+        if (!executor.isAdmin() && executor.getWallet().getId() != wallet.getId()) {
             throw new InvalidTransferException(USER_AND_WALLET_DONT_MATCH_ERROR);
         }
     }

@@ -76,7 +76,7 @@ public class UserModelMapper {
 
     public UserDto toDto(User user) {
         String status = "Active";
-        if(user.isBlocked()){
+        if (user.isBlocked()) {
             status = "Blocked";
         }
         return new UserDto(

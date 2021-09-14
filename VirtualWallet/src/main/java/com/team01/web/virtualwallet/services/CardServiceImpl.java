@@ -9,6 +9,7 @@ import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -47,12 +48,12 @@ public class CardServiceImpl implements CardService {
         boolean duplicateCardNumberExists = true;
         try {
             getByCardNumber(card.getCardNumber());
-        }catch (EntityNotFoundException e){
+        } catch (EntityNotFoundException e) {
             duplicateCardNumberExists = false;
         }
 
-        if(duplicateCardNumberExists){
-            throw new DuplicateEntityException("Card","number",card.getCardNumber());
+        if (duplicateCardNumberExists) {
+            throw new DuplicateEntityException("Card", "number", card.getCardNumber());
         }
         cardRepository.create(card);
     }
@@ -72,7 +73,7 @@ public class CardServiceImpl implements CardService {
 
     private void validateCardNumber(String cardNumber) {
         if (!cardNumber.matches(ONLY_DIGITS) || cardNumber.length() != 16) { //validates card number is only digits
-            throw new InvalidCardInformation("Card","number", cardNumber);
+            throw new InvalidCardInformation("Card", "number", cardNumber);
         }
     }
 }

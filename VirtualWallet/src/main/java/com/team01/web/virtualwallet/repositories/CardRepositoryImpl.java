@@ -33,21 +33,21 @@ public class CardRepositoryImpl implements CardRepository {
     public Card getById(int id) {
         try (Session session = sessionFactory.openSession()) {
             Card card = session.get(Card.class, id);
-            if (card == null){
-                throw new EntityNotFoundException("Card",id);
+            if (card == null) {
+                throw new EntityNotFoundException("Card", id);
             }
             return card;
         }
     }
 
     @Override
-    public Card getByCardNumber(String cardNumber){
+    public Card getByCardNumber(String cardNumber) {
         try (Session session = sessionFactory.openSession()) {
             Query<Card> query = session.createQuery("from Card where active = true and cardNumber = :cardNumber", Card.class);
-            query.setParameter("cardNumber",cardNumber);
+            query.setParameter("cardNumber", cardNumber);
             List<Card> result = query.list();
-            if(result.size()==0){
-                throw new EntityNotFoundException("Card","card number",cardNumber);
+            if (result.size() == 0) {
+                throw new EntityNotFoundException("Card", "card number", cardNumber);
             }
             return result.get(0);
         }
