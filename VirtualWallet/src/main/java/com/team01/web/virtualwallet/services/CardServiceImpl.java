@@ -6,7 +6,6 @@ import com.team01.web.virtualwallet.exceptions.InvalidCardInformation;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.repositories.contracts.CardRepository;
 import com.team01.web.virtualwallet.services.contracts.CardService;
-import com.team01.web.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

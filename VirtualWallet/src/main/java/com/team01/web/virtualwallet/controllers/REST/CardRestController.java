@@ -84,6 +84,7 @@ public class CardRestController {
     @DeleteMapping("/{id}")
     public CardDto delete(@PathVariable int id, @RequestHeader HttpHeaders headers) {
         try {
+//            todo fix authentication
 //            User executor = authenticationHelper.tryGetUser(headers);
             Card card = cardService.getById(id);
             CardDto dto = modelMapper.toDto(card);

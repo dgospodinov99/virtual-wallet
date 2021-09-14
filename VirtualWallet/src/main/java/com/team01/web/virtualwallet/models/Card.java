@@ -1,10 +1,14 @@
 package com.team01.web.virtualwallet.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.annotations.*;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -30,8 +34,20 @@ public class Card {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @JsonFormat(pattern="dd-MM-yyyy")
+    @Column(name = "exp_date")
+    private LocalDate expirationDate;
+
     @Column(name = "is_active")
     private Boolean active;
+
+    public LocalDate getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
+    }
 
     public Card() {
         setActive(true);

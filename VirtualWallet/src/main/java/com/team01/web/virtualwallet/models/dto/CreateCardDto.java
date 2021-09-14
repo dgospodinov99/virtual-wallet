@@ -1,7 +1,10 @@
 package com.team01.web.virtualwallet.models.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 
 public class CreateCardDto {
 
@@ -17,7 +20,18 @@ public class CreateCardDto {
     @Size(min = 3, max = 3, message = "Card check number must be between 3 digits")
     private String checkNumber;
 
+    @NotBlank(message = "Card expiration date can't be blank!")
+    private String expirationDate;
+
     public CreateCardDto() {
+    }
+
+    public String getExpirationDate() {
+        return expirationDate;
+    }
+
+    public void setExpirationDate(String expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
     public String getCardNumber() {

@@ -1,10 +1,12 @@
 package com.team01.web.virtualwallet.models.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
+import java.time.LocalDate;
 
 public class CardDto {
 
@@ -20,11 +22,22 @@ public class CardDto {
     @Size(min = 3, max = 3, message = "Card check number must be between 3 digits")
     private String checkNumber;
 
-    //userId = walletId
     @Positive(message = "User ID must be positive!")
     private int userId;
 
+    @JsonFormat(pattern="MM/yyyy")
+    private LocalDate expirationDate;
+
     public CardDto() {
+    }
+
+    public LocalDate getExpirationDate() {
+        return expirationDate;
+    }
+
+    public CardDto setExpirationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
+        return this;
     }
 
     public String getCardNumber() {
