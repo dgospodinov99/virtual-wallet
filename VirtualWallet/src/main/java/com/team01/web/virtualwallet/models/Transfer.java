@@ -1,6 +1,7 @@
 package com.team01.web.virtualwallet.models;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transfers")
@@ -21,6 +22,9 @@ public class Transfer {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "receiver_id")
     private Wallet receiver;
+
+    @Column(name = "timestamp")
+    private LocalDateTime timestamp;
 
     public Transfer() {
     }
@@ -55,5 +59,13 @@ public class Transfer {
 
     public void setReceiver(Wallet receiver) {
         this.receiver = receiver;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 }
