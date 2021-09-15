@@ -19,9 +19,9 @@ values  (1, 'guygilbert123', 'GuyGilbert@gmail.com', '0000000000', 'Parola123@',
 insert into `virtual-wallet`.cards (card_id, card_number, holder, check_number,exp_date,user_id)
 values  (1, '1111111111111111', 'Guy Gilbert', '000','2030-01-31',1),
         (2, '1111111111111112', 'Kevin Brown', '000','2030-01-31',2),
-        (3, '1111111111111113', 'Roberto Taamburello','2030-01-31', '000',3),
-        (4, '1111111111111114', 'Dian Gospodinov', '2030-01-31','000',4),
-        (5, '1111111111111115', 'Bojidar Velichkov','2030-01-31','000',5);
+        (3, '1111111111111113', 'Roberto Taamburello','000', '2030-01-31',3),
+        (4, '1111111111111114', 'Dian Gospodinov', '000', '2030-01-31',4),
+        (5, '1111111111111115', 'Bojidar Velichkov', '000', '2030-01-31',5);
 
 
 insert into `virtual-wallet`.users_cards(user_id, card_id)
