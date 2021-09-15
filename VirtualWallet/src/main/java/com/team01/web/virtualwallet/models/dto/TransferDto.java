@@ -1,54 +1,44 @@
 package com.team01.web.virtualwallet.models.dto;
 
-import javax.validation.constraints.NotNull;
+
 import javax.validation.constraints.Positive;
-import java.time.LocalDateTime;
 
 public class TransferDto {
 
-    @Positive(message = "Sender ID is invalid!")
-    private int senderId;
 
-    @Positive(message = "Receiver ID is invalid!")
-    private int receiverId;
+    @Positive(message = "Wallet ID is invalid!")
+    private int walletId;
 
-    @Positive(message = "Transaction amount must be positive!")
-    private Double amount;
+    @Positive(message = "Card ID is invalid!")
+    private int cardId;
 
-    private LocalDateTime timestamp;
+    @Positive(message = "Amount is invalid!")
+    private double amount;
 
     public TransferDto() {
     }
 
-    public int getSenderId() {
-        return senderId;
+    public int getWalletId() {
+        return walletId;
     }
 
-    public void setSenderId(int senderId) {
-        this.senderId = senderId;
+    public void setWalletId(int walletId) {
+        this.walletId = walletId;
     }
 
-    public int getReceiverId() {
-        return receiverId;
+    public int getCardId() {
+        return cardId;
     }
 
-    public void setReceiverId(int receiverId) {
-        this.receiverId = receiverId;
+    public void setCardId(int cardId) {
+        this.cardId = cardId;
     }
 
-    public Double getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
     }
 }

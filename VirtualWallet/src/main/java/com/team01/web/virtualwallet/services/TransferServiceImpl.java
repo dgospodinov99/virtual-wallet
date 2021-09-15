@@ -1,25 +1,24 @@
 package com.team01.web.virtualwallet.services;
 
-import com.team01.web.virtualwallet.exceptions.BlockedUserException;
-import com.team01.web.virtualwallet.exceptions.InvalidTransferException;
-import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.team01.web.virtualwallet.exceptions.BadLuckException;
 import com.team01.web.virtualwallet.models.Transfer;
-import com.team01.web.virtualwallet.models.User;
-import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.repositories.contracts.TransferRepository;
 import com.team01.web.virtualwallet.services.contracts.TransferService;
-import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TransferServiceImpl implements TransferService {
-
-    private static final String USER_BLOCKED_MESSAGE = "You are blocked from making transactions!";
-    private static final String USER_AND_WALLET_DONT_MATCH_ERROR = "Users can make transfers only from their own or shared wallet!";
 
     private final TransferRepository transferRepository;
     private final WalletService walletService;
@@ -41,38 +40,37 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    public List<Transfer> getUserTransfers(User user) {
-        return transferRepository.getAllWalletTransfers(user.getWallet());
-    }
+    public void create(Transfer transfer) throws IOException {
+        String cardNumber = transfer.getCard().getCardNumber();
+        String cardCheck = transfer.getCard().getCheckNumber();
+        String cardExpDate = transfer.getCard().getExpirationDate().toString();
+        String amount = String.valueOf(transfer.getAmount());
 
-    @Override
-    public void create(Transfer transfer, User executor) {
-        //connect to dummy api?
-        validateUser(executor, transfer.getSender());
-        validateUserStatus(executor);
-        validateTransfer(transfer.getSender(), transfer.getAmount());
+        URL url = new URL("http://localhost:8080/dummy");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
 
-        walletService.deposit(transfer.getReceiver(), transfer.getAmount()); //add money to receiver
-        walletService.withdraw(transfer.getSender(), transfer.getAmount());  //remove money from sender
+        con.setRequestProperty("Content-Type", "application/json; utf-8");
+        con.setRequestProperty("Accept", "application/json");
+        con.setDoOutput(true);
+        String jsonInputString = String.format
+                ("{\"cardNumber\": \"%s\"," +
+                " \"cardCheck\": \"%s\"," +
+                " \"expirationDate\": \"%s\"," +
+                " \"amount\": %s}",cardNumber,cardCheck,cardExpDate,amount);
 
-        transferRepository.create(transfer);
-    }
-
-    private void validateTransfer(Wallet sender, double amount) {
-        if (amount > sender.getBalance()) {
-            throw new InvalidTransferException("Balance is not enough");
+        try(OutputStream os = con.getOutputStream()) {
+            byte[] input = jsonInputString.getBytes("utf-8");
+            os.write(input, 0, input.length);
         }
-    }
 
-    private void validateUserStatus(User user) {
-        if (user.isBlocked()) {
-            throw new BlockedUserException(USER_BLOCKED_MESSAGE);
-        }
-    }
+        int statusCode = con.getResponseCode();
 
-    private void validateUser(User executor, Wallet wallet) {
-        if (!executor.isAdmin() && executor.getWallet().getId() != wallet.getId()) {
-            throw new InvalidTransferException(USER_AND_WALLET_DONT_MATCH_ERROR);
+        if(statusCode == 200){
+            transferRepository.create(transfer);
+            walletService.deposit(transfer.getWallet(),transfer.getAmount());
+        } else {
+            throw new BadLuckException("Unlucky or invalid card");
         }
     }
 

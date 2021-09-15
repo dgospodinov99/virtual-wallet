@@ -1,9 +1,8 @@
 package com.team01.web.virtualwallet.repositories;
 
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
+import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.Transfer;
-import com.team01.web.virtualwallet.models.User;
-import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.repositories.contracts.TransferRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -36,25 +35,18 @@ public class TransferRepositoryImpl implements TransferRepository {
         try (Session session = sessionFactory.openSession()) {
             Transfer transfer = session.get(Transfer.class, id);
             if (transfer == null) {
-                throw new EntityNotFoundException("Transfer", id);
+                throw new EntityNotFoundException("Transaction", id);
             }
             return transfer;
         }
     }
 
     @Override
-    public List<Transfer> getAllWalletTransfers(Wallet wallet) {
-        try (Session session = sessionFactory.openSession()) {
-            Query<Transfer> query = session.createQuery("from Transfer where sender.id = :walletId or receiver.id = :walletId", Transfer.class);
-            query.setParameter("walletId", wallet.getId());
-            return query.list();
-        }
-    }
-
-    @Override
     public void create(Transfer transfer) {
         try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
             session.save(transfer);
+            session.getTransaction().commit();
         }
     }
 }

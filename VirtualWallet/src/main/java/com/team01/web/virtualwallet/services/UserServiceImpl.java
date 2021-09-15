@@ -2,13 +2,13 @@ package com.team01.web.virtualwallet.services;
 
 import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Card;
-import com.team01.web.virtualwallet.models.Transfer;
+import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.UserRepository;
 import com.team01.web.virtualwallet.services.contracts.CardService;
-import com.team01.web.virtualwallet.services.contracts.TransferService;
+import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +26,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final WalletService walletService;
     private final CardService cardService;
-    private final TransferService transferService;
+    private final TransactionService transactionService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, WalletService walletService, CardService cardService, TransferService transferService) {
+    public UserServiceImpl(UserRepository userRepository, WalletService walletService, CardService cardService, TransactionService transactionService) {
         this.userRepository = userRepository;
         this.walletService = walletService;
         this.cardService = cardService;
 
-        this.transferService = transferService;
+        this.transactionService = transactionService;
     }
 
     @Override
@@ -96,11 +96,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Transfer> getUserTransfers(int id, User executor) {
+    public List<Transaction> getUserTransfers(int id, User executor) {
         User user = getById(id);
         validateUser(executor,user.getWallet());
 
-        return transferService.getUserTransfers(user);
+        return transactionService.getUserTransactions(user);
     }
 
     @Override

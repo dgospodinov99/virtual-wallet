@@ -1,36 +1,33 @@
 package com.team01.web.virtualwallet.services.utils;
 
 import com.team01.web.virtualwallet.models.Transfer;
-import com.team01.web.virtualwallet.models.dto.CreateTransferDto;
 import com.team01.web.virtualwallet.models.dto.TransferDto;
+import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.TransferService;
-import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Component
 public class TransferModelMapper {
 
     private final TransferService transferService;
-    private final UserService userService;
+    private final CardService cardService;
     private final WalletService walletService;
 
     @Autowired
-    public TransferModelMapper(TransferService transferService, UserService userService, WalletService walletService) {
+    public TransferModelMapper(TransferService transferService, CardService cardService, WalletService walletService) {
         this.transferService = transferService;
-        this.userService = userService;
+        this.cardService = cardService;
         this.walletService = walletService;
     }
 
-    public Transfer fromDto(CreateTransferDto dto) {
+
+    public Transfer fromDto(TransferDto dto) {
         Transfer transfer = new Transfer();
         transfer.setAmount(dto.getAmount());
-        transfer.setSender(walletService.getById(dto.getSenderId()));
-        transfer.setReceiver(walletService.getById(dto.getReceiverId()));
-        transfer.setTimestamp(LocalDateTime.now());
+        transfer.setCard(cardService.getById(dto.getCardId()));
+        transfer.setWallet(walletService.getById(dto.getWalletId()));
 
         return transfer;
     }
@@ -38,9 +35,9 @@ public class TransferModelMapper {
     public TransferDto toDto(Transfer transfer) {
         TransferDto dto = new TransferDto();
         dto.setAmount(transfer.getAmount());
-        dto.setSenderId(transfer.getSender().getId());
-        dto.setReceiverId(transfer.getReceiver().getId());
-        dto.setTimestamp(transfer.getTimestamp());
+        dto.setCardId(transfer.getCard().getId());
+        dto.setWalletId(transfer.getWallet().getId());
+
         return dto;
     }
 }
