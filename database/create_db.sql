@@ -1,4 +1,4 @@
-create or replace table roles
+create table roles
 (
 	role_id int auto_increment
 		primary key,
@@ -7,7 +7,7 @@ create or replace table roles
 		unique (name)
 );
 
-create or replace table wallets
+create table wallets
 (
 	wallet_id int auto_increment
 		primary key,
@@ -15,9 +15,9 @@ create or replace table wallets
 	is_active tinyint(1) default 1 null
 );
 
-create or replace table transfers
+create table transactions
 (
-	transfer_id int auto_increment
+	transaction_id int auto_increment
 		primary key,
 	sender_id int not null,
 	receiver_id int not null,
@@ -29,7 +29,7 @@ create or replace table transfers
 		foreign key (sender_id) references wallets (wallet_id)
 );
 
-create or replace table users
+create table users
 (
 	user_id int auto_increment
 		primary key,
@@ -51,7 +51,7 @@ create or replace table users
 		foreign key (wallet_id) references wallets (wallet_id)
 );
 
-create or replace table cards
+create table cards
 (
 	card_id int auto_increment
 		primary key,
@@ -67,7 +67,20 @@ create or replace table cards
 		foreign key (user_id) references users (user_id)
 );
 
-create or replace table users_cards
+create table transfers
+(
+	transfer_id int auto_increment
+		primary key,
+	wallet_id int not null,
+	card_id int not null,
+	amount double null,
+	constraint transfers_cards_card_id_fk
+		foreign key (card_id) references cards (card_id),
+	constraint transfers_wallets_wallet_id_fk
+		foreign key (wallet_id) references wallets (wallet_id)
+);
+
+create table users_cards
 (
 	user_id int not null,
 	card_id int not null,
@@ -78,7 +91,7 @@ create or replace table users_cards
 		foreign key (user_id) references users (user_id)
 );
 
-create or replace table users_roles
+create table users_roles
 (
 	user_id int not null,
 	role_id int not null,
