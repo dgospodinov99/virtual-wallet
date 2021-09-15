@@ -2,7 +2,7 @@ package com.team01.web.virtualwallet.models.dto;
 
 import javax.validation.constraints.Positive;
 
-public class CreateTransferDto {
+public class CreateTransactionDto {
 
     @Positive(message = "Sender ID is invalid!")
     private int senderId;
@@ -13,7 +13,7 @@ public class CreateTransferDto {
     @Positive(message = "Transaction amount must be positive!")
     private Double amount;
 
-    public CreateTransferDto() {
+    public CreateTransactionDto() {
     }
 
     public int getSenderId() {
