@@ -2,14 +2,13 @@ package com.team01.web.virtualwallet.controllers.REST;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
-import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
-import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
-import com.team01.web.virtualwallet.exceptions.InvalidCardInformation;
-import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.CardDto;
 import com.team01.web.virtualwallet.models.dto.CreateCardDto;
+import com.team01.web.virtualwallet.models.dto.UpdateUserDto;
+import com.team01.web.virtualwallet.models.dto.UserDto;
 import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.CardModelMapper;
@@ -65,6 +64,22 @@ public class CardRestController {
             return modelMapper.toDto(cardService.getById(id));
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public CardDto update(@PathVariable int id, @RequestHeader HttpHeaders headers, @Valid @RequestBody CreateCardDto dto, BindingResult result) {
+        globalExceptionHandler.checkValidFields(result);
+        try {
+            User executor = authenticationHelper.tryGetUser(headers);
+            Card card = modelMapper.fromCreateDto(dto, id);
+
+            cardService.update(card, executor);
+            return modelMapper.toDto(card);
+        } catch (DuplicateEntityException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        } catch (UnauthorizedOperationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 

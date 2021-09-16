@@ -15,7 +15,7 @@ public interface CardService {
 
     void create(Card card);
 
-    void update(Card card);
+    void update(Card card, User executor);
 
     void delete(int id, User executor);
 }

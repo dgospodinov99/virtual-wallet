@@ -62,7 +62,8 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public void update(Card card) {
+    public void update(Card card, User executor) {
+        validateUser(executor, card);
         cardRepository.update(card);
     }
 
