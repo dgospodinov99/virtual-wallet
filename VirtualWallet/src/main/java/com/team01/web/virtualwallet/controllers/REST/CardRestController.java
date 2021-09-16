@@ -5,6 +5,7 @@ import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidCardInformation;
+import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.CardDto;
@@ -47,10 +48,15 @@ public class CardRestController {
     }
 
     @GetMapping()
-    public List<CardDto> getAll() {
-        return cardService.getAll().stream()
-                .map(card -> modelMapper.toDto(card))
-                .collect(Collectors.toList());
+    public List<CardDto> getAll(@RequestHeader HttpHeaders headers) {
+        try {
+            User executor = authenticationHelper.tryGetUser(headers);
+            return cardService.getAll(executor).stream()
+                    .map(card -> modelMapper.toDto(card))
+                    .collect(Collectors.toList());
+        } catch (UnauthorizedOperationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
@@ -84,14 +90,16 @@ public class CardRestController {
     @DeleteMapping("/{id}")
     public CardDto delete(@PathVariable int id, @RequestHeader HttpHeaders headers) {
         try {
-//            todo fix authentication
-//            User executor = authenticationHelper.tryGetUser(headers);
+
+            User executor = authenticationHelper.tryGetUser(headers);
             Card card = cardService.getById(id);
             CardDto dto = modelMapper.toDto(card);
-            cardService.delete(id);
+            cardService.delete(id,executor);
             return dto;
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (UnauthorizedOperationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 }

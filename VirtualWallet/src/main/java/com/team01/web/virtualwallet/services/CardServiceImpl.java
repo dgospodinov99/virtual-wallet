@@ -3,7 +3,9 @@ package com.team01.web.virtualwallet.services;
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidCardInformation;
+import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.Card;
+import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.repositories.contracts.CardRepository;
 import com.team01.web.virtualwallet.services.contracts.CardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,8 @@ import java.util.List;
 public class CardServiceImpl implements CardService {
 
     private static final String ONLY_DIGITS = "[0-9]+";
-
+    private static final String INVALID_CARD_OWNER = "Invalid card owner!";
+    private static final String NOT_ADMIN_MESSAGE = "Only administrators can do this operation";
 
     private final CardRepository cardRepository;
 
@@ -26,7 +29,8 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public List<Card> getAll() {
+    public List<Card> getAll(User executor) {
+        validateAdmin(executor);
         return cardRepository.getAll();
     }
 
@@ -63,11 +67,24 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(int id, User executor) {
         Card card = getById(id);
+        validateUser(executor, card);
         card.setActive(false);
 
         cardRepository.update(card);
+    }
+
+    private void validateUser(User executor, Card card) {
+        if(!executor.isAdmin() && card.getUser().getId() != executor.getId()){
+            throw new UnauthorizedOperationException(INVALID_CARD_OWNER);
+        }
+    }
+
+    private void validateAdmin(User executor) {
+        if(!executor.isAdmin()){
+            throw new UnauthorizedOperationException(NOT_ADMIN_MESSAGE);
+        }
     }
 
     private void validateCardNumber(String cardNumber) {
