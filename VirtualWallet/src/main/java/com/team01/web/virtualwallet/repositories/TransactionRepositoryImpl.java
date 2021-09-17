@@ -47,10 +47,10 @@ public class TransactionRepositoryImpl implements TransactionRepository {
         try (Session session = sessionFactory.openSession()) {
             String queryString = "from Transaction where 1 = 1";
 
-            if (params.getReceiverUsername().isPresent()) {
+            if (params.getReceiverId().isPresent()) {
                 queryString += " and receiver.id = :receiverId";
             }
-            if (params.getSenderUsername().isPresent()) {
+            if (params.getSenderId().isPresent()) {
                 queryString += " and sender.id = :senderId";
             }
 //            if (params.getDirection().isPresent()) {
@@ -60,20 +60,40 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 //                    queryString += " and sender = :?";
 //                }
 //            }
-//            if(params.getSortParam().isPresent()){
-//                if(params.getSortParam().equals("amount")){
-//                    queryString += " order by amount desc";
-//                }
-//            }
+            if (params.getStartDate().isPresent() && params.getEndDate().isPresent()) {
+                queryString += " and timestamp between :startDate and :endDate";
+            } else if (params.getStartDate().isPresent()) {
+                queryString += " and timestamp >= :startDate";
+            } else if (params.getEndDate().isPresent()) {
+                queryString += " and timestamp <= :endDate";
+            }
 
-            // + sort param
+            //sorting params
+            if (params.getSortParam().isPresent()) {
+                if (params.getSortParam().get().equals("amount")) {
+                    queryString += " order by amount desc";
+                } else if (params.getSortParam().get().equals("date")) {
+                    queryString += " order by timestamp desc";
+                }
+            }
+
             Query<Transaction> query = session.createQuery(queryString, Transaction.class);
 
-            if (params.getReceiverUsername().isPresent()) {
-                query.setParameter("receiverId", params.getReceiverUsername().orElse(null));
+            if (params.getReceiverId().isPresent()) {
+                query.setParameter("receiverId", params.getReceiverId().orElse(null));
             }
-            if (params.getSenderUsername().isPresent()) {
-                query.setParameter("senderId", params.getSenderUsername().orElse(null));
+            if (params.getSenderId().isPresent()) {
+                query.setParameter("senderId", params.getSenderId().orElse(null));
+            }
+
+            //set date params in query
+            if (params.getStartDate().isPresent() && params.getEndDate().isPresent()) {
+                query.setParameter("startDate", params.getStartDate().get());
+                query.setParameter("endDate", params.getEndDate().get());
+            } else if (params.getStartDate().isPresent()) {
+                query.setParameter("startDate", params.getStartDate().get());
+            } else if (params.getEndDate().isPresent()) {
+                query.setParameter("endDate", params.getEndDate().get());
             }
 
             return query.list();

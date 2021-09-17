@@ -5,8 +5,11 @@ import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
 import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
-import com.team01.web.virtualwallet.models.dto.*;
+import com.team01.web.virtualwallet.models.dto.CreateTransactionDto;
+import com.team01.web.virtualwallet.models.dto.FilterTransactionParams;
+import com.team01.web.virtualwallet.models.dto.TransactionDto;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
+import com.team01.web.virtualwallet.services.utils.Helpers;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -62,13 +65,20 @@ public class TransactionRestController {
             @RequestParam(required = false) Integer receiverId,
             @RequestParam(required = false) String sortParam,
             @RequestParam(required = false) String direction,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
             @RequestHeader HttpHeaders headers) {
         try {
+            User executor = authenticationHelper.tryGetUser(headers);
+
             var params = new FilterTransactionParams()
-                    .setSenderUsername(senderId)
-                    .setReceiverUsername(receiverId)
+                    .setSenderId(senderId)
+                    .setReceiverId(receiverId)
                     .setSortParam(sortParam)
-                    .setDirection(direction);
+                    .setDirection(direction)
+                    .setStartDate(Helpers.stringToLocalDateTimeOptional(from))
+                    .setEndDate(Helpers.stringToLocalDateTimeOptional(to));
+
 
             return transactionService.filterTransactions(params)
                     .stream()
@@ -99,4 +109,6 @@ public class TransactionRestController {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
+
+
 }
