@@ -84,10 +84,11 @@ public class UserRestController {
     }
 
     @GetMapping("/{id}/transfers")
-    public List<TransactionDto> getUserTransfers(@PathVariable int id, @RequestHeader HttpHeaders headers) {
+    public List<TransactionDto> getUserTransfers(@PathVariable int id,
+                                                 @RequestHeader HttpHeaders headers,
+                                                 @RequestParam(required = false) String direction) {
         try {
             User executor = authenticationHelper.tryGetUser(headers);
-
 
             return service.getUserTransfers(id,executor)
                     .stream()
@@ -104,7 +105,7 @@ public class UserRestController {
         globalExceptionHandler.checkValidFields(result);
         try {
 
-            User user = modelMapper.fromCreateDto(dto);
+            User user = modelMapper.fromDto(dto);
             service.create(user);
 
             return modelMapper.toDto(user);
@@ -117,7 +118,7 @@ public class UserRestController {
     public UserDto update(@PathVariable int id, @Valid @RequestBody UpdateUserDto dto, BindingResult result) {
         globalExceptionHandler.checkValidFields(result);
         try {
-            User user = modelMapper.fromUpdateDto(dto, id);
+            User user = modelMapper.fromDto(dto, id);
             service.update(user);
             return modelMapper.toDto(user);
         } catch (DuplicateEntityException | InvalidPasswordException e) {

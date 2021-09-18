@@ -4,6 +4,7 @@ import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.Role;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.CreateUserDto;
+import com.team01.web.virtualwallet.models.dto.RegisterDto;
 import com.team01.web.virtualwallet.models.dto.UpdateUserDto;
 import com.team01.web.virtualwallet.models.dto.UserDto;
 import com.team01.web.virtualwallet.services.contracts.CardService;
@@ -35,8 +36,24 @@ public class UserModelMapper {
         this.walletService = walletService;
     }
 
+    public User fromDto(RegisterDto dto) {
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setPassword(dto.getPassword());
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setActive(true);
 
-    public User fromCreateDto(CreateUserDto dto) {
+        Role role = roleService.getByName("User");
+        Set<Role> roles = new HashSet<>();
+        roles.add(role);
+        user.setRoles(roles);
+
+        return user;
+    }
+
+
+    public User fromDto(CreateUserDto dto) {
         User user = new User();
         user.setUsername(dto.getUsername());
         user.setEmail(dto.getEmail());
@@ -58,7 +75,7 @@ public class UserModelMapper {
         return user;
     }
 
-    public User fromUpdateDto(UpdateUserDto dto, int id) {
+    public User fromDto(UpdateUserDto dto, int id) {
         User user = userService.getById(id);
         user.setEmail(dto.getEmail());
         user.setPhotoURL(dto.getPhotoURL());
