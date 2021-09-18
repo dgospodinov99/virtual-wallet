@@ -41,8 +41,7 @@ public class AuthenticationHelper {
 
     public User tryGetUser(HttpSession session) {
         String currentUser = (String) session.getAttribute("currentUser");
-        String userRole = (String) session.getAttribute("currentUserRole");
-        if (currentUser == null || !userRole.equals("Administrator")) {
+        if (currentUser == null) {
             throw new AuthenticationFailureException("Unauthorized");
         }
 
