@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
         User user = getById(id);
         //card deletion
         for (Card card : user.getCards()) {
-            cardService.delete(card.getId());
+            cardService.delete(card.getId(), user);
         }
 
         walletService.delete(user.getWallet());

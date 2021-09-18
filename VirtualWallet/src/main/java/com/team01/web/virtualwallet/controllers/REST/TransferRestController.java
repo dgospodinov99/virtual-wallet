@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/transfers")
@@ -33,14 +34,16 @@ public class TransferRestController {
     }
 
     @GetMapping
-    public List<Transfer> getAll() {
-        return transferService.getAll();
+    public List<TransferDto> getAll() {
+        return transferService.getAll().stream()
+                .map(modelMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Transfer getById(@PathVariable int id) {
+    public TransferDto getById(@PathVariable int id) {
         try {
-            return transferService.getById(id);
+            return modelMapper.toDto(transferService.getById(id));
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

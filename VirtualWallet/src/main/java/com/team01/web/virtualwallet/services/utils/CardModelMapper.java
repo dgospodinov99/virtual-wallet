@@ -9,10 +9,8 @@ import com.team01.web.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 
 @Component
 public class CardModelMapper {
@@ -26,16 +24,16 @@ public class CardModelMapper {
         this.userService = userService;
     }
 
+    public Card fromCreateDto(CreateCardDto dto, int id) {
+        Card card = cardService.getById(id);
+        dtoToObject(dto, card);
+        return card;
+    }
+
     public Card fromCreateDto(CreateCardDto dto, User user) {
         Card card = new Card();
-        card.setCardNumber(dto.getCardNumber());
-        card.setCheckNumber(dto.getCheckNumber());
-        card.setHolder(dto.getHolder());
+        dtoToObject(dto, card);
         card.setUser(user);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
-        YearMonth date = YearMonth.parse(dto.getExpirationDate(),formatter);
-        card.setExpirationDate(date.atEndOfMonth());
         return card;
     }
 
@@ -48,5 +46,17 @@ public class CardModelMapper {
         dto.setUserId(card.getUser().getId());
         return dto;
     }
+
+    private void dtoToObject(CreateCardDto dto, Card card) {
+        card.setCardNumber(dto.getCardNumber());
+        card.setCheckNumber(dto.getCheckNumber());
+        card.setHolder(dto.getHolder());
+
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
+        YearMonth date = YearMonth.parse(dto.getExpirationDate(), formatter);
+        card.setExpirationDate(date.atEndOfMonth());
+    }
+
 
 }
