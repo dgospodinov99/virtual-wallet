@@ -91,42 +91,6 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
-//    @Override
-//    public List<User> filterUsers(FilterUserParams params) {
-//        try (Session session = sessionFactory.openSession()) {
-//            String queryString = "from User where active = true ";
-//
-//            if (params.getEmail().isPresent()) {
-//                queryString += "and email like concat('%', :email, '%') ";
-//            }
-//            if (params.getUsername().isPresent()) {
-//                queryString += "and username like concat('%', :username, '%') ";
-//            }
-//            if (params.getPhoneNumber().isPresent()) {
-//                queryString += "and phoneNumber like concat('%', :phoneNumber, '%') ";
-//            }
-//            if (params.getSortParam().isPresent()) {
-//                queryString += params.getSortParam().get().getQuery();
-//            }
-//
-//            Query<User> query = session.createQuery(queryString, User.class);
-//
-//            if (params.getEmail().isPresent()) {
-//                query.setParameter("email", params.getEmail().get());
-//            }
-//            if (params.getUsername().isPresent()) {
-//                query.setParameter("username", params.getUsername().get());
-//            }
-//            if (params.getPhoneNumber().isPresent()) {
-//                query.setParameter("phoneNumber", params.getPhoneNumber().get());
-//            }
-//            if (params.getSortParam().isPresent()) {
-//                query.setParameter("")
-//            }
-//            return query.list();
-//        }
-//    }
-
     @Override
     public List<User> filterUsers(FilterUserParams fup) {
         try (Session session = sessionFactory.openSession()) {
