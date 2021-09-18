@@ -2,9 +2,7 @@ package com.team01.web.virtualwallet.controllers.REST;
 
 import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
 import com.team01.web.virtualwallet.exceptions.BadLuckException;
-import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
-import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
 import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.dto.TransferDto;
 import com.team01.web.virtualwallet.services.contracts.TransferService;
@@ -60,12 +58,10 @@ public class TransferRestController {
 
             return modelMapper.toDto(transfer);
 
-        } catch (UnsupportedOperationException e) {
+        } catch (UnsupportedOperationException | IOException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         } catch (BadLuckException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
 }

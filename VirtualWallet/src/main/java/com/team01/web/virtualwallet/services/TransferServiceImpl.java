@@ -10,12 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDate;
-import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class TransferServiceImpl implements TransferService {
@@ -60,7 +57,7 @@ public class TransferServiceImpl implements TransferService {
                 " \"amount\": %s}",cardNumber,cardCheck,cardExpDate,amount);
 
         try(OutputStream os = con.getOutputStream()) {
-            byte[] input = jsonInputString.getBytes("utf-8");
+            byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
 
@@ -69,8 +66,10 @@ public class TransferServiceImpl implements TransferService {
         if(statusCode == 200){
             transferRepository.create(transfer);
             walletService.deposit(transfer.getWallet(),transfer.getAmount());
+        } else if (statusCode == 400){
+            throw new BadLuckException("Unlucky card");
         } else {
-            throw new BadLuckException("Unlucky or invalid card");
+            throw new BadLuckException("Expired card");
         }
     }
 

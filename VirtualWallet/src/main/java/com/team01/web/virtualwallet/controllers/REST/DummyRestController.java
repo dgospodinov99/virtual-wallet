@@ -1,5 +1,6 @@
 package com.team01.web.virtualwallet.controllers.REST;
 
+import com.team01.web.virtualwallet.exceptions.BadLuckException;
 import com.team01.web.virtualwallet.models.dto.DummyDto;
 import com.team01.web.virtualwallet.services.contracts.DummyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,14 @@ public class DummyRestController {
 
     @PostMapping
     public void depositMoney(@RequestBody DummyDto dto){
-        if(dummyService.depositMoney(stringToLocalDate(dto.getExpirationDate()), dto.getAmount())){
-            throw new ResponseStatusException(HttpStatus.OK);
-        }else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        try {
+            if (dummyService.depositMoney(stringToLocalDate(dto.getExpirationDate()), dto.getAmount())) {
+                throw new ResponseStatusException(HttpStatus.OK);
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+        } catch (BadLuckException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
 
     }
