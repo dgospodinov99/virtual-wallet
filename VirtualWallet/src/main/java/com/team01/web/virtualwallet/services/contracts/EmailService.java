@@ -1,8 +1,10 @@
 package com.team01.web.virtualwallet.services.contracts;
 
+import org.springframework.mail.SimpleMailMessage;
+
 public interface EmailService {
 
-    void sendSimpleMessage(String to, String subject, String text);
+    SimpleMailMessage sendSimpleMessage(String to, String subject, String text);
 
     void sendVerifyRegistrationEmail(String recipientEmail, int code);
 

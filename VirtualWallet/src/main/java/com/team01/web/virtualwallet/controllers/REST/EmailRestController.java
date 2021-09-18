@@ -3,6 +3,7 @@ package com.team01.web.virtualwallet.controllers.REST;
 import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
 import com.team01.web.virtualwallet.models.dto.RegisterDto;
 import com.team01.web.virtualwallet.services.contracts.EmailService;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,8 +30,8 @@ public class EmailRestController {
 //        emailService.sendVerifyRegistrationEmail(dto.getEmail(), 333333);
     }
 
-    @PostMapping("/verify-transaction")
-    public void sendTransactionVerification() {
-
-    }
+//    @PostMapping("/verify-transaction")
+//    public SimpleMailMessage sendTransactionVerification() {
+//        return emailService.sendSimpleMessage();
+//    }
 }

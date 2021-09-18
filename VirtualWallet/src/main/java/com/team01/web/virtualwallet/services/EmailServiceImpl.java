@@ -4,7 +4,7 @@ import com.team01.web.virtualwallet.config.EmailConfig;
 import com.team01.web.virtualwallet.services.contracts.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,26 +12,25 @@ public class EmailServiceImpl implements EmailService {
 
     private final EmailConfig emailConfig;
 
+
+    private final JavaMailSender mailSender;
+
     @Autowired
-    public EmailServiceImpl(EmailConfig emailConfig) {
+    public EmailServiceImpl(EmailConfig emailConfig, JavaMailSender mailSender) {
         this.emailConfig = emailConfig;
+        this.mailSender = mailSender;
     }
 
     @Override
-    public void sendSimpleMessage(String to, String subject, String text) {
-
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(emailConfig.getHost());
-        mailSender.setPort(emailConfig.getPort());
-        mailSender.setUsername(emailConfig.getUsername());
-        mailSender.setPassword(emailConfig.getPassword());
+    public SimpleMailMessage sendSimpleMessage(String to, String subject, String text) {
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom("NoReply@VirtualWalletDB.com");
+        mailMessage.setFrom(emailConfig.getUsername());
         mailMessage.setTo(to);
         mailMessage.setSubject(subject);
         mailMessage.setText(text);
         mailSender.send(mailMessage);
+        return mailMessage;
     }
 
     @Override
