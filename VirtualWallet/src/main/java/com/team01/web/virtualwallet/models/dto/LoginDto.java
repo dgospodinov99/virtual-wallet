@@ -4,10 +4,10 @@ import javax.validation.constraints.NotBlank;
 
 public class LoginDto {
 
-    @NotBlank
+    @NotBlank(message = "Username can't be blank!")
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "Password can't be blank!")
     private String password;
 
     public LoginDto() {

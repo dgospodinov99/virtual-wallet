@@ -5,6 +5,7 @@ import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.AuthenticationFailureException;
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
+import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.LoginDto;
 import com.team01.web.virtualwallet.models.dto.RegisterDto;
@@ -26,6 +27,8 @@ import javax.validation.Valid;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
+    private static final String PASSWORDS_DONT_MATCH = "Password confirmation should match password.";
+
     private final AuthenticationHelper authenticationHelper;
     private final UserModelMapper modelMapper;
     private final UserService userService;
@@ -37,12 +40,6 @@ public class AuthenticationController {
         this.modelMapper = modelMapper;
         this.userService = userService;
     }
-
-//    @ModelAttribute("balance")
-//    public double populateCountries() {
-//        return userService.getByUsername();
-//    }
-
 
     @GetMapping("/login")
     public String showLoginPage(Model model) {
@@ -91,7 +88,7 @@ public class AuthenticationController {
         }
 
         if (!register.getPassword().equals(register.getConfirmPassword())) {
-            bindingResult.rejectValue("passwordConfirm", "password_error", "Password confirmation should match password.");
+            bindingResult.rejectValue("passwordConfirm", "password_error", PASSWORDS_DONT_MATCH);
             return "register";
         }
 
@@ -101,6 +98,9 @@ public class AuthenticationController {
             return "redirect:/auth/login";
         } catch (DuplicateEntityException e) {
             bindingResult.rejectValue("username", "username_error", e.getMessage());
+            return "register";
+        } catch (InvalidPasswordException e) {
+            bindingResult.rejectValue("password", "password_error", e.getMessage());
             return "register";
         }
     }
