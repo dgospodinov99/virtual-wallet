@@ -1,53 +1,49 @@
 package com.team01.web.virtualwallet.services;
 
+import com.team01.web.virtualwallet.config.EmailConfig;
 import com.team01.web.virtualwallet.services.contracts.EmailService;
-import com.team01.web.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
-
-import java.util.Properties;
 
 @Service
 public class EmailServiceImpl implements EmailService {
 
-    private final JavaMailSender emailSender;
-    private final UserService userService;
+    private final EmailConfig emailConfig;
 
     @Autowired
-    public EmailServiceImpl(JavaMailSender emailSender, UserService userService) {
-        this.emailSender = emailSender;
-        this.userService = userService;
+    public EmailServiceImpl(EmailConfig emailConfig) {
+        this.emailConfig = emailConfig;
     }
 
     @Override
     public void sendSimpleMessage(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@VirtualWalletHelpDesk.com");
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        emailSender.send(message);
-    }
 
-    @Bean
-    public JavaMailSender getJavaMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
+        mailSender.setHost(emailConfig.getHost());
+        mailSender.setPort(emailConfig.getPort());
+        mailSender.setUsername(emailConfig.getUsername());
+        mailSender.setPassword(emailConfig.getPassword());
 
-        mailSender.setUsername("my.gmail@gmail.com");
-        mailSender.setPassword("password");
-
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
-
-        return mailSender;
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setFrom("NoReply@VirtualWalletDB.com");
+        mailMessage.setTo(to);
+        mailMessage.setSubject(subject);
+        mailMessage.setText(text);
+        mailSender.send(mailMessage);
     }
+
+    @Override
+    public void sendVerifyRegistrationEmail(String recipientEmail, int code) {
+        String message = "Your verification code is: " + code;
+        sendSimpleMessage(recipientEmail, "Registration Verification", message);
+    }
+
+    @Override
+    public void sendVerifyTransactionEmail(String recipientEmail, int code) {
+        String message = "Please confirm large transaction using the code: " + code;
+        sendSimpleMessage(recipientEmail, "Large Transaction Verification", message);
+    }
+
 }
