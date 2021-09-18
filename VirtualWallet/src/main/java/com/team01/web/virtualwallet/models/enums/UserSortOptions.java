@@ -6,9 +6,9 @@ import java.util.Map;
 public enum UserSortOptions {
 
     USERNAME_ASC("Username, ascending", "order by username asc"),
-    USERNAME_DESC("Username, ascending", "order by username desc"),
+    USERNAME_DESC("Username, descending", "order by username desc"),
     EMAIL_ASC("Email, ascending", "order by email asc"),
-    EMAIL_DESC("Email, ascending", "order by email desc");
+    EMAIL_DESC("Email, descending", "order by email desc");
 
     private final String query;
     private final String preview;

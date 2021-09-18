@@ -67,14 +67,16 @@ public class UserRestController {
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String phoneNumber,
-            @RequestParam(required = false) UserSortOptions sortParam) {
+            @RequestParam(required = false) String sortParam) {
         try {
+
+
 
             var params = new FilterUserParams()
                     .setUsername(username)
                     .setEmail(email)
                     .setPhoneNumber(phoneNumber)
-                    .setSortParam(sortParam);
+                    .setSortParam(UserSortOptions.valueOfPreview(sortParam));
 
             return service.filterUsers(params)
                     .stream()

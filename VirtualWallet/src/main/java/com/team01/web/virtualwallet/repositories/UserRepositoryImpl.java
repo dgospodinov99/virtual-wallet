@@ -151,9 +151,7 @@ public class UserRepositoryImpl implements UserRepository {
 
             if (!filters.isEmpty()) baseQuery.append(" where ").append(String.join(" and ", filters));
 
-            fup.getSortParam().ifPresent(value -> {
-                baseQuery.append(value.getQuery());
-            });
+            fup.getSortParam().ifPresent(value -> baseQuery.append(" ").append(value.getQuery()));
 
             return session.createQuery(baseQuery.toString(), User.class)
                     .setProperties(params)
