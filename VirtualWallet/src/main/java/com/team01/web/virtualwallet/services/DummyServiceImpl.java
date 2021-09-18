@@ -1,5 +1,6 @@
 package com.team01.web.virtualwallet.services;
 
+import com.team01.web.virtualwallet.exceptions.BadLuckException;
 import com.team01.web.virtualwallet.services.contracts.DummyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class DummyServiceImpl implements DummyService {
     @Override
     public boolean depositMoney(LocalDate expDate, double amount) {
         if (expDate.isBefore(LocalDate.now())){
-            return false;
+            throw new BadLuckException("Expired card");
         }
         double random = Math.random()*100;
         if(random > 50){
