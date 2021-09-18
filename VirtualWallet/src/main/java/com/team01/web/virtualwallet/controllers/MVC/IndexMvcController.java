@@ -1,5 +1,6 @@
 package com.team01.web.virtualwallet.controllers.MVC;
 
+import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,15 @@ public class IndexMvcController {
 
     @GetMapping
     public String showHomePage(HttpSession session ,Model model) {
-        if(session.getAttribute("currentUser") == null){
+        try {
+            if(session.getAttribute("currentUser") == null){
+                return "redirect:/auth/login";
+            }
+            return "index";
+        }catch (EntityNotFoundException e){
             return "redirect:/auth/login";
         }
-        return "index";
+
     }
 
     @ModelAttribute("isAuthenticated")
