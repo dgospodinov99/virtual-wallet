@@ -1,5 +1,7 @@
 package com.team01.web.virtualwallet.models.dto;
 
+import com.team01.web.virtualwallet.models.enums.UserSortOptions;
+
 import java.util.Optional;
 
 public class FilterUserParams {
@@ -10,19 +12,9 @@ public class FilterUserParams {
 
     private Optional<String> phoneNumber;
 
+    private Optional<UserSortOptions> sortParam;
+
     public FilterUserParams() {
-    }
-
-    public Optional<String> getUsername() {
-        return username;
-    }
-
-    public Optional<String> getEmail() {
-        return email;
-    }
-
-    public Optional<String> getPhoneNumber() {
-        return phoneNumber;
     }
 
     public FilterUserParams setUsername(String username) {
@@ -38,5 +30,26 @@ public class FilterUserParams {
     public FilterUserParams setPhoneNumber(String phoneNumber) {
         this.phoneNumber = Optional.ofNullable(phoneNumber);
         return this;
+    }
+
+    public FilterUserParams setSortParam(UserSortOptions sortParam) {
+        this.sortParam = Optional.ofNullable(sortParam);
+        return this;
+    }
+
+    public Optional<String> getUsername() {
+        return username;
+    }
+
+    public Optional<String> getEmail() {
+        return email;
+    }
+
+    public Optional<String> getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public Optional<UserSortOptions> getSortParam() {
+        return sortParam;
     }
 }

@@ -8,6 +8,7 @@ import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
 import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.*;
+import com.team01.web.virtualwallet.models.enums.UserSortOptions;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
@@ -65,13 +66,15 @@ public class UserRestController {
     public List<UserDto> filter(
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
-            @RequestParam(required = false) String phoneNumber) {
+            @RequestParam(required = false) String phoneNumber,
+            @RequestParam(required = false) UserSortOptions sortParam) {
         try {
 
             var params = new FilterUserParams()
                     .setUsername(username)
                     .setEmail(email)
-                    .setPhoneNumber(phoneNumber);
+                    .setPhoneNumber(phoneNumber)
+                    .setSortParam(sortParam);
 
             return service.filterUsers(params)
                     .stream()

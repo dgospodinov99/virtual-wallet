@@ -10,6 +10,8 @@ import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Repository
@@ -89,34 +91,73 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
+//    @Override
+//    public List<User> filterUsers(FilterUserParams params) {
+//        try (Session session = sessionFactory.openSession()) {
+//            String queryString = "from User where active = true ";
+//
+//            if (params.getEmail().isPresent()) {
+//                queryString += "and email like concat('%', :email, '%') ";
+//            }
+//            if (params.getUsername().isPresent()) {
+//                queryString += "and username like concat('%', :username, '%') ";
+//            }
+//            if (params.getPhoneNumber().isPresent()) {
+//                queryString += "and phoneNumber like concat('%', :phoneNumber, '%') ";
+//            }
+//            if (params.getSortParam().isPresent()) {
+//                queryString += params.getSortParam().get().getQuery();
+//            }
+//
+//            Query<User> query = session.createQuery(queryString, User.class);
+//
+//            if (params.getEmail().isPresent()) {
+//                query.setParameter("email", params.getEmail().get());
+//            }
+//            if (params.getUsername().isPresent()) {
+//                query.setParameter("username", params.getUsername().get());
+//            }
+//            if (params.getPhoneNumber().isPresent()) {
+//                query.setParameter("phoneNumber", params.getPhoneNumber().get());
+//            }
+//            if (params.getSortParam().isPresent()) {
+//                query.setParameter("")
+//            }
+//            return query.list();
+//        }
+//    }
+
     @Override
-    public List<User> filterUsers(FilterUserParams params) {
+    public List<User> filterUsers(FilterUserParams fup) {
         try (Session session = sessionFactory.openSession()) {
-            String queryString = "from User where active = true";
+            StringBuilder baseQuery = new StringBuilder().append("from User");
+            var filters = new ArrayList<String>();
+            var params = new HashMap<String, String>();
 
-            if (params.getEmail().isPresent()) {
-                queryString += " and email = :email";
-            }
-            if (params.getUsername().isPresent()) {
-                queryString += " and username = :username";
-            }
-            if (params.getPhoneNumber().isPresent()) {
-                queryString += " and phoneNumber = :phoneNumber";
-            }
+            fup.getUsername().ifPresent(value -> {
+                filters.add("username like :username");
+                params.put("username", "%" + value + "%");
+            });
 
-            Query<User> query = session.createQuery(queryString, User.class);
+            fup.getEmail().ifPresent(value -> {
+                filters.add("email like :email");
+                params.put("email", "%" + value + "%");
+            });
 
-            if (params.getEmail().isPresent()) {
-                query.setParameter("email", params.getEmail().orElse(null));
-            }
-            if (params.getUsername().isPresent()) {
-                query.setParameter("username", params.getUsername().orElse(null));
-            }
-            if (params.getPhoneNumber().isPresent()) {
-                query.setParameter("phoneNumber", params.getPhoneNumber().orElse(null));
-            }
+            fup.getPhoneNumber().ifPresent(value -> {
+                filters.add("phoneNumber like :phoneNumber");
+                params.put("phoneNumber", "%" + value + "%");
+            });
 
-            return query.list();
+            if (!filters.isEmpty()) baseQuery.append(" where ").append(String.join(" and ", filters));
+
+            fup.getSortParam().ifPresent(value -> {
+                baseQuery.append(value.getQuery());
+            });
+
+            return session.createQuery(baseQuery.toString(), User.class)
+                    .setProperties(params)
+                    .list();
         }
     }
 
