@@ -24,7 +24,7 @@ public class IndexMvcController {
     }
 
     @GetMapping
-    public String showHomePage(HttpSession session ,Model model) {
+    public String showHomePage(HttpSession session) {
         try {
             if(session.getAttribute("currentUser") == null){
                 return "redirect:/auth/login";
@@ -43,8 +43,13 @@ public class IndexMvcController {
 
     @ModelAttribute("balance")
     public double populateBalance(HttpSession session){
-        User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
-        return user.getWallet().getBalance();
+        try {
+            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+            return user.getWallet().getBalance();
+        }catch (EntityNotFoundException e){
+            showHomePage(session);
+            return 0;
+        }
     }
 
 
