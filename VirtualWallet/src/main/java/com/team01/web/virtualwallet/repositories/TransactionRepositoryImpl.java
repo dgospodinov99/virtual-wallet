@@ -16,6 +16,8 @@ import java.util.List;
 @Repository
 public class TransactionRepositoryImpl implements TransactionRepository {
 
+    private static final int LATEST_TRANSACTIONS = 5;
+
     private final SessionFactory sessionFactory;
 
     @Autowired
@@ -53,13 +55,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             if (params.getSenderId().isPresent()) {
                 queryString += " and sender.id = :senderId";
             }
-//            if (params.getDirection().isPresent()) {
-//                if(params.getDirection().equals(TransferDirection.IN)){
-//                    queryString += " and receiver = :?";
-//                }else {
-//                    queryString += " and sender = :?";
-//                }
-//            }
+
             if (params.getStartDate().isPresent() && params.getEndDate().isPresent()) {
                 queryString += " and timestamp between :startDate and :endDate";
             } else if (params.getStartDate().isPresent()) {
@@ -108,6 +104,18 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             return query.list();
         }
     }
+
+    @Override
+    public List<Transaction> getWalletLatestTransactions(Wallet wallet) {
+        try (Session session = sessionFactory.openSession()) {
+            Query<Transaction> query = session.createQuery(
+                    "from Transaction where sender.id = :walletId or receiver.id = :walletId order by timestamp desc", Transaction.class);
+            query.setParameter("walletId", wallet.getId());
+            query.setMaxResults(LATEST_TRANSACTIONS);
+            return query.list();
+        }
+    }
+
 
     @Override
     public void create(Transaction transaction) {

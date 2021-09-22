@@ -14,6 +14,8 @@ public interface TransactionService {
 
     List<Transaction> getUserTransactions(User user);
 
+    List<Transaction>  getUserLatestTransactions(User user);
+
     List<Transaction> filterTransactions(FilterTransactionParams params);
 
     void create(Transaction transaction, User executor);

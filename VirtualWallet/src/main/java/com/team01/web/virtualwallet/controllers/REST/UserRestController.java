@@ -95,7 +95,7 @@ public class UserRestController {
         try {
             User executor = authenticationHelper.tryGetUser(headers);
 
-            return service.getUserTransfers(id,executor)
+            return service.getUserTransactions(id,executor)
                     .stream()
                     .map(transfer -> transactionModelMapper.toDto(transfer))
                     .collect(Collectors.toList());

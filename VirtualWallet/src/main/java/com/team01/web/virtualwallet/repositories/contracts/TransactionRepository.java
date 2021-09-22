@@ -13,6 +13,8 @@ public interface TransactionRepository {
 
     List<Transaction> getAllWalletTransactions(Wallet wallet);
 
+    List<Transaction> getWalletLatestTransactions(Wallet wallet);
+
     void create(Transaction transaction);
 
     List<Transaction> filterTransactions(FilterTransactionParams params);

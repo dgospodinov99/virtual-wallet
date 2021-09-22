@@ -1,16 +1,17 @@
 package com.team01.web.virtualwallet.controllers.MVC;
 
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
+import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @Controller
 @RequestMapping("/")
@@ -46,6 +47,29 @@ public class IndexMvcController {
         try {
             User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
             return user.getWallet().getBalance();
+        }catch (EntityNotFoundException e){
+            showHomePage(session);
+            return 0;
+        }
+    }
+
+    @ModelAttribute("transactions")
+    public List<Transaction> populateTransactions(HttpSession session){
+        try {
+            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+            //todo change with method - limit 5-10
+            return userService.getUserLatestTransactions(user);
+        }catch (EntityNotFoundException e){
+            showHomePage(session);
+            return List.of();
+        }
+    }
+
+    @ModelAttribute("currentWalletId")
+    public int populateWalletId(HttpSession session){
+        try {
+            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+            return user.getWallet().getId();
         }catch (EntityNotFoundException e){
             showHomePage(session);
             return 0;

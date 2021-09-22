@@ -25,7 +25,9 @@ public interface UserService {
 
     List<User> filterUsers(FilterUserParams params);
 
-    List<Transaction> getUserTransfers(int id, User executor);
+    List<Transaction> getUserTransactions(int id, User executor);
+
+    List<Transaction> getUserLatestTransactions(User executor);
 
     void create(User user);
 

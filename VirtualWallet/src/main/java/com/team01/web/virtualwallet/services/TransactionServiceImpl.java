@@ -45,6 +45,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    public List<Transaction> getUserLatestTransactions(User user) {
+        return transactionRepository.getWalletLatestTransactions(user.getWallet());
+    }
+
+    @Override
     public List<Transaction> filterTransactions(FilterTransactionParams params) {
         return transactionRepository.filterTransactions(params);
     }

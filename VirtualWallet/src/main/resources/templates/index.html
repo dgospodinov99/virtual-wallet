@@ -84,13 +84,13 @@
                             <h6 class="m-0 font-weight-bold text-primary">Latest Transactions</h6>
                         </div>
                         <!-- Card Body -->
-                        <div class="card-body">
-                            <div class="row">Transaction 1</div>
-                            <div class="row">Transaction 2</div>
-                            <div class="row">Transaction 3</div>
-                            <div class="row">Transaction 4</div>
-                            <div class="row">Transaction 5</div>
-                            <div class="row">Transaction 6</div>
+                        <div class="card-body" th:each="transaction : ${transactions}">
+                            <div th:if="${transaction.sender.id} == ${currentWalletId}">
+                                <div class="row" style="color: red" th:text="${transaction.amount}">Transaction 1</div>
+                            </div>
+                            <div th:unless="${transaction.sender.id} == ${currentWalletId}">
+                                <div class="row" style="color: green" th:text="${transaction.amount}">Transaction 1</div>
+                            </div>
                         </div>
                     </div>
                 </div>
