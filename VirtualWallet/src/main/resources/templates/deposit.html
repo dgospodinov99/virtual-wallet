@@ -38,11 +38,11 @@
             <div class="container-fluid">
                 <div class="row">
                     <!-- Border Left Utilities -->
-                    <div class="col-lg-6">
+                    <div th:align="center" class="col-lg-6">
                         <form action="#" th:action="@{/myaccount/deposit}" th:object="${deposit}" method="post"
                               class="user">
-                            <div class="form-group">
-
+                            <div class="form-group col-5">
+                                <label>Select one of your cards</label>
                                 <select class="form-control" th:field="*{cardId}">
                                     <option th:each="card : ${cards}"
                                             th:value="${card.getId()}"
@@ -52,13 +52,14 @@
                                 </select>
 
                             </div>
-                            <div class="form-group">
+                            <div class="form-group col-5">
+                                <label>Enter amount to deposit</label>
                                 <input type="number" th:field="*{amount}" class="form-control"
                                        id="exampleAmount" placeholder="Amount">
                                 <label class="text-danger" th:errors="*{amount}">Deposit error placeholder</label>
                             </div>
                             <hr>
-                            <input class="btn btn-primary btn-user btn-block" th:type="submit" th:value="Deposit">
+                            <input class="btn btn-primary btn-user btn-block col-5" th:type="submit" th:value="Deposit">
 
                         </form>
 

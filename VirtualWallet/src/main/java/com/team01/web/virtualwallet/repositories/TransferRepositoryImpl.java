@@ -56,7 +56,7 @@ public class TransferRepositoryImpl implements TransferRepository {
     @Override
     public List<Transfer> getLatestWalletTransfers(Wallet wallet) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Transfer> query = session.createQuery("from Transfer where wallet.id = :walletId", Transfer.class);
+            Query<Transfer> query = session.createQuery("from Transfer where wallet.id = :walletId order by timestamp desc", Transfer.class);
             query.setParameter("walletId", wallet.getId());
             query.setMaxResults(LATEST_TRANSFER_SIZE);
             return query.list();
