@@ -15,7 +15,7 @@ public class TransactionDto {
     @Positive(message = "Transaction amount must be positive!")
     private Double amount;
 
-    private LocalDateTime timestamp;
+    private String timestamp;
 
     public TransactionDto() {
     }
@@ -44,11 +44,11 @@ public class TransactionDto {
         this.amount = amount;
     }
 
-    public LocalDateTime getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 }

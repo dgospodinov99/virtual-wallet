@@ -1,6 +1,7 @@
 package com.team01.web.virtualwallet.models;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "transfers")
@@ -21,6 +22,10 @@ public class Transfer {
 
     @Column(name = "amount")
     private double amount;
+
+    @Column(name = "timestamp")
+    private LocalDateTime timestamp;
+
 
     public Transfer() {
     }
@@ -55,5 +60,13 @@ public class Transfer {
 
     public void setAmount(double amount) {
         this.amount = amount;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 }

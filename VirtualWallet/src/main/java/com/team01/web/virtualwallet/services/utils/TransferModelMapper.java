@@ -10,6 +10,9 @@ import com.team01.web.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Component
 public class TransferModelMapper {
 
@@ -30,6 +33,7 @@ public class TransferModelMapper {
         transfer.setAmount(dto.getAmount());
         transfer.setCard(cardService.getById(dto.getCardId()));
         transfer.setWallet(walletService.getById(dto.getWalletId()));
+        transfer.setTimestamp(LocalDateTime.now());
 
         return transfer;
     }
@@ -39,6 +43,7 @@ public class TransferModelMapper {
         transfer.setAmount(dto.getAmount());
         transfer.setCard(cardService.getById(dto.getCardId()));
         transfer.setWallet(wallet);
+        transfer.setTimestamp(LocalDateTime.now());
 
         return transfer;
     }
@@ -48,6 +53,11 @@ public class TransferModelMapper {
         dto.setAmount(transfer.getAmount());
         dto.setCardId(transfer.getCard().getId());
         dto.setWalletId(transfer.getWallet().getId());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
+        String date = transfer.getTimestamp().format(formatter);
+
+        dto.setTimestamp(date);
 
         return dto;
     }

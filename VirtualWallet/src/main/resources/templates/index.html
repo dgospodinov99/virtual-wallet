@@ -59,7 +59,8 @@
                                             <h2 th:text="${balance}"></h2>
                                         </div>
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            <a href="#" th:href="@{/myaccount/deposit}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                            <a href="#" th:href="@{/myaccount/deposit}"
+                                               class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                                     class="fas fa-download fa-sm text-white-10"></i>Deposit</a>
                                         </div>
                                     </div>
@@ -76,24 +77,63 @@
 
                 <!-- Content Row -->
                 <div class="row">
-                    <!-- Last Transactions -->
-                    <div class="col-xl-5 col-lg-7">
-                    <div class="card shadow mb-4">
-                        <!-- Card Header - Dropdown -->
-                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                            <h6 class="m-0 font-weight-bold text-primary">Latest Transactions</h6>
-                        </div>
-                        <!-- Card Body -->
-                        <div class="card-body" th:each="transaction : ${transactions}">
-                            <div th:if="${transaction.sender.id} == ${currentWalletId}">
-                                <div class="row" style="color: red" th:text="${transaction.amount}">Transaction 1</div>
+                    <!-- Latest Transactions -->
+                    <div class="col-xl-3 col-lg-5">
+                        <div class="card shadow mb-4">
+                            <!-- Card Header - Dropdown -->
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Latest Transactions</h6>
                             </div>
-                            <div th:unless="${transaction.sender.id} == ${currentWalletId}">
-                                <div class="row" style="color: green" th:text="${transaction.amount}">Transaction 1</div>
+                            <!-- Card Body -->
+                            <div th:if="${transactions.isEmpty()}" class="card-body">
+                                <div class="row" style="color: black">No Transactions</div>
+                            </div>
+
+                            <div th:unless="${transactions.isEmpty()}" class="card-body"
+                                 th:each="transaction : ${transactions}">
+                                <div th:if="${transaction.senderId} == ${currentWalletId}">
+                                    <div class="row">
+                                        <div class="col-5" style="color: red" th:text="${transaction.amount}">Transfer
+                                            1
+                                        </div>
+                                        <div class="col-5" style="color: dodgerblue; font-size: 10px"
+                                             th:text="${transaction.timestamp}">Timestamp 1
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:unless="${transaction.senderId} == ${currentWalletId}">
+                                    <div class="row">
+                                        <div class="col-5" style="color: green" th:text="${transaction.amount}">Transfer 1</div>
+                                        <div class="col-5" style="color: dodgerblue; font-size: 12px" th:text="${transaction.timestamp}">Timestamp 1</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                     </div>
-                </div>
+
+                    <!-- Latest Transfers -->
+                    <div class="col-xl-3 col-lg-5">
+                        <div class="card shadow mb-4">
+                            <!-- Card Header - Dropdown -->
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Latest Transfers</h6>
+                            </div>
+                            <!-- Card Body -->
+                            <div th:if="${transfers.isEmpty()}" class="card-body">
+                                <div class="row" style="color: black">No Transfers</div>
+                            </div>
+
+                            <div th:unless="${transfers.isEmpty()}" class="card-body" th:each="transfer : ${transfers}">
+                                <div class="row">
+                                    <div class="col-5" style="color: black" th:text="${transfer.amount}">Transfer 1</div>
+                                    <div class="col-5" style="color: dodgerblue; font-size: 12px" th:text="${transfer.timestamp}">Timestamp 1</div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
 
                 </div>
                 <!-- /.container-fluid -->
@@ -110,7 +150,7 @@
 
 </div>
 <!-- Footer -->
-<div  class="navbar fixed-bottom">
+<div class="navbar fixed-bottom">
     <footer class="sticky-footer bg-white">
         <div class="container my-auto">
             <div class="copyright text-center my-auto">

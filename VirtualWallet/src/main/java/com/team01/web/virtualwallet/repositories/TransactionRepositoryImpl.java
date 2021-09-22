@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public class TransactionRepositoryImpl implements TransactionRepository {
 
-    private static final int LATEST_TRANSACTIONS = 5;
+    private static final int LATEST_TRANSACTIONS_SIZE = 5;
 
     private final SessionFactory sessionFactory;
 
@@ -111,7 +111,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
             Query<Transaction> query = session.createQuery(
                     "from Transaction where sender.id = :walletId or receiver.id = :walletId order by timestamp desc", Transaction.class);
             query.setParameter("walletId", wallet.getId());
-            query.setMaxResults(LATEST_TRANSACTIONS);
+            query.setMaxResults(LATEST_TRANSACTIONS_SIZE);
             return query.list();
         }
     }

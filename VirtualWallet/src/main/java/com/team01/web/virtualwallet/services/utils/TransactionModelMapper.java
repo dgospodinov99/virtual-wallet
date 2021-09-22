@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class TransactionModelMapper {
@@ -40,7 +41,10 @@ public class TransactionModelMapper {
         dto.setAmount(transaction.getAmount());
         dto.setSenderId(transaction.getSender().getId());
         dto.setReceiverId(transaction.getReceiver().getId());
-        dto.setTimestamp(transaction.getTimestamp());
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
+        String date = transaction.getTimestamp().format(formatter);
+        dto.setTimestamp(date);
         return dto;
     }
 }

@@ -2,6 +2,7 @@ package com.team01.web.virtualwallet.services;
 
 import com.team01.web.virtualwallet.exceptions.BadLuckException;
 import com.team01.web.virtualwallet.models.Transfer;
+import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.repositories.contracts.TransferRepository;
 import com.team01.web.virtualwallet.services.contracts.TransferService;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
@@ -29,6 +30,16 @@ public class TransferServiceImpl implements TransferService {
     @Override
     public List<Transfer> getAll() {
         return transferRepository.getAll();
+    }
+
+    @Override
+    public List<Transfer> getUserTransfers(User user) {
+        return transferRepository.getWalletTransfers(user.getWallet());
+    }
+
+    @Override
+    public List<Transfer> getUserLatestTransfers(User user) {
+        return transferRepository.getLatestWalletTransfers(user.getWallet());
     }
 
     @Override
