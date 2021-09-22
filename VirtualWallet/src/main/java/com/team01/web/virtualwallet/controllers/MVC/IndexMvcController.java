@@ -57,7 +57,6 @@ public class IndexMvcController {
     public List<Transaction> populateTransactions(HttpSession session){
         try {
             User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
-            //todo change with method - limit 5-10
             return userService.getUserLatestTransactions(user);
         }catch (EntityNotFoundException e){
             showHomePage(session);
