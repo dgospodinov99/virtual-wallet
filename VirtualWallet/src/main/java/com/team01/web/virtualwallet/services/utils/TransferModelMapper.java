@@ -1,6 +1,8 @@
 package com.team01.web.virtualwallet.services.utils;
 
 import com.team01.web.virtualwallet.models.Transfer;
+import com.team01.web.virtualwallet.models.Wallet;
+import com.team01.web.virtualwallet.models.dto.DepositDto;
 import com.team01.web.virtualwallet.models.dto.TransferDto;
 import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.TransferService;
@@ -28,6 +30,15 @@ public class TransferModelMapper {
         transfer.setAmount(dto.getAmount());
         transfer.setCard(cardService.getById(dto.getCardId()));
         transfer.setWallet(walletService.getById(dto.getWalletId()));
+
+        return transfer;
+    }
+
+    public Transfer fromDto(DepositDto dto, Wallet wallet) {
+        Transfer transfer = new Transfer();
+        transfer.setAmount(dto.getAmount());
+        transfer.setCard(cardService.getById(dto.getCardId()));
+        transfer.setWallet(wallet);
 
         return transfer;
     }
