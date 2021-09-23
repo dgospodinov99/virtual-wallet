@@ -3,7 +3,8 @@ package com.team01.web.virtualwallet.repositories;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.Wallet;
-import com.team01.web.virtualwallet.models.dto.FilterTransactionParams;
+import com.team01.web.virtualwallet.models.dto.FilterTransactionByAdminParams;
+import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.TransactionRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -45,7 +46,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public List<Transaction> filterTransactions(FilterTransactionParams params) {
+    public List<Transaction> adminFilterTransactions(FilterTransactionByAdminParams params) {
         try (Session session = sessionFactory.openSession()) {
             String queryString = "from Transaction where 1 = 1";
 
@@ -90,6 +91,56 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 query.setParameter("startDate", params.getStartDate().get());
             } else if (params.getEndDate().isPresent()) {
                 query.setParameter("endDate", params.getEndDate().get());
+            }
+
+            return query.list();
+        }
+    }
+
+    @Override
+    public List<Transaction> userFilterTransactions(FilterTransactionsByUserParams params) {
+
+        try (Session session = sessionFactory.openSession()) {
+            String queryString = "from Transaction where 1 = 1";
+
+            if (params.getDirection().isPresent()) {
+                var direction = params.getDirection().get();
+                switch (direction) {
+                    case IN: {
+                        queryString += " and receiver.id = :walletId";
+                        break;
+                    }
+                    case OUT: {
+                        queryString += " and sender.id = :walletId";
+                        break;
+                    }
+                }
+            }
+
+            if (params.getStartDate().isPresent() && params.getEndDate().isPresent()) {
+                queryString += " and timestamp between :startDate and :endDate";
+            } else if (params.getStartDate().isPresent()) {
+                queryString += " and timestamp >= :startDate";
+            } else if (params.getEndDate().isPresent()) {
+                queryString += " and timestamp <= :endDate";
+            }
+
+
+            Query<Transaction> query = session.createQuery(queryString, Transaction.class);
+
+            //todo refactor maybe
+            //set date params in query
+            if (params.getStartDate().isPresent() && params.getEndDate().isPresent()) {
+                query.setParameter("startDate", params.getStartDate().get());
+                query.setParameter("endDate", params.getEndDate().get());
+            } else if (params.getStartDate().isPresent()) {
+                query.setParameter("startDate", params.getStartDate().get());
+            } else if (params.getEndDate().isPresent()) {
+                query.setParameter("endDate", params.getEndDate().get());
+            }
+
+            if (params.getDirection().isPresent()) {
+                query.setParameter("walletId", params.getWalletId().get());
             }
 
             return query.list();

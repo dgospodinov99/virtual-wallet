@@ -93,16 +93,4 @@ public class IndexMvcController {
         }
     }
 
-    @ModelAttribute("currentWalletId")
-    public int populateWalletId(HttpSession session){
-        try {
-            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
-            return user.getWallet().getId();
-        }catch (EntityNotFoundException e){
-            showHomePage(session);
-            return 0;
-        }
-    }
-
-
 }

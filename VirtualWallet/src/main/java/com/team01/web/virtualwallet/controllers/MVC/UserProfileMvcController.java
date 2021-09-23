@@ -6,6 +6,10 @@ import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.DepositDto;
+import com.team01.web.virtualwallet.models.dto.FilterTransactionDto;
+import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
+import com.team01.web.virtualwallet.models.enums.TransactionDirection;
+import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.TransferService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
@@ -22,6 +26,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,13 +40,15 @@ public class UserProfileMvcController {
     private final TransferService transferService;
     private final TransferModelMapper transferModelMapper;
     private final TransactionModelMapper transactionModelMapper;
+    private final TransactionService transactionService;
 
     @Autowired
-    public UserProfileMvcController(UserService userService, TransferService transferService, TransferModelMapper transferModelMapper, TransactionModelMapper transactionModelMapper) {
+    public UserProfileMvcController(UserService userService, TransferService transferService, TransferModelMapper transferModelMapper, TransactionModelMapper transactionModelMapper, TransactionService transactionService) {
         this.userService = userService;
         this.transferService = transferService;
         this.transferModelMapper = transferModelMapper;
         this.transactionModelMapper = transactionModelMapper;
+        this.transactionService = transactionService;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -56,16 +65,16 @@ public class UserProfileMvcController {
     public Set<Card> populateUserCards(HttpSession session) {
         try {
             return populateUser(session).getCards();
-        } catch (EntityNotFoundException e){
+        } catch (EntityNotFoundException e) {
             return null;
         }
     }
 
-    @ModelAttribute("currentWalletId")
-    public int populateWalletId(HttpSession session){
-        User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
-        return user.getWallet().getId();
+    @ModelAttribute("filterDto")
+    public FilterTransactionDto populateFilterDto() {
+        return new FilterTransactionDto();
     }
+
 
     @GetMapping
     public String showUserProfile() {
@@ -75,11 +84,11 @@ public class UserProfileMvcController {
     @GetMapping("/cards")
     public String showCards(HttpSession session) {
         try {
-            if(session.getAttribute("currentUser") == null){
+            if (session.getAttribute("currentUser") == null) {
                 return "redirect:/auth/login";
             }
             return "cards";
-        }catch (EntityNotFoundException e){
+        } catch (EntityNotFoundException e) {
             return "redirect:/auth/login";
         }
 
@@ -114,7 +123,7 @@ public class UserProfileMvcController {
     public String showActivity(HttpSession session, Model model) {
         User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
 
-        var transactions = userService.getUserTransactions(user.getId(),user)
+        var transactions = userService.getUserTransactions(user.getId(), user)
                 .stream()
                 .map(transaction -> transactionModelMapper.toDto(transaction))
                 .collect(Collectors.toList());
@@ -123,6 +132,32 @@ public class UserProfileMvcController {
         return "transactions";
     }
 
+    @GetMapping("/transactions/filter")
+    public String filterTransactions(@ModelAttribute FilterTransactionDto dto, HttpSession session, Model model) {
+        dto.setWalletId(populateUser(session).getWallet().getId());
+        Optional<TransactionDirection> direction = dto.getDirection() == null ? Optional.empty() : Optional.of(dto.getDirection());
+        Optional<LocalDateTime> startDate = dto.getStartDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getStartDate()));
+        Optional<LocalDateTime> endDate = dto.getEndDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getEndDate()));
 
+
+        var params = new FilterTransactionsByUserParams()
+                .setEndDate(endDate)
+                .setStartDate(startDate)
+                .setDirection(direction)
+                .setWalletId(Optional.of(dto.getWalletId()));
+
+        var filtered = transactionService.userFilterTransactions(params)
+                .stream()
+                .map(transaction -> transactionModelMapper.toDto(transaction))
+                .collect(Collectors.toList());;
+
+        model.addAttribute("transactions",filtered);
+        return "transactions";
+    }
+
+    private LocalDateTime stringToLocalDate(String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        return LocalDateTime.parse(date,formatter);
+    }
 
 }

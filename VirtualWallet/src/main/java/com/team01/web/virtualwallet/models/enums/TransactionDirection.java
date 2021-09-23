@@ -1,4 +1,4 @@
-package com.team01.web.virtualwallet.models;
+package com.team01.web.virtualwallet.models.enums;
 
 public enum TransactionDirection {
     IN,
@@ -8,9 +8,9 @@ public enum TransactionDirection {
     public String toString() {
         switch (this) {
             case IN:
-                return "in";
+                return "Income";
             case OUT:
-                return "out";
+                return "Outcome";
             default:
                 throw new IllegalArgumentException("Invalid transfer direction (can be in/out).");
         }

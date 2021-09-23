@@ -10,7 +10,8 @@
     <title>Virtual Wallet</title>
 
     <!-- Custom fonts for this template-->
-    <link href="../static/vendor/fontawesome-free/css/all.min.css" th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <link href="../static/vendor/fontawesome-free/css/all.min.css" th:href="@{/vendor/fontawesome-free/css/all.min.css}"
+          rel="stylesheet" type="text/css">
     <link
             href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
             rel="stylesheet">
@@ -32,6 +33,7 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
+
             <!-- Page Heading -->
             <h1 class="h3 mb-2 text-gray-800">Your Transactions</h1>
 
@@ -41,11 +43,48 @@
                     <h6 class="m-0 font-weight-bold text-primary">Your Transactions</h6>
                 </div>
                 <div class="card-body">
+                    <div class="row">
+                        <form action="#" th:action="@{/myaccount/transactions/filter}" th:object="${filterDto}" method="get">
+                            <div class="form-group row"> <!-- Date input -->
+                                <div class="col-sm-4 mb-3 mb-sm-0">
+                                    <label class="control-label">Start Date</label>
+                                    <input class="form-control" type="datetime-local" th:field="*{startDate}"/>
+                                </div>
+
+                                <div class="col-sm-4">
+                                    <label class="control-label">End Date</label>
+                                    <input class="form-control"  placeholder="DD/MM/YYYY" th:field="*{endDate}"
+                                           type="datetime-local"/>
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <label class="control-label">Direction</label>
+<!--                                    <select class="form-check">-->
+                                    <select class="form-control" th:field="*{direction}">
+                                        <option selected value="">Any</option>
+                                        <option th:each="direction : ${T(com.team01.web.virtualwallet.models.enums.TransactionDirection).values()}"
+                                                th:value="${direction.name()}"
+                                                th:text="${direction}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <label class="control-label"></br></label>
+                                    <input class="form-control btn btn-primary btn-user btn-block" th:type="submit" th:value="Filter">
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="row"/>
+
                     <div class="table-responsive">
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                             <tr>
-                                <!--                                todo in application properties-->
+                                <!--todo in application properties-->
                                 <th>Amount</th>
                                 <th>From</th>
                                 <th>To</th>
@@ -64,13 +103,13 @@
                                 <tbody>
                                 <tr>
                                     <div th:unless="${transaction.sender} == ${session.currentUser}">
-                                        <td  style="color: green" th:text="${transaction.amount}">100</td>
+                                        <td style="color: green" th:text="${transaction.amount}">100</td>
                                         <td style="color: dodgerblue" th:text="${transaction.sender}">Someone</td>
                                         <td style="color: dodgerblue">You</td>
                                     </div>
 
                                     <div th:if="${transaction.sender} == ${session.currentUser}">
-                                        <td  style="color: red" th:text="${transaction.amount}">100</td>
+                                        <td style="color: red" th:text="${transaction.amount}">100</td>
                                         <td style="color: dodgerblue">You</td>
                                         <td style="color: dodgerblue" th:text="${transaction.receiver}">Someone</td>
                                     </div>
@@ -118,6 +157,16 @@
 <!-- Page level custom scripts -->
 <script th:src="@{/js/demo/chart-area-demo.js}"></script>
 <script th:src="@{/js/demo/chart-pie-demo.js}"></script>
+
+
+<!-- Include jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<!-- Include Date Range Picker -->
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
 
 </body>
 </html>

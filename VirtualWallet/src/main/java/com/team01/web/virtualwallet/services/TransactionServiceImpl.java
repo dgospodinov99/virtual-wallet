@@ -5,7 +5,9 @@ import com.team01.web.virtualwallet.exceptions.InvalidTransferException;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
-import com.team01.web.virtualwallet.models.dto.FilterTransactionParams;
+import com.team01.web.virtualwallet.models.dto.FilterTransactionDto;
+import com.team01.web.virtualwallet.models.dto.FilterTransactionByAdminParams;
+import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.TransactionRepository;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
@@ -50,12 +52,18 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> filterTransactions(FilterTransactionParams params) {
-        return transactionRepository.filterTransactions(params);
+    public List<Transaction> adminFilterTransactions(FilterTransactionByAdminParams params) {
+        return transactionRepository.adminFilterTransactions(params);
     }
+
+    @Override
+    public List<Transaction> userFilterTransactions(FilterTransactionsByUserParams params) {
+        return transactionRepository.userFilterTransactions(params);
+    }
+
+
     @Override
     public void create(Transaction transaction, User executor) {
-        //connect to dummy api?
         validateUser(executor, transaction.getSender());
         validateUserStatus(executor);
         validateTransfer(transaction.getSender(), transaction.getAmount());

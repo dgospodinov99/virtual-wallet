@@ -6,7 +6,7 @@ import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.CreateTransactionDto;
-import com.team01.web.virtualwallet.models.dto.FilterTransactionParams;
+import com.team01.web.virtualwallet.models.dto.FilterTransactionByAdminParams;
 import com.team01.web.virtualwallet.models.dto.TransactionDto;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.utils.Helpers;
@@ -64,23 +64,21 @@ public class TransactionRestController {
             @RequestParam(required = false) Integer senderId,
             @RequestParam(required = false) Integer receiverId,
             @RequestParam(required = false) String sortParam,
-            @RequestParam(required = false) String direction,
             @RequestParam(required = false) String from,
             @RequestParam(required = false) String to,
             @RequestHeader HttpHeaders headers) {
         try {
             User executor = authenticationHelper.tryGetUser(headers);
 
-            var params = new FilterTransactionParams()
+            var params = new FilterTransactionByAdminParams()
                     .setSenderId(senderId)
                     .setReceiverId(receiverId)
                     .setSortParam(sortParam)
-                    .setDirection(direction)
                     .setStartDate(Helpers.stringToLocalDateTimeOptional(from))
                     .setEndDate(Helpers.stringToLocalDateTimeOptional(to));
 
 
-            return transactionService.filterTransactions(params)
+            return transactionService.adminFilterTransactions(params)
                     .stream()
                     .map(transaction -> modelMapper.toDto(transaction))
                     .collect(Collectors.toList());
