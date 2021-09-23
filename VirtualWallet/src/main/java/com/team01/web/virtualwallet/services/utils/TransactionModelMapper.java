@@ -39,10 +39,10 @@ public class TransactionModelMapper {
     public TransactionDto toDto(Transaction transaction) {
         TransactionDto dto = new TransactionDto();
         dto.setAmount(transaction.getAmount());
-        dto.setSenderId(transaction.getSender().getId());
-        dto.setReceiverId(transaction.getReceiver().getId());
+        dto.setSender(userService.getById(transaction.getSender().getId()).getUsername());
+        dto.setReceiver(userService.getById(transaction.getReceiver().getId()).getUsername());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm  dd-MM-yyyy");
         String date = transaction.getTimestamp().format(formatter);
         dto.setTimestamp(date);
         return dto;

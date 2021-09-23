@@ -37,7 +37,6 @@
 
             <div class="container-fluid">
                 <div class="row">
-                    <!-- Border Left Utilities -->
                     <div class="col-lg-6">
                         <div class="card mb-4 py-3 border-left-primary" th:each="card : ${cards}">
                             <div class="card-body">
@@ -47,35 +46,21 @@
                                 <h4 th:text="${card.expirationDate}"></h4>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
-                <!-- End of Content Wrapper -->
-
             </div>
-
-
         </div>
-        <!-- End of Main Content -->
-
-
+        <!-- End of Content Wrapper -->
     </div>
-    <!-- End of Content Wrapper -->
-
 </div>
-<!-- End of Page Wrapper -->
-
 <!-- Footer -->
-<div class="navbar fixed-bottom">
-    <footer class="sticky-footer bg-white">
-        <div class="container my-auto">
-            <div class="copyright text-center my-auto">
-                <span>Team01 &copy; Virtual Wallet 2021</span>
-            </div>
+<footer class="sticky-footer bg-white">
+    <div class="container my-auto">
+        <div class="copyright text-center my-auto">
+            <span>Team01 © Virtual Wallet 2021</span>
         </div>
-    </footer>
-</div>
+    </div>
+</footer>
 <!-- End of Footer -->
 
 
@@ -93,7 +78,7 @@
             <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="#" th:href="@{/auth/login}">Logout</a>
+                <a class="btn btn-primary" href="#" th:href="@{/auth/logout}">Logout</a>
             </div>
         </div>
     </div>

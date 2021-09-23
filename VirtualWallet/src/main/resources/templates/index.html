@@ -91,7 +91,7 @@
 
                             <div th:unless="${transactions.isEmpty()}" class="card-body"
                                  th:each="transaction : ${transactions}">
-                                <div th:if="${transaction.senderId} == ${currentWalletId}">
+                                <div th:if="${transaction.sender} == ${session.currentUser}">
                                     <div class="row">
                                         <div class="col-5" style="color: red" th:text="${transaction.amount}">Transfer
                                             1
@@ -101,7 +101,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div th:unless="${transaction.senderId} == ${currentWalletId}">
+                                <div th:unless="${transaction.sender} == ${session.currentUser}">
                                     <div class="row">
                                         <div class="col-5" style="color: green" th:text="${transaction.amount}">Transfer 1</div>
                                         <div class="col-5" style="color: dodgerblue; font-size: 12px" th:text="${transaction.timestamp}">Timestamp 1</div>
@@ -150,17 +150,14 @@
 
 </div>
 <!-- Footer -->
-<div class="navbar fixed-bottom">
-    <footer class="sticky-footer bg-white">
-        <div class="container my-auto">
-            <div class="copyright text-center my-auto">
-                <span>Team01 &copy; Virtual Wallet 2021</span>
-            </div>
+<footer class="sticky-footer bg-white">
+    <div class="container my-auto">
+        <div class="copyright text-center my-auto">
+            <span>Team01 © Virtual Wallet 2021</span>
         </div>
-    </footer>
-</div>
+    </div>
+</footer>
 <!-- End of Footer -->
-
 
 <!-- Logout Modal-->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"

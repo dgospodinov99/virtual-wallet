@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 public class TransactionDto {
 
     @Positive(message = "Sender ID is invalid!")
-    private int senderId;
+    private String sender;
 
     @Positive(message = "Receiver ID is invalid!")
-    private int receiverId;
+    private String receiver;
 
     @Positive(message = "Transaction amount must be positive!")
     private Double amount;
@@ -20,20 +20,20 @@ public class TransactionDto {
     public TransactionDto() {
     }
 
-    public int getSenderId() {
-        return senderId;
+    public String getSender() {
+        return sender;
     }
 
-    public void setSenderId(int senderId) {
-        this.senderId = senderId;
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
-    public int getReceiverId() {
-        return receiverId;
+    public String getReceiver() {
+        return receiver;
     }
 
-    public void setReceiverId(int receiverId) {
-        this.receiverId = receiverId;
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
     }
 
     public Double getAmount() {
