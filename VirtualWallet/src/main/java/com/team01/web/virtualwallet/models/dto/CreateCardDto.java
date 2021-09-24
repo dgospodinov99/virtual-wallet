@@ -9,7 +9,7 @@ import java.time.LocalDate;
 public class CreateCardDto {
 
     @NotBlank(message = "Card Number can't be blank!")
-    @Size(min = 16, max = 16, message = "Card number be 16 digits")
+    @Size(min = 16, max = 16, message = "Card number must be 16 digits")
     private String cardNumber;
 
     @NotBlank(message = "Card Holder can't be blank!")
