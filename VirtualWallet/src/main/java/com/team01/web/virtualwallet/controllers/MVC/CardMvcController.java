@@ -70,6 +70,53 @@ public class CardMvcController {
         }
     }
 
+    @GetMapping("/new")
+    public String showNewCardPage(Model model, HttpSession session) {
+        try {
+            authenticationHelper.tryGetUser(session);
+        } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
+            return "redirect:/unauthorized";
+        }
+        model.addAttribute("card", new CreateCardDto());
+        return "card-new";
+    }
+
+    @PostMapping("/new")
+    public String createCard(
+            @Valid @ModelAttribute("card") CreateCardDto dto,
+            BindingResult errors,
+            Model model,
+            HttpSession session) {
+        User user;
+        try {
+            user = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/unauthorized";
+        }
+
+        if (errors.hasErrors()) {
+            return "card-new";
+        }
+
+        try {
+            Card card = modelMapper.fromCreateDto(dto, user);
+            cardService.create(card);
+
+            Set<Card> newCardSet = user.getCards();
+            newCardSet.add(card);
+            user.setCards(newCardSet);
+            userService.update(user);
+
+            return "redirect:/myaccount/cards";
+        } catch (DuplicateEntityException e) {
+            errors.rejectValue("cardNumber", "duplicate_card", e.getMessage());
+            return "card-new";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("error", e.getMessage());
+            return "404";
+        }
+    }
+
     @GetMapping("/{id}/update")
     public String showEditCardPage(@PathVariable int id, Model model, HttpSession session) {
         try {
@@ -92,10 +139,10 @@ public class CardMvcController {
 
     @PostMapping("/{id}/update")
     public String updateCard(@PathVariable int id,
-                                  @Valid @ModelAttribute("card") CreateCardDto dto,
-                                  BindingResult errors,
-                                  Model model,
-                                  HttpSession session) {
+                             @Valid @ModelAttribute("card") CreateCardDto dto,
+                             BindingResult errors,
+                             Model model,
+                             HttpSession session) {
 
         User user;
         try {
@@ -114,15 +161,15 @@ public class CardMvcController {
 
             return "redirect:/myaccount/cards";
         } catch (DateTimeParseException e) {
-            errors.rejectValue("expirationDate","invalid", "Invalid Date!");
+            errors.rejectValue("expirationDate", "invalid", "Invalid Date!");
             return "card-update";
-        }  catch (UnauthorizedOperationException e) {
+        } catch (UnauthorizedOperationException e) {
             return "redirect:/unauthorized";
         } catch (DuplicateEntityException e) {
-            errors.rejectValue("cardNumber","duplicate",e.getMessage());
+            errors.rejectValue("cardNumber", "duplicate", e.getMessage());
             return "card-update";
         } catch (InvalidCardInformation e) {
-            errors.rejectValue("cardNumber","invalid",e.getMessage());
+            errors.rejectValue("cardNumber", "invalid", e.getMessage());
             return "card-update";
         }
     }
@@ -137,7 +184,7 @@ public class CardMvcController {
                 return "redirect:/unauthorized";
             }
 
-            cardService.delete(id,user);
+            cardService.delete(id, user);
 
             return "redirect:/myaccount/cards";
         } catch (EntityNotFoundException e) {

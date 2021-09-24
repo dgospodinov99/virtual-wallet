@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -91,7 +92,9 @@ public class CardRestController {
             Card card = modelMapper.fromCreateDto(dto, user);
             cardService.create(card);
 
-            user.getCards().add(card);
+            Set<Card> newCardSet =  user.getCards();
+            newCardSet.add(card);
+            user.setCards(newCardSet);
             userService.update(user);
 
             return modelMapper.toDto(card);
