@@ -4,6 +4,7 @@ import com.team01.web.virtualwallet.models.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 
 public class Helpers {
 
@@ -15,7 +16,7 @@ public class Helpers {
         card.setHolder("Mock User");
         card.setCheckNumber("123");
         card.setExpirationDate(LocalDate.now().plusYears(2));
-        card.setUser(createMockUser());
+        card.setUser(new User());
 
         return card;
     }
@@ -30,10 +31,10 @@ public class Helpers {
         user.setPhoneNumber("0123456789");
         user.setPhotoURL(user.getUsername() + ".jpg");
         user.setBlocked(false);
-        var cardList = user.getCards();
+        var cardList = new HashSet<Card>();
         cardList.add(createMockCard());
         user.setCards(cardList);
-        var roleList = user.getRoles();
+        var roleList = new HashSet<Role>();
         roleList.add(createMockRole());
         user.setRoles(roleList);
 
@@ -80,4 +81,15 @@ public class Helpers {
 
         return transfer;
     }
+
+    public static User createMockAdmin() {
+        var user = createMockUser();
+        var role = createMockRole();
+        role.setName("Administrator");
+        var roleList = new HashSet<Role>();
+        roleList.add(role);
+        user.setRoles(roleList);
+        return user;
+    }
+
 }
