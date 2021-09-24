@@ -37,6 +37,12 @@ public class CardServiceTests {
     }
 
     @Test
+    public void getAll_Should_Throw_If_User_Not_Admin() {
+        Assertions.assertThrows(UnauthorizedOperationException.class,
+                () -> mockService.getAll(createMockUser()));
+    }
+
+    @Test
     public void getById_Should_Return_Card_When_Match_Exists() {
         //Arrange
         Mockito.when(mockRepository.getById(1))
