@@ -9,6 +9,7 @@ import com.team01.web.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
@@ -42,8 +43,20 @@ public class CardModelMapper {
         dto.setCardNumber(card.getCardNumber());
         dto.setCheckNumber(card.getCheckNumber());
         dto.setHolder(card.getHolder());
-        dto.setExpirationDate(card.getExpirationDate());
+        dto.setExpirationDate(localDateToString(card.getExpirationDate()));
         dto.setUserId(card.getUser().getId());
+        dto.setCardId(card.getId());
+        return dto;
+    }
+
+    public CreateCardDto toCreateDto(Card card) {
+        CreateCardDto dto = new CreateCardDto();
+        dto.setCardNumber(card.getCardNumber());
+        dto.setCheckNumber(card.getCheckNumber());
+        dto.setHolder(card.getHolder());
+
+        dto.setExpirationDate(localDateToString(card.getExpirationDate()));
+
         return dto;
     }
 
@@ -58,5 +71,9 @@ public class CardModelMapper {
         card.setExpirationDate(date.atEndOfMonth());
     }
 
+    private String localDateToString(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
+        return date.format(formatter);
+    }
 
 }

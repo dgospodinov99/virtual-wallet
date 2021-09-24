@@ -1,14 +1,14 @@
 package com.team01.web.virtualwallet.models.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.stereotype.Repository;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
-import java.time.LocalDate;
 
 public class CardDto {
+
+    private int cardId;
 
     @NotBlank(message = "Card Number can't be blank!")
     @Size(min = 16, max = 16, message = "Card number be 16 digits")
@@ -25,19 +25,18 @@ public class CardDto {
     @Positive(message = "User ID must be positive!")
     private int userId;
 
-    @JsonFormat(pattern="MM/yyyy")
-    private LocalDate expirationDate;
+    @JsonFormat(pattern = "MM/yyyy")
+    private String expirationDate;
 
     public CardDto() {
     }
 
-    public LocalDate getExpirationDate() {
+    public String getExpirationDate() {
         return expirationDate;
     }
 
-    public CardDto setExpirationDate(LocalDate expirationDate) {
+    public void setExpirationDate(String expirationDate) {
         this.expirationDate = expirationDate;
-        return this;
     }
 
     public String getCardNumber() {
@@ -70,5 +69,14 @@ public class CardDto {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public int getCardId() {
+        return cardId;
+    }
+
+    public CardDto setCardId(int cardId) {
+        this.cardId = cardId;
+        return this;
     }
 }

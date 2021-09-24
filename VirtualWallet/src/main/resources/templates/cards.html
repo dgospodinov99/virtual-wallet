@@ -43,7 +43,34 @@
                                 <h4 th:text="${card.checkNumber}"></h4>
                                 <h4 th:text="${card.holder}"></h4>
                                 <h4 th:text="${card.expirationDate}"></h4>
+                                <a href="#" th:href="@{/myaccount/cards/{id}/update(id=${card.cardId})}"
+                                   class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                        class="fas fa-user-edit fa-sm text-white-10"></i>Edit</a>
+                                <a href="#" th:href="@{/myaccount/cards/{id}/delete(id=${card.cardId})}" data-toggle="modal" data-target="#deleteModal"
+                                   class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
+                                        class="fas fa-archive fa-sm text-white-10"></i>Delete</a>
                             </div>
+
+                            <!-- Delete Modal-->
+                            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Do you want to delete the card</h5>
+                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">Select "Yes" below if you are sure.</div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                            <a class="btn btn-primary" href="#" th:href="@{/myaccount/cards/{id}/delete(id=${card.cardId})}">Yes</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -66,25 +93,7 @@
 </footer>
 <!-- End of Footer -->
 
-<!-- Logout Modal-->
-<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="#" th:href="@{/auth/logout}">Logout</a>
-            </div>
-        </div>
-    </div>
-</div>
+
 <!-- Bootstrap core JavaScript-->
 <script th:src="@{/vendor/jquery/jquery.min.js}"></script>
 <script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>

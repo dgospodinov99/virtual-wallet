@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Column;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -119,7 +120,14 @@ public class User {
     }
 
     public Set<Card> getCards() {
-        return cards;
+        Set<Card> activeCards = new HashSet<>();
+        for (Card card: cards) {
+            if(card.isActive()){
+                activeCards.add(card);
+            }
+        }
+
+        return activeCards;
     }
 
     public void setCards(Set<Card> cards) {

@@ -19,6 +19,7 @@ public class CardServiceImpl implements CardService {
     private static final String ONLY_DIGITS = "[0-9]+";
     private static final String INVALID_CARD_OWNER = "Invalid card owner!";
     private static final String NOT_ADMIN_MESSAGE = "Only administrators can do this operation";
+    private static final String CARD_ONLY_DIGITS_MESSAGE = "Card number can be only digits";
 
     private final CardRepository cardRepository;
 
@@ -64,6 +65,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public void update(Card card, User executor) {
         validateUser(executor, card);
+        validateCardNumber(card.getCardNumber());
         cardRepository.update(card);
     }
 
@@ -90,7 +92,7 @@ public class CardServiceImpl implements CardService {
 
     private void validateCardNumber(String cardNumber) {
         if (!cardNumber.matches(ONLY_DIGITS) || cardNumber.length() != 16) { //validates card number is only digits
-            throw new InvalidCardInformation("Card", "number", cardNumber);
+            throw new InvalidCardInformation(CARD_ONLY_DIGITS_MESSAGE);
         }
     }
 }

@@ -61,15 +61,6 @@ public class UserProfileMvcController {
         return userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
     }
 
-    @ModelAttribute("cards")
-    public Set<Card> populateUserCards(HttpSession session) {
-        try {
-            return populateUser(session).getCards();
-        } catch (EntityNotFoundException e) {
-            return null;
-        }
-    }
-
     @ModelAttribute("filterDto")
     public FilterTransactionDto populateFilterDto() {
         return new FilterTransactionDto();
@@ -81,43 +72,7 @@ public class UserProfileMvcController {
         return "profile-user";
     }
 
-    @GetMapping("/cards")
-    public String showCards(HttpSession session) {
-        try {
-            if (session.getAttribute("currentUser") == null) {
-                return "redirect:/auth/login";
-            }
-            return "cards";
-        } catch (EntityNotFoundException e) {
-            return "redirect:/auth/login";
-        }
 
-    }
-
-    @GetMapping("/deposit")
-    public String showDeposit(Model model) {
-        model.addAttribute("deposit", new DepositDto());
-        return "deposit";
-    }
-
-    @PostMapping("/deposit")
-    public String handleDeposit(@Valid @ModelAttribute("deposit") DepositDto dto,
-                                BindingResult bindingResult,
-                                HttpSession session) {
-        if (bindingResult.hasErrors()) {
-            return "deposit";
-        }
-
-        try {
-            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
-            Transfer transfer = transferModelMapper.fromDto(dto, user.getWallet());
-            transferService.create(transfer);
-            return "redirect:/";
-        } catch (BadLuckException | IOException e) {
-            bindingResult.rejectValue("amount", "auth_error", e.getMessage());
-            return "deposit";
-        }
-    }
 
     @GetMapping("/transactions")
     public String showActivity(HttpSession session, Model model) {
