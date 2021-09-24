@@ -39,32 +39,7 @@
                 <div class="row">
                     <!-- Border Left Utilities -->
                     <div th:align="center" class="col-lg-6">
-                        <form action="#" th:action="@{__${#httpServletRequest.requestURI}__}" th:object="${card}" method="post"
-                              class="user">
-                            <div class="form-group col-5">
-                                <label>Card Number</label><br/>
-                                <input type="text" class="form-control" placeholder="Enter card number" th:field="*{cardNumber}"/>
-                                <label class="text-danger" th:errors="*{cardNumber}">Card number error placeholder</label>
-
-                                <label>Card Holder</label><br/>
-                                <input type="text" class="form-control" placeholder="First and last name" th:field="*{holder}"/>
-                                <label class="text-danger" th:errors="*{holder}">Holder error placeholder</label>
-
-                                <label>Check Number</label><br/>
-                                <input type="text" class="form-control" placeholder="Security code" th:field="*{checkNumber}" />
-                                <label class="text-danger" th:errors="*{checkNumber}">Check Number error placeholder</label>
-
-                                <label>Expiration Date</label><br/>
-                                <input type="text" class="form-control" placeholder="mm/yyyy" th:field="*{expirationDate}"/>
-                                <label class="text-danger" th:errors="*{expirationDate}">Check Number error placeholder</label>
-
-                            </div>
-                            <hr>
-                            <input class="btn btn-primary btn-user btn-block col-5" th:type="submit" th:value="Submit">
-
-                        </form>
-
-
+                        <div th:replace="/fragments/card-form.html :: card-form"/>
                     </div>
                 </div>
                 <!-- End of Content Wrapper -->
