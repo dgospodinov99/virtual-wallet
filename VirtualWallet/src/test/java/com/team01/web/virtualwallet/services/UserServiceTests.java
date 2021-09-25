@@ -1,10 +1,10 @@
 package com.team01.web.virtualwallet.services;
 
+import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
+import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
 import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
-import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
-import com.team01.web.virtualwallet.repositories.contracts.TransactionRepository;
 import com.team01.web.virtualwallet.repositories.contracts.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,9 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.team01.web.virtualwallet.Helpers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +21,12 @@ public class UserServiceTests {
 
     @Mock
     private UserRepository mockRepository;
+
+    @Mock
+    private WalletServiceImpl mockWalletService;
+
+    @Mock
+    private CardServiceImpl mockCardService;
 
     @InjectMocks
     private UserServiceImpl mockService;
@@ -240,4 +243,177 @@ public class UserServiceTests {
                 .filterUsers(params);
     }
 
+    @Test
+    public void create_Should_Call_Repository_When_Valid_Parameters() {
+        //Arrange
+        var user = createMockUser();
+        Mockito.when(mockRepository.getByEmail(user.getEmail()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByUsername(user.getUsername()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByPhoneNumber(user.getPhoneNumber()))
+                .thenThrow(EntityNotFoundException.class);
+        //Act
+        mockService.create(user);
+        //Assert
+        Mockito.verify(mockRepository, Mockito.times(1))
+                .create(user);
+    }
+
+    @Test
+    public void create_Should_Throw_When_Username_Not_Unique() {
+        //Arrange
+        var user = createMockUser();
+        Mockito.when(mockRepository.getByEmail(user.getEmail()))
+                .thenThrow(EntityNotFoundException.class);
+        //Act, Assert
+        Assertions.assertThrows(DuplicateEntityException.class,
+                () -> mockService.create(user));
+    }
+
+    @Test
+    public void create_Should_Throw_When_Email_Not_Unique() {
+        //Arrange, Act, Assert
+        Assertions.assertThrows(DuplicateEntityException.class,
+                () -> mockService.create(createMockUser()));
+    }
+
+    @Test
+    public void create_Should_Throw_When_PhoneNumber_Not_Unique() {
+        //Arrange
+        var user = createMockUser();
+        Mockito.when(mockRepository.getByEmail(user.getEmail()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByUsername(user.getUsername()))
+                .thenThrow(EntityNotFoundException.class);
+        //Act, Assert
+        Assertions.assertThrows(DuplicateEntityException.class,
+                () -> mockService.create(user));
+    }
+
+    @Test
+    public void create_Should_Throw_When_Password_Too_Short() {
+        //Arrange
+        var user = createMockUser();
+        Mockito.when(mockRepository.getByEmail(user.getEmail()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByUsername(user.getUsername()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByPhoneNumber(user.getPhoneNumber()))
+                .thenThrow(EntityNotFoundException.class);
+        //Act
+        user.setPassword("Aa1@");
+        Assertions.assertThrows(InvalidPasswordException.class,
+                () -> mockService.create(user));
+    }
+
+    @Test
+    public void create_Should_Throw_When_Password_Doesnt_Contain_Special_Symbol() {
+        //Arrange
+        var user = createMockUser();
+        Mockito.when(mockRepository.getByEmail(user.getEmail()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByUsername(user.getUsername()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByPhoneNumber(user.getPhoneNumber()))
+                .thenThrow(EntityNotFoundException.class);
+        //Act
+        user.setPassword("Aaaaaaaaa12");
+        //Assert
+        Assertions.assertThrows(InvalidPasswordException.class,
+                () -> mockService.create(user));
+    }
+
+    @Test
+    public void create_Should_Throw_When_Password_Doesnt_Contain_Capital_Letter() {
+        //Arrange
+        var user = createMockUser();
+        Mockito.when(mockRepository.getByEmail(user.getEmail()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByUsername(user.getUsername()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByPhoneNumber(user.getPhoneNumber()))
+                .thenThrow(EntityNotFoundException.class);
+        //Act
+        user.setPassword("aaaaaaaaa12#");
+        //Assert
+        Assertions.assertThrows(InvalidPasswordException.class,
+                () -> mockService.create(user));
+    }
+
+    @Test
+    public void create_Should_Throw_When_Password_Doesnt_Contain_Lowercase_Letter() {
+        //Arrange
+        var user = createMockUser();
+        Mockito.when(mockRepository.getByEmail(user.getEmail()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByUsername(user.getUsername()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByPhoneNumber(user.getPhoneNumber()))
+                .thenThrow(EntityNotFoundException.class);
+        //Act
+        user.setPassword("AAAAAAAAA12#");
+        //Assert
+        Assertions.assertThrows(InvalidPasswordException.class,
+                () -> mockService.create(user));
+    }
+
+    @Test
+    public void create_Should_Throw_When_Password_Doesnt_Contain_Digit() {
+        //Arrange
+        var user = createMockUser();
+        Mockito.when(mockRepository.getByEmail(user.getEmail()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByUsername(user.getUsername()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByPhoneNumber(user.getPhoneNumber()))
+                .thenThrow(EntityNotFoundException.class);
+        //Act
+        user.setPassword("AAAAAAAAAaa#");
+        //Assert
+        Assertions.assertThrows(InvalidPasswordException.class,
+                () -> mockService.create(user));
+    }
+
+    @Test
+    public void create_Should_Create_When_Password_Is_Valid() {
+        //Arrange
+        var user = createMockUser();
+        Mockito.when(mockRepository.getByEmail(user.getEmail()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByUsername(user.getUsername()))
+                .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByPhoneNumber(user.getPhoneNumber()))
+                .thenThrow(EntityNotFoundException.class);
+        //Act
+        user.setPassword("AAAAAAAAAaa12#");
+        mockService.create(user);
+        //Assert
+        Mockito.verify(mockRepository, Mockito.times(1))
+                .create(user);
+    }
+
+    @Test
+    public void delete_Should_Call_Repository() {
+        //Arrange
+        var user = createMockUser();
+        Mockito.when(mockRepository.getById(user.getId()))
+                .thenReturn(user);
+        //Act
+        mockService.delete(user.getId());
+        //Assert
+        Mockito.verify(mockRepository, Mockito.times(1))
+                .update(user);
+        Assertions.assertFalse(user.getActive());
+    }
+
+    @Test
+    public void delete_Should_Throw_When_No_Match_Found() {
+        //Arrange
+        Mockito.when(mockRepository.getById(Mockito.anyInt()))
+                .thenThrow(EntityNotFoundException.class);
+        //Act, Assert
+        Assertions.assertThrows(EntityNotFoundException.class,
+                () -> mockService.delete(Mockito.anyInt()));
+    }
 }
