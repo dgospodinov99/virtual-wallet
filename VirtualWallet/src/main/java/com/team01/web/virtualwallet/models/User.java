@@ -126,7 +126,6 @@ public class User {
                 activeCards.add(card);
             }
         }
-
         return activeCards;
     }
 
