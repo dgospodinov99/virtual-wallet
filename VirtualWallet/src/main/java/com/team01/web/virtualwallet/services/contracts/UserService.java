@@ -36,5 +36,5 @@ public interface UserService {
 
     void delete(int id);
 
-    void updatePassword(User user, ChangePasswordDto dto);
+    void updatePassword(User user, String newPassword);
 }

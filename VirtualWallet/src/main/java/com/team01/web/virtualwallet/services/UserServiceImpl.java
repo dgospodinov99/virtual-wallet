@@ -143,9 +143,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(User user, ChangePasswordDto dto) {
-        isPasswordValid(dto.getNewPassword());
-        user.setPassword(dto.getNewPassword());
+    public void updatePassword(User user, String newPassword) {
+        isPasswordValid(newPassword);
+        user.setPassword(newPassword);
 
         userRepository.update(user);
     }

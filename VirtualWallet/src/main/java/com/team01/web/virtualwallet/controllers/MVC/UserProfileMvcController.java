@@ -139,7 +139,7 @@ public class UserProfileMvcController {
         try {
             authenticationHelper.verifyAuthentication(executor.getUsername(),dto.getOldPassword());
 
-            userService.updatePassword(executor, dto);
+            userService.updatePassword(executor, dto.getNewPassword());
 
             return "redirect:/myaccount";
         } catch (AuthenticationFailureException e){
