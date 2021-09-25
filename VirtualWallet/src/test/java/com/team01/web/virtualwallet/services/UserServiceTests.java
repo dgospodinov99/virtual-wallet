@@ -430,4 +430,75 @@ public class UserServiceTests {
         Assertions.assertThrows(EntityNotFoundException.class,
                 () -> mockService.delete(Mockito.anyInt()));
     }
+
+
+    @Test
+    public void updatePassword_Should_Throw_When_Password_Too_Short() {
+        //Arrange
+        var user = createMockUser();
+        String invalidPassword = "Aa1@";
+
+        //Act, Assert
+        Assertions.assertThrows(InvalidPasswordException.class,
+                () -> mockService.updatePassword(user, invalidPassword));
+    }
+
+    @Test
+    public void updatePassword_Should_Throw_When_Password_Doesnt_Contain_Special_Symbol() {
+        //Arrange
+        var user = createMockUser();
+        String invalidPassword = "Aaaaaaaaa12";
+
+        //Act , Assert
+        Assertions.assertThrows(InvalidPasswordException.class,
+                () -> mockService.updatePassword(user, invalidPassword));
+    }
+
+    @Test
+    public void updatePassword_Should_Throw_When_Password_Doesnt_Contain_Capital_Letter() {
+        //Arrange
+        var user = createMockUser();
+        String invalidPassword = "aaaaaaaaa12#";
+
+        //Act ,Assert
+        Assertions.assertThrows(InvalidPasswordException.class,
+                () -> mockService.updatePassword(user,invalidPassword));
+    }
+
+    @Test
+    public void updatePassword_Should_Throw_When_Password_Doesnt_Contain_Lowercase_Letter() {
+        //Arrange
+        var user = createMockUser();
+
+        String invalidPassword = "AAAAAAAAA12#";
+        //Act, Assert
+        Assertions.assertThrows(InvalidPasswordException.class,
+                () -> mockService.updatePassword(user, invalidPassword));
+    }
+
+    @Test
+    public void updatePassword_Should_Throw_When_Password_Doesnt_Contain_Digit() {
+        //Arrange
+        var user = createMockUser();
+        String invalidPassword = "AAAAAAAAAaa#";
+
+        //Act, Assert
+        Assertions.assertThrows(InvalidPasswordException.class,
+                () -> mockService.updatePassword(user, invalidPassword));
+    }
+
+    @Test
+    public void updatePassword_Should_Update_When_Password_Is_Valid() {
+        //Arrange
+        var user = createMockUser();
+        String validPassword = "AAAAAAAAAaa12#";
+
+        //Act
+        mockService.updatePassword(user, validPassword);
+
+        //Assert
+        Mockito.verify(mockRepository, Mockito.times(1))
+                .update(user);
+    }
+
 }
