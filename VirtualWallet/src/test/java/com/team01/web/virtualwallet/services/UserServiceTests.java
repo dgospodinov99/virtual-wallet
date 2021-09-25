@@ -264,8 +264,12 @@ public class UserServiceTests {
     public void create_Should_Throw_When_Username_Not_Unique() {
         //Arrange
         var user = createMockUser();
+        var user2 = createMockUser();
+        user2.setId(2);
         Mockito.when(mockRepository.getByEmail(user.getEmail()))
                 .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByUsername(user.getUsername()))
+                .thenReturn(user2);
         //Act, Assert
         Assertions.assertThrows(DuplicateEntityException.class,
                 () -> mockService.create(user));
@@ -273,19 +277,29 @@ public class UserServiceTests {
 
     @Test
     public void create_Should_Throw_When_Email_Not_Unique() {
-        //Arrange, Act, Assert
+        //Arrange
+        var user = createMockUser();
+        var user2 = createMockUser();
+        user2.setId(2);
+        Mockito.when(mockRepository.getByEmail(user.getEmail()))
+                .thenReturn(user2);
+        //Act, Assert
         Assertions.assertThrows(DuplicateEntityException.class,
-                () -> mockService.create(createMockUser()));
+                () -> mockService.create(user));
     }
 
     @Test
     public void create_Should_Throw_When_PhoneNumber_Not_Unique() {
         //Arrange
         var user = createMockUser();
+        var user2 = createMockUser();
+        user2.setId(2);
         Mockito.when(mockRepository.getByEmail(user.getEmail()))
                 .thenThrow(EntityNotFoundException.class);
         Mockito.when(mockRepository.getByUsername(user.getUsername()))
                 .thenThrow(EntityNotFoundException.class);
+        Mockito.when(mockRepository.getByPhoneNumber(user.getPhoneNumber()))
+                .thenReturn(user2);
         //Act, Assert
         Assertions.assertThrows(DuplicateEntityException.class,
                 () -> mockService.create(user));

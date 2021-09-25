@@ -110,9 +110,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void create(User user) {
-        verifyUniqueEmail(user.getEmail());
-        verifyUniqueUsername(user.getUsername());
-        verifyUniquePhoneNumber(user.getPhoneNumber());
+        verifyUniqueEmail(user.getEmail(),user);
+        verifyUniqueUsername(user.getUsername(),user);
+        verifyUniquePhoneNumber(user.getPhoneNumber(), user);
         isPasswordValid(user.getPassword());
         Wallet wallet = walletService.create(new Wallet());
         user.setWallet(wallet);
@@ -121,32 +121,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(User user) {
-        boolean duplicateEmailExists = true;
-        boolean duplicatePNExists = true;
-        try {
-            User existingUser = userRepository.getByEmail(user.getEmail());
-            if (existingUser.getId() == user.getId()) {
-                duplicateEmailExists = false;
-            }
-        } catch (EntityNotFoundException e) {
-            duplicateEmailExists = false;
-        }
+        verifyUniqueEmail(user.getEmail(),user);
+        verifyUniquePhoneNumber(user.getPhoneNumber(), user);
 
-        try {
-            User existingUser = userRepository.getByPhoneNumber(user.getPhoneNumber());
-            if(existingUser.getId() == user.getId()){
-                duplicatePNExists = false;
-            }
-        }catch (EntityNotFoundException e){
-            duplicatePNExists = false;
-        }
-
-        if (duplicateEmailExists) {
-            throw new DuplicateEntityException("User", "email", user.getEmail());
-        }
-        if (duplicatePNExists) {
-            throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
-        }
         isPasswordValid(user.getPassword());
         userRepository.update(user);
     }
@@ -187,10 +164,13 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void verifyUniqueEmail(String email) {
+    private void verifyUniqueEmail(String email, User user) {
         boolean duplicateExists = true;
         try {
-            userRepository.getByEmail(email);
+            User existingUser = userRepository.getByEmail(email);
+            if(existingUser.getId() == user.getId()){
+                duplicateExists = false;
+            }
         } catch (EntityNotFoundException e) {
             duplicateExists = false;
         }
@@ -199,10 +179,13 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void verifyUniqueUsername(String username) {
+    private void verifyUniqueUsername(String username, User user) {
         boolean duplicateExists = true;
         try {
-            userRepository.getByUsername(username);
+            User existingUser = userRepository.getByUsername(username);
+            if(existingUser.getId() == user.getId()){
+                duplicateExists = false;
+            }
         } catch (EntityNotFoundException e) {
             duplicateExists = false;
         }
@@ -211,10 +194,13 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void verifyUniquePhoneNumber(String phoneNumber) {
+    private void verifyUniquePhoneNumber(String phoneNumber, User user) {
         boolean duplicateExists = true;
         try {
-            userRepository.getByPhoneNumber(phoneNumber);
+            User existingUser = userRepository.getByPhoneNumber(phoneNumber);
+            if(existingUser.getId() == user.getId()){
+                duplicateExists = false;
+            }
         } catch (EntityNotFoundException e) {
             duplicateExists = false;
         }
