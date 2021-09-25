@@ -31,6 +31,7 @@ public class Helpers {
         user.setPhoneNumber("0123456789");
         user.setPhotoURL(user.getUsername() + ".jpg");
         user.setBlocked(false);
+        user.setActive(true);
         var cardList = new HashSet<Card>();
         cardList.add(createMockCard());
         user.setCards(cardList);
