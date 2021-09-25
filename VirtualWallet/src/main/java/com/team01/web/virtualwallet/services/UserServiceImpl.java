@@ -5,6 +5,7 @@ import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
+import com.team01.web.virtualwallet.models.dto.ChangePasswordDto;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.UserRepository;
 import com.team01.web.virtualwallet.services.contracts.CardService;
@@ -138,6 +139,14 @@ public class UserServiceImpl implements UserService {
 
         walletService.delete(user.getWallet());
         user.setActive(false);
+        userRepository.update(user);
+    }
+
+    @Override
+    public void updatePassword(User user, ChangePasswordDto dto) {
+        isPasswordValid(dto.getNewPassword());
+        user.setPassword(dto.getNewPassword());
+
         userRepository.update(user);
     }
 

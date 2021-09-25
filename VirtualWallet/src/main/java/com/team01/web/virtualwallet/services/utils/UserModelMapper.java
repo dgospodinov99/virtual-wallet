@@ -3,10 +3,7 @@ package com.team01.web.virtualwallet.services.utils;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.Role;
 import com.team01.web.virtualwallet.models.User;
-import com.team01.web.virtualwallet.models.dto.CreateUserDto;
-import com.team01.web.virtualwallet.models.dto.RegisterDto;
-import com.team01.web.virtualwallet.models.dto.UpdateUserDto;
-import com.team01.web.virtualwallet.models.dto.UserDto;
+import com.team01.web.virtualwallet.models.dto.*;
 import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.RoleService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
@@ -81,7 +78,6 @@ public class UserModelMapper {
         user.setPhoneNumber(dto.getPhoneNumber());
         return user;
     }
-
 
     public UpdateUserDto toUpdateDto(User user) {
         UpdateUserDto dto = new UpdateUserDto();

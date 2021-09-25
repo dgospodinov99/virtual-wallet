@@ -4,6 +4,7 @@ import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.User;
+import com.team01.web.virtualwallet.models.dto.ChangePasswordDto;
 import com.team01.web.virtualwallet.models.dto.CreateCardDto;
 import com.team01.web.virtualwallet.models.dto.UpdateUserDto;
 import com.team01.web.virtualwallet.services.contracts.UserService;
@@ -22,6 +23,8 @@ import java.time.format.DateTimeParseException;
 @RequestMapping("/myaccount")
 public class UserProfileMvcController {
 
+    private static final String INVALID_OLD_PASSWORD = "Invalid old Password!";
+    private static final String PASSWORDS_DO_NOT_MATCH = "Passwords do not match!";
     private final UserService userService;
     private final AuthenticationHelper authenticationHelper;
     private final UserModelMapper modelMapper;
@@ -92,6 +95,61 @@ public class UserProfileMvcController {
         } catch (DuplicateEntityException e) {
             errors.rejectValue("email", "duplicate", e.getMessage());
             return "profile-user-update";
+        }
+    }
+
+    @GetMapping("/update/password")
+    public String showEditPasswordPage(Model model, HttpSession session) {
+        try {
+            authenticationHelper.tryGetUser(session);
+        } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
+            return "redirect:/unauthorized";
+        }
+
+        try {
+            User user = populateUser(session);
+            model.addAttribute("dto", new ChangePasswordDto());
+            return "profile-user-password-update";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errors", e.getMessage());
+            return "404";
+        }
+    }
+
+    @PostMapping("/update/password")
+    public String updateUser(@Valid @ModelAttribute("dto") ChangePasswordDto dto,
+                             BindingResult errors,
+                             Model model,
+                             HttpSession session) {
+        User executor;
+        try {
+            executor = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/unauthorized";
+        }
+        if (errors.hasErrors()) {
+            return "profile-user-password-update";
+        }
+
+        if (!dto.getNewPassword().equals(dto.getNewPasswordConfirm())) {
+            errors.rejectValue("newPasswordConfirm", "password_error", PASSWORDS_DO_NOT_MATCH);
+            return "profile-user-password-update";
+        }
+
+        try {
+            authenticationHelper.verifyAuthentication(executor.getUsername(),dto.getOldPassword());
+
+            userService.updatePassword(executor, dto);
+
+            return "redirect:/myaccount";
+        } catch (AuthenticationFailureException e){
+            errors.rejectValue("oldPassword", "invalid", INVALID_OLD_PASSWORD);
+            return "profile-user-password-update";
+        } catch (InvalidPasswordException e){
+            errors.rejectValue("newPassword", "invalid", e.getMessage());
+            return "profile-user-password-update";
+        } catch (UnauthorizedOperationException e) {
+            return "redirect:/unauthorized";
         }
     }
 

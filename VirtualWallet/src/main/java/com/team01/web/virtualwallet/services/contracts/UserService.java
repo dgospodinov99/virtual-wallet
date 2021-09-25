@@ -3,6 +3,7 @@ package com.team01.web.virtualwallet.services.contracts;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
+import com.team01.web.virtualwallet.models.dto.ChangePasswordDto;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 
 import java.util.List;
@@ -34,4 +35,6 @@ public interface UserService {
     void update(User user);
 
     void delete(int id);
+
+    void updatePassword(User user, ChangePasswordDto dto);
 }

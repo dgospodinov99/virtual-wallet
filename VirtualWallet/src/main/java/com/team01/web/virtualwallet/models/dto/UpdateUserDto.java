@@ -22,17 +22,15 @@ public class UpdateUserDto {
         return email;
     }
 
-    public UpdateUserDto setEmail(String email) {
+    public void setEmail(String email) {
         this.email = email;
-        return this;
     }
 
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public UpdateUserDto setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-        return this;
     }
 }

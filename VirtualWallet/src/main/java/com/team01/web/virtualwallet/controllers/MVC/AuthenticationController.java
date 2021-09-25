@@ -27,7 +27,7 @@ import javax.validation.Valid;
 @RequestMapping("/auth")
 public class AuthenticationController {
 
-    private static final String PASSWORDS_DONT_MATCH = "Password confirmation should match password.";
+    private static final String PASSWORDS_DONT_MATCH = "Passwords do not match!.";
 
     private final AuthenticationHelper authenticationHelper;
     private final UserModelMapper modelMapper;
@@ -88,7 +88,7 @@ public class AuthenticationController {
         }
 
         if (!register.getPassword().equals(register.getConfirmPassword())) {
-            bindingResult.rejectValue("passwordConfirm", "password_error", PASSWORDS_DONT_MATCH);
+            bindingResult.rejectValue("confirmPassword", "password_error", PASSWORDS_DONT_MATCH);
             return "register";
         }
 
