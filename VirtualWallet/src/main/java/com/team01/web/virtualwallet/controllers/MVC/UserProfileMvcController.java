@@ -1,54 +1,36 @@
 package com.team01.web.virtualwallet.controllers.MVC;
 
-import com.team01.web.virtualwallet.exceptions.BadLuckException;
-import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
+import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
+import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Card;
-import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.User;
-import com.team01.web.virtualwallet.models.dto.DepositDto;
-import com.team01.web.virtualwallet.models.dto.FilterTransactionDto;
-import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
-import com.team01.web.virtualwallet.models.enums.TransactionDirection;
-import com.team01.web.virtualwallet.services.contracts.TransactionService;
-import com.team01.web.virtualwallet.services.contracts.TransferService;
+import com.team01.web.virtualwallet.models.dto.CreateCardDto;
+import com.team01.web.virtualwallet.models.dto.UpdateUserDto;
 import com.team01.web.virtualwallet.services.contracts.UserService;
-import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
-import com.team01.web.virtualwallet.services.utils.TransferModelMapper;
+import com.team01.web.virtualwallet.services.utils.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.time.format.DateTimeParseException;
 
 @Controller
 @RequestMapping("/myaccount")
 public class UserProfileMvcController {
 
     private final UserService userService;
-    private final TransferService transferService;
-    private final TransferModelMapper transferModelMapper;
-    private final TransactionModelMapper transactionModelMapper;
-    private final TransactionService transactionService;
+    private final AuthenticationHelper authenticationHelper;
+    private final UserModelMapper modelMapper;
 
     @Autowired
-    public UserProfileMvcController(UserService userService, TransferService transferService, TransferModelMapper transferModelMapper, TransactionModelMapper transactionModelMapper, TransactionService transactionService) {
+    public UserProfileMvcController(UserService userService, AuthenticationHelper authenticationHelper, UserModelMapper modelMapper) {
         this.userService = userService;
-        this.transferService = transferService;
-        this.transferModelMapper = transferModelMapper;
-        this.transactionModelMapper = transactionModelMapper;
-        this.transactionService = transactionService;
+        this.authenticationHelper = authenticationHelper;
+        this.modelMapper = modelMapper;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -61,58 +43,56 @@ public class UserProfileMvcController {
         return userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
     }
 
-    @ModelAttribute("filterDto")
-    public FilterTransactionDto populateFilterDto() {
-        return new FilterTransactionDto();
-    }
-
-
     @GetMapping
     public String showUserProfile() {
         return "profile-user";
     }
 
+    @GetMapping("/update")
+    public String showEditPage(Model model, HttpSession session) {
+        try {
+            authenticationHelper.tryGetUser(session);
+        } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
+            return "redirect:/unauthorized";
+        }
 
-
-    @GetMapping("/transactions")
-    public String showActivity(HttpSession session, Model model) {
-        User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
-
-        var transactions = userService.getUserTransactions(user.getId(), user)
-                .stream()
-                .map(transaction -> transactionModelMapper.toDto(transaction))
-                .collect(Collectors.toList());
-
-        model.addAttribute("transactions", transactions);
-        return "transactions";
+        try {
+            User user = populateUser(session);
+            UpdateUserDto dto = modelMapper.toUpdateDto(user);
+            model.addAttribute("dto", dto);
+            return "profile-user-update";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("errors", e.getMessage());
+            return "404";
+        }
     }
 
-    @GetMapping("/transactions/filter")
-    public String filterTransactions(@ModelAttribute FilterTransactionDto dto, HttpSession session, Model model) {
-        dto.setWalletId(populateUser(session).getWallet().getId());
-        Optional<TransactionDirection> direction = dto.getDirection() == null ? Optional.empty() : Optional.of(dto.getDirection());
-        Optional<LocalDateTime> startDate = dto.getStartDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getStartDate()));
-        Optional<LocalDateTime> endDate = dto.getEndDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getEndDate()));
+    @PostMapping("/update")
+    public String updateUser(@Valid @ModelAttribute("dto") UpdateUserDto dto,
+                             BindingResult errors,
+                             Model model,
+                             HttpSession session) {
+        User executor;
+        try {
+            executor = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/unauthorized";
+        }
+        if (errors.hasErrors()) {
+            return "profile-user-update";
+        }
 
+        try {
+            User user = modelMapper.fromDto(dto, populateUser(session).getId());
+            userService.update(user);
 
-        var params = new FilterTransactionsByUserParams()
-                .setEndDate(endDate)
-                .setStartDate(startDate)
-                .setDirection(direction)
-                .setWalletId(Optional.of(dto.getWalletId()));
-
-        var filtered = transactionService.userFilterTransactions(params)
-                .stream()
-                .map(transaction -> transactionModelMapper.toDto(transaction))
-                .collect(Collectors.toList());;
-
-        model.addAttribute("transactions",filtered);
-        return "transactions";
-    }
-
-    private LocalDateTime stringToLocalDate(String date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        return LocalDateTime.parse(date,formatter);
+            return "redirect:/myaccount";
+        } catch (UnauthorizedOperationException e) {
+            return "redirect:/unauthorized";
+        } catch (DuplicateEntityException e) {
+            errors.rejectValue("email", "duplicate", e.getMessage());
+            return "profile-user-update";
+        }
     }
 
 }

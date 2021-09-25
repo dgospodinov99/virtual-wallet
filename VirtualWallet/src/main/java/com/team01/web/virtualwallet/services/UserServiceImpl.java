@@ -122,16 +122,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public void update(User user) {
         boolean duplicateEmailExists = true;
+        boolean duplicatePNExists = true;
         try {
             User existingUser = userRepository.getByEmail(user.getEmail());
             if (existingUser.getId() == user.getId()) {
                 duplicateEmailExists = false;
+            }
+            existingUser = userRepository.getByPhoneNumber(user.getPhoneNumber());
+            if(existingUser.getId() == user.getId()){
+                duplicatePNExists = false;
             }
         } catch (EntityNotFoundException e) {
             duplicateEmailExists = false;
         }
         if (duplicateEmailExists) {
             throw new DuplicateEntityException("User", "email", user.getEmail());
+        }
+        if (duplicatePNExists) {
+            throw new DuplicateEntityException("User", "phone number", user.getEmail());
         }
         isPasswordValid(user.getPassword());
         userRepository.update(user);

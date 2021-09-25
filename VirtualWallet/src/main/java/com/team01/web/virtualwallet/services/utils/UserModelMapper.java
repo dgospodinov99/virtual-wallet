@@ -91,6 +91,16 @@ public class UserModelMapper {
         return user;
     }
 
+
+    public UpdateUserDto toUpdateDto(User user) {
+        UpdateUserDto dto = new UpdateUserDto();
+        dto.setEmail(user.getEmail());
+        dto.setPhoneNumber(user.getPhoneNumber());
+
+        return dto;
+    }
+
+
     public UserDto toDto(User user) {
         String status = "Active";
         if (user.isBlocked()) {

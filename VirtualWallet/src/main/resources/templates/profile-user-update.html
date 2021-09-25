@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Virtual Wallet - Deposit</title>
+    <title>Virtual Wallet - Edit Profile</title>
 
     <!-- Custom fonts for this template-->
     <link href="../static/vendor/fontawesome-free/css/all.min.css" th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
@@ -39,31 +39,23 @@
                 <div class="row">
                     <!-- Border Left Utilities -->
                     <div th:align="center" class="col-lg-6">
-                        <form action="#" th:action="@{/myaccount/deposit}" th:object="${deposit}" method="post"
+                        <form action="#" th:action="@{/myaccount/update}" th:object="${dto}" method="post"
                               class="user">
                             <div class="form-group col-5">
-                                <label>Select one of your cards</label>
-                                <select class="form-control" th:field="*{cardId}">
-                                    <option th:each="card : ${cards}"
-                                            th:value="${card.getId()}"
-                                            th:text="${card.getCardNumber()}">
-                                        Card
-                                    </option>
-                                </select>
+                                <label>Email</label><br/>
+                                <input type="text" class="form-control" placeholder="Email" th:field="*{email}"/>
+                                <label class="text-danger" th:errors="*{email}">Email error placeholder</label>
 
-                            </div>
-                            <div class="form-group col-5">
-                                <label>Enter amount to deposit</label>
-                                <input type="number" th:field="*{amount}" class="form-control"
-                                       id="exampleAmount" placeholder="Amount">
-                                <label class="text-danger" th:errors="*{amount}">Deposit error placeholder</label>
+                                <label>Phone Number</label><br/>
+                                <input type="text" class="form-control" placeholder="Phone Number" th:field="*{phoneNumber}"/>
+                                <label class="text-danger" th:errors="*{phoneNumber}">PhoneNumber error placeholder</label>
+
                             </div>
                             <hr>
-                            <input class="btn btn-primary btn-user btn-block col-5" th:type="submit" th:value="Deposit">
-                            <a class="btn btn-secondary btn-user btn-block col-5" th:href="@{/}">Back</a>
+                            <input class="btn btn-primary btn-user btn-block col-5" th:type="submit" th:value="Submit"/>
+                            <a class="btn btn-secondary btn-user btn-block col-5" th:href="@{/myaccount/cards}">Back</a>
+
                         </form>
-
-
                     </div>
                 </div>
                 <!-- End of Content Wrapper -->

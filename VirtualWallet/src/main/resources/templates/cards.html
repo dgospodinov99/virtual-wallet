@@ -35,7 +35,6 @@
 
             <div th:replace="/fragments/navbar.html :: navbar"/>
 
-
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-6">
@@ -56,16 +55,15 @@
                                 <a href="#" th:href="@{/myaccount/cards/{id}/update(id=${card.cardId})}"
                                    class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
                                         class="fas fa-user-edit fa-sm text-white-10"></i>  Edit</a>
-                                <a href="#" th:href="@{/myaccount/cards/{id}/delete(id=${card.cardId})}"
-                                   data-toggle="modal" data-target="#deleteModal"
+                                <a role="button"
+                                   th:attr="data-target='#deleteModal'+${card.cardId}"
+                                   data-toggle="modal"
                                    class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm"><i
                                         class="fas fa-archive fa-sm text-white-10"></i>  Delete</a>
                             </div>
 
                             <!-- Delete Modal-->
-                            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
-                                 aria-labelledby="exampleModalLabel"
-                                 aria-hidden="true">
+                            <div class="modal fade" th:id="deleteModal + ${card.cardId}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -90,7 +88,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
         </div>
         <!-- End of Content Wrapper -->

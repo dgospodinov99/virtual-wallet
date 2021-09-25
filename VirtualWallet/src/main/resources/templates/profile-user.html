@@ -12,7 +12,8 @@
     <title>Virtual Wallet - MyAccount</title>
 
     <!-- Custom fonts for this template-->
-    <link href="../static/vendor/fontawesome-free/css/all.min.css" th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <link href="../static/vendor/fontawesome-free/css/all.min.css" th:href="@{/vendor/fontawesome-free/css/all.min.css}"
+          rel="stylesheet" type="text/css">
     <link
             href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
             rel="stylesheet">
@@ -22,7 +23,11 @@
 
 
 </head>
-
+<style>
+    div.row {
+        font-size: 30px;
+    }
+</style>
 <body id="page-top">
 <!-- Page Wrapper -->
 
@@ -39,20 +44,41 @@
             <!-- Begin Page Content -->
             <div class="container-fluid">
 
-                <!-- Page Heading -->
-                <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h4 class="h4 mb-0 text-gray-800" th:text="'Hello, ' + ${session.currentUser}">Dashboard</h4>
-                </div>
-
                 <!-- Content Row -->
                 <div class="row">
+                    <div class="card-body">
+                        <label>Username:</label>
+                        <h4 class="text-xl font-weight-bold text-primary" th:text="${user.username}"></h4>
 
+                    </div>
 
                 </div>
-                <!-- /.container-fluid -->
 
-                <!-- /.container-fluid -->
+                <div class="row">
+                    <div class="card-body">
+                        <label>Email:</label>
+                        <h4 class="text-xl font-weight-bold text-primary" th:text="${user.email}"></h4>
 
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="card-body">
+                        <label>Phone Number:</label>
+                        <h4 class="text-xl font-weight-bold text-primary" th:text="${user.phoneNumber}"></h4>
+                    </div>
+                </div>
+
+                <!--                <a href="#" th:href="@{/myaccount/cards/{id}/update(id=${card.cardId})}"-->
+                <div class="row">
+                    <div class="col-2">
+                        <a class="btn btn-primary btn-user btn-block col-5" th:href="@{/myaccount/update}"> Edit</a>
+                    </div>
+                    <div class="col-2">
+                        <a class="btn btn-secondary btn-user btn-block col-5" th:href="@{/}"> Back</a>
+                    </div>
+                    <!-- /.container-fluid -->
+                </div>
             </div>
             <!-- End of Main Content -->
 
@@ -65,7 +91,7 @@
 
 </div>
 <!-- Footer -->
-<div  class="navbar fixed-bottom">
+<div class="navbar fixed-bottom">
     <footer class="sticky-footer bg-white">
         <div class="container my-auto">
             <div class="copyright text-center my-auto">
