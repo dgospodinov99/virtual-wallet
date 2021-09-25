@@ -14,13 +14,6 @@ public class UpdateUserDto {
     @Size(min = 10, max = 10, message = "Phone number must be 10 digits long!")
     private String phoneNumber;
 
-    @NotBlank(message = "Password can't be blank!")
-    @Size(min = 8, max = 100, message = "Password must be at least 8 symbols!")
-    private String password;
-
-    private String photoURL;
-
-    private List<Integer> cardsId;
 
     public UpdateUserDto() {
     }
@@ -29,39 +22,17 @@ public class UpdateUserDto {
         return email;
     }
 
-    public void setEmail(String email) {
+    public UpdateUserDto setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public UpdateUserDto setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public List<Integer> getCardsId() {
-        return cardsId;
-    }
-
-    public void setCardsId(List<Integer> cardsId) {
-        this.cardsId = cardsId;
-    }
-
-    public String getPhotoURL() {
-        return photoURL;
-    }
-
-    public void setPhotoURL(String photoURL) {
-        this.photoURL = photoURL;
+        return this;
     }
 }

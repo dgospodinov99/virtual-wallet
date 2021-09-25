@@ -128,18 +128,24 @@ public class UserServiceImpl implements UserService {
             if (existingUser.getId() == user.getId()) {
                 duplicateEmailExists = false;
             }
-            existingUser = userRepository.getByPhoneNumber(user.getPhoneNumber());
-            if(existingUser.getId() == user.getId()){
-                duplicatePNExists = false;
-            }
         } catch (EntityNotFoundException e) {
             duplicateEmailExists = false;
         }
+
+        try {
+            User existingUser = userRepository.getByPhoneNumber(user.getPhoneNumber());
+            if(existingUser.getId() == user.getId()){
+                duplicatePNExists = false;
+            }
+        }catch (EntityNotFoundException e){
+            duplicatePNExists = false;
+        }
+
         if (duplicateEmailExists) {
             throw new DuplicateEntityException("User", "email", user.getEmail());
         }
         if (duplicatePNExists) {
-            throw new DuplicateEntityException("User", "phone number", user.getEmail());
+            throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
         }
         isPasswordValid(user.getPassword());
         userRepository.update(user);

@@ -78,16 +78,7 @@ public class UserModelMapper {
     public User fromDto(UpdateUserDto dto, int id) {
         User user = userService.getById(id);
         user.setEmail(dto.getEmail());
-        user.setPhotoURL(dto.getPhotoURL());
-        user.setPassword(dto.getPassword());
         user.setPhoneNumber(dto.getPhoneNumber());
-        Set<Card> cards = new HashSet<>();
-
-        for (int cardId : dto.getCardsId()) {
-            cards.add(cardService.getById(cardId));
-        }
-        user.setCards(cards);
-
         return user;
     }
 
