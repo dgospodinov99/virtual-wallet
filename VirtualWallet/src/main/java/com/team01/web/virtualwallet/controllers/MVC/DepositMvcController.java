@@ -90,7 +90,7 @@ public class DepositMvcController {
             bindingResult.rejectValue("amount", "auth_error", e.getMessage());
             return "deposit";
         } catch (HttpClientErrorException.Unauthorized e) {
-            bindingResult.rejectValue("amount", "auth_error", "Your card is expired!");
+            bindingResult.rejectValue("cardId", "card_error", "Your card is expired!");
             return "deposit";
         } catch (HttpClientErrorException.BadRequest e) {
             bindingResult.rejectValue("amount", "auth_error", "r/therewasanattempt");
