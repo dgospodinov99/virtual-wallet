@@ -81,4 +81,13 @@ public class TransferServiceTests {
         Mockito.verify(mockRepository, Mockito.times(1))
                 .getLatestWalletTransfers(user.getWallet());
     }
+
+    @Test
+    public void create_Should_Call_Repository() {
+        var transfer = createMockTransfer();
+        mockService.create(transfer);
+
+        Mockito.verify(mockRepository, Mockito.times(1))
+                .create(transfer);
+    }
 }
