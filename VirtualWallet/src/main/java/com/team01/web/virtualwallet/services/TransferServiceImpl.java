@@ -48,40 +48,9 @@ public class TransferServiceImpl implements TransferService {
     }
 
     @Override
-    public void create(Transfer transfer) throws IOException {
-        String cardNumber = transfer.getCard().getCardNumber();
-        String cardCheck = transfer.getCard().getCheckNumber();
-        String cardExpDate = transfer.getCard().getExpirationDate().toString();
-        String amount = String.valueOf(transfer.getAmount());
-
-        URL url = new URL("http://localhost:8080/dummy");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-
-        con.setRequestProperty("Content-Type", "application/json; utf-8");
-        con.setRequestProperty("Accept", "application/json");
-        con.setDoOutput(true);
-        String jsonInputString = String.format
-                ("{\"cardNumber\": \"%s\"," +
-                " \"cardCheck\": \"%s\"," +
-                " \"expirationDate\": \"%s\"," +
-                " \"amount\": %s}",cardNumber,cardCheck,cardExpDate,amount);
-
-        try(OutputStream os = con.getOutputStream()) {
-            byte[] input = jsonInputString.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
-
-        int statusCode = con.getResponseCode();
-
-        if(statusCode == 200){
-            transferRepository.create(transfer);
-            walletService.deposit(transfer.getWallet(),transfer.getAmount());
-        } else if (statusCode == 400){
-            throw new BadLuckException("Unlucky card");
-        } else {
-            throw new BadLuckException("Expired card");
-        }
+    public void create(Transfer transfer) {
+        transferRepository.create(transfer);
+        walletService.deposit(transfer.getWallet(), transfer.getAmount());
     }
 
 }
