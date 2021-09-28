@@ -37,10 +37,10 @@ create or replace table users
 	email varchar(100) not null,
 	phone_number varchar(10) not null,
 	password varchar(100) not null,
-	photo_url text null,
 	wallet_id int not null,
 	blocked tinyint(1) default 0 not null,
 	username varchar(20) not null,
+	photo_name varchar(100) default 'basic.png' not null,
 	constraint users_email_uindex
 		unique (email),
 	constraint users_phone_number_uindex
@@ -69,12 +69,12 @@ create or replace table cards
 
 create or replace table transfers
 (
-	timestamp datetime not null,
 	transfer_id int auto_increment
 		primary key,
 	wallet_id int not null,
 	card_id int not null,
 	amount double null,
+	timestamp datetime not null,
 	constraint transfers_cards_card_id_fk
 		foreign key (card_id) references cards (card_id),
 	constraint transfers_wallets_wallet_id_fk
