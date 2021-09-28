@@ -52,5 +52,4 @@ public class TransferServiceImpl implements TransferService {
         transferRepository.create(transfer);
         walletService.deposit(transfer.getWallet(), transfer.getAmount());
     }
-
 }

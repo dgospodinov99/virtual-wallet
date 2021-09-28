@@ -2,6 +2,7 @@ package com.team01.web.virtualwallet.services;
 
 import com.team01.web.virtualwallet.exceptions.BlockedUserException;
 import com.team01.web.virtualwallet.exceptions.InvalidTransferException;
+import com.team01.web.virtualwallet.exceptions.InvalidUserInput;
 import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
@@ -68,7 +69,7 @@ public class TransactionServiceImpl implements TransactionService {
         validateUser(executor, transaction.getSender());
         validateUserStatus(executor);
         validateTransfer(transaction.getSender(), transaction.getAmount());
-
+        validateTransaction(executor.getWallet(), transaction.getReceiver());
         walletService.deposit(transaction.getReceiver(), transaction.getAmount()); //add money to receiver
         walletService.withdraw(transaction.getSender(), transaction.getAmount());  //remove money from sender
 
@@ -90,6 +91,12 @@ public class TransactionServiceImpl implements TransactionService {
     private void validateUser(User executor, Wallet wallet) {
         if (!executor.isAdmin() && executor.getWallet().getId() != wallet.getId()) {
             throw new UnauthorizedOperationException(USER_AND_WALLET_DONT_MATCH_ERROR);
+        }
+    }
+
+    private void validateTransaction(Wallet sender, Wallet receiver) {
+        if (sender.getId() == receiver.getId()) {
+            throw new InvalidUserInput("Ain't gonna happen");
         }
     }
 
