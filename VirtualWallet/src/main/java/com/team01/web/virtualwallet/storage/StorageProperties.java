@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("storage")
 public class StorageProperties {
 
-    private String location = "D:\\TelerikProjects\\Repos\\virtual-wallet\\VirtualWallet\\src\\main\\java\\user_images\\";
+    private String location = "D:\\TelerikProjects\\Repos\\virtual-wallet\\VirtualWallet\\src\\main\\resources\\images\\";
 
     public String getLocation() {
         return location;
