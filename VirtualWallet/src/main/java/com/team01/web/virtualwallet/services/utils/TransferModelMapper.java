@@ -3,6 +3,7 @@ package com.team01.web.virtualwallet.services.utils;
 import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.models.dto.DepositDto;
+import com.team01.web.virtualwallet.models.dto.DummyDto;
 import com.team01.web.virtualwallet.models.dto.TransferDto;
 import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.TransferService;
@@ -60,5 +61,14 @@ public class TransferModelMapper {
         dto.setTimestamp(date);
 
         return dto;
+    }
+
+    public DummyDto transferToDummyDto(Transfer transfer) {
+        DummyDto dummyDto = new DummyDto();
+        dummyDto.setAmount(transfer.getAmount());
+        dummyDto.setCardCheck(transfer.getCard().getCheckNumber());
+        dummyDto.setExpirationDate(String.valueOf(transfer.getCard().getExpirationDate()));
+        dummyDto.setCardNumber(transfer.getCard().getCardNumber());
+        return dummyDto;
     }
 }
