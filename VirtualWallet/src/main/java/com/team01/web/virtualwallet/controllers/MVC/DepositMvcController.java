@@ -5,10 +5,12 @@ import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.DepositDto;
+import com.team01.web.virtualwallet.models.dto.DummyDto;
 import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.TransferService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.TransferModelMapper;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -25,6 +29,8 @@ import java.util.Set;
 @Controller
 @RequestMapping("/myaccount/deposit")
 public class DepositMvcController {
+
+    private static final String DUMMY_END_POINT = "http://localhost:8080/dummy";
 
     private final UserService userService;
     private final TransferModelMapper transferModelMapper;
@@ -71,10 +77,23 @@ public class DepositMvcController {
         try {
             User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
             Transfer transfer = transferModelMapper.fromDto(dto, user.getWallet());
-            transferService.create(transfer);
+            HttpHeaders headers = new HttpHeaders();
+            HttpEntity<DummyDto> entity = new HttpEntity<>(transferModelMapper.transferToDummyDto(transfer), headers);
+            RestTemplate template = new RestTemplate();
+            ResponseEntity<String> response = template.exchange(DUMMY_END_POINT, HttpMethod.POST, entity, String.class);
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
+                transferService.create(transfer);
+            }
+
             return "redirect:/";
         } catch (BadLuckException | IOException e) {
             bindingResult.rejectValue("amount", "auth_error", e.getMessage());
+            return "deposit";
+        } catch (HttpClientErrorException.Unauthorized e) {
+            bindingResult.rejectValue("amount", "auth_error", "Your card is expired!");
+            return "deposit";
+        } catch (HttpClientErrorException.BadRequest e) {
+            bindingResult.rejectValue("amount", "auth_error", "r/therewasanattempt");
             return "deposit";
         }
     }
