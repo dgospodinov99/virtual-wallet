@@ -5,8 +5,8 @@ import com.team01.web.virtualwallet.models.dto.DummyDto;
 import com.team01.web.virtualwallet.services.contracts.DummyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -24,15 +24,15 @@ public class DummyRestController {
     }
 
     @PostMapping
-    public void depositMoney(@RequestBody DummyDto dto){
+    public ResponseEntity<String> depositMoney(@RequestBody DummyDto dto){
         try {
             if (dummyService.depositMoney(stringToLocalDate(dto.getExpirationDate()), dto.getAmount())) {
-                throw new ResponseStatusException(HttpStatus.OK);
+                return new ResponseEntity(HttpStatus.OK);
             } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
             }
         } catch (BadLuckException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
 
     }
