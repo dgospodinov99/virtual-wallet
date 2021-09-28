@@ -34,7 +34,9 @@
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span th:text="${session.currentUser}" class="mr-2 d-none d-lg-inline text-gray-600 small"></span>
                 <img class="img-profile rounded-circle"
-                     th:src="@{/img/undraw_profile.svg}">  <!-- User IMAGE -->
+                     th:src="@{/images/{image}(image=${session.currentUserImage})}">
+                <!--                     th:src="@{../../images/{image}(image=${session.currentUserImage})}">-->
+
             </a>
 
             <!-- Dropdown - User Information -->
