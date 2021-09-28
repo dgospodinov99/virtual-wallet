@@ -56,7 +56,9 @@
                                 <label>Enter amount to deposit</label>
                                 <input type="number" th:field="*{amount}" class="form-control"
                                        id="exampleAmount" placeholder="Amount">
-                                <label class="text-danger" th:errors="*{amount}">Deposit error placeholder</label>
+                                <a href="https://www.reddit.com/r/therewasanattempt/" target=”_blank”>
+                                    <label th:type="button" title="Why is this a button?" class="text-danger" th:errors="*{amount}">Deposit error placeholder</label>
+                                </a>
                             </div>
                             <hr>
                             <input class="btn btn-primary btn-user btn-block col-5" th:type="submit" th:value="Deposit">
