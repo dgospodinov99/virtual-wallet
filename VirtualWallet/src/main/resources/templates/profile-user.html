@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 
     <meta charset="utf-8">
@@ -42,16 +41,35 @@
             <div th:replace="/fragments/navbar.html :: navbar"/>
 
             <!-- Begin Page Content -->
-            <div class="container-fluid">
+            <div class="container-fluid" th:align="center">
 
                 <!-- Content Row -->
                 <div class="row">
                     <div class="card-body">
-                        <label>Username:</label>
-                        <h4 class="text-xl font-weight-bold text-primary" th:text="${user.username}"></h4>
+                        <label></label>
+                        <form method="POST" action="#" th:action="@{/files}" enctype="multipart/form-data">
+
+                            <img class="img-profile rounded-circle"
+                                 th:src="@{/images/{image}(image=${session.currentUserImage})}" th:height="200px"
+                                 th:width="200px">
+                            <br/>
+                            <input class="btn btn-primary btn-user btn-block col-1"
+                                   onclick="document.getElementById('asd').click()" value="Change Image"/>
+                            <input id="asd" style="display:none" type="file" name="file" accept=".png"
+                                   onchange="form.submit()"/>
+
+
+                        </form>
+
 
                     </div>
 
+                </div>
+                <div class="row">
+                    <div class="card-body">
+                        <label>Username:</label>
+                        <h4 class="text-xl font-weight-bold text-primary" th:text="${user.username}"></h4>
+                    </div>
                 </div>
 
                 <div class="row">
@@ -72,28 +90,30 @@
                 <div class="row"><br/></div>
                 <div class="row"><br/></div>
 
+
                 <div class="row">
                     </br>
-                    <div class="col-3">
+                    <div class="col-4">
                         <a class="btn btn-primary btn-user btn-block col-5" th:href="@{/myaccount/update}"> Edit</a>
                     </div>
-                </div>
 
-
-                <div class="row">
                     <br/>
-                    <div class="col-3">
+                    <div class="col-4">
                         <a class="btn btn-info btn-user btn-block col-5" th:href="@{/myaccount/update/password}">
                             Change Password</a>
                     </div>
-                </div>
 
-                <div class="row">
                     </br>
-                    <div class="col-3">
+                    <div class="col-4">
                         <a class="btn btn-secondary btn-user btn-block col-5" th:href="@{/}"> Back</a>
                     </div>
                 </div>
+
+                <div class="row"><br/></div>
+                <div class="row"><br/></div>
+
+                <div class="row"><br/></div>
+                <div class="row"><br/></div>
 
             </div>
             <!-- End of Main Content -->
@@ -107,17 +127,14 @@
 
 </div>
 <!-- Footer -->
-<div class="navbar fixed-bottom">
-    <footer class="sticky-footer bg-white">
-        <div class="container my-auto">
-            <div class="copyright text-center my-auto">
-                <span>Team01 &copy; Virtual Wallet 2021</span>
-            </div>
+<footer class="sticky-footer bg-white">
+    <div class="container my-auto">
+        <div class="copyright text-center my-auto">
+            <span>Team01 © Virtual Wallet 2021</span>
         </div>
-    </footer>
-</div>
+    </div>
+</footer>
 <!-- End of Footer -->
-
 
 <!-- Logout Modal-->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
