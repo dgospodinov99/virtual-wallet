@@ -4,24 +4,13 @@ import javax.validation.constraints.Positive;
 
 public class CreateTransactionDto {
 
-    @Positive(message = "Sender ID is invalid!")
-    private int senderId;
+    @Positive(message = "Transaction amount must be positive!")
+    private double amount;
 
     @Positive(message = "Receiver ID is invalid!")
     private int receiverId;
 
-    @Positive(message = "Transaction amount must be positive!")
-    private Double amount;
-
     public CreateTransactionDto() {
-    }
-
-    public int getSenderId() {
-        return senderId;
-    }
-
-    public void setSenderId(int senderId) {
-        this.senderId = senderId;
     }
 
     public int getReceiverId() {
@@ -32,11 +21,11 @@ public class CreateTransactionDto {
         this.receiverId = receiverId;
     }
 
-    public Double getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 }

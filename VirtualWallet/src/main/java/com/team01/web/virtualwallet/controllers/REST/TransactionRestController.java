@@ -93,8 +93,8 @@ public class TransactionRestController {
         globalExceptionHandler.checkValidFields(result);
         try {
             User executor = authenticationHelper.tryGetUser(headers);
-
             Transaction transaction = modelMapper.fromDto(dto);
+            transaction.setSender(executor.getWallet());
             transactionService.create(transaction, executor);
             return modelMapper.toDto(transaction);
         } catch (EntityNotFoundException e) {

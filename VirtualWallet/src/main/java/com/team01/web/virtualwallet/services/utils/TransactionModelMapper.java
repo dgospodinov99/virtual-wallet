@@ -29,7 +29,6 @@ public class TransactionModelMapper {
     public Transaction fromDto(CreateTransactionDto dto) {
         Transaction transaction = new Transaction();
         transaction.setAmount(dto.getAmount());
-        transaction.setSender(walletService.getById(dto.getSenderId()));
         transaction.setReceiver(walletService.getById(dto.getReceiverId()));
         transaction.setTimestamp(LocalDateTime.now());
 
