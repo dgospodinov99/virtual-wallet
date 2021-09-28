@@ -75,9 +75,15 @@
                                     <input class="form-control btn btn-primary btn-user btn-block" th:type="submit"
                                            th:value="Filter">
                                 </div>
-
                             </div>
                         </form>
+                        <div class="col-sm-2">
+                            <a th:href="@{/myaccount/transactions/new}">
+                                <label class="control-label"></br></label>
+                                <input class="form-control btn btn-primary btn-user btn-block" th:type="submit"
+                                       th:value="'New Transaction'">
+                            </a>
+                        </div>
                     </div>
 
                     <div class="row"/>
