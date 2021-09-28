@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.time.DateTimeException;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Set;
@@ -114,6 +115,9 @@ public class CardMvcController {
         } catch (EntityNotFoundException e) {
             model.addAttribute("error", e.getMessage());
             return "404";
+        } catch (DateTimeException e) {
+            errors.rejectValue("expirationDate", "expirationDate_error", "Please enter a valid date!");
+            return "card-new";
         }
     }
 
