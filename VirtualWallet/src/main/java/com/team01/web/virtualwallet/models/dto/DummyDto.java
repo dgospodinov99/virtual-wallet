@@ -1,7 +1,5 @@
 package com.team01.web.virtualwallet.models.dto;
 
-import java.time.LocalDate;
-
 public class DummyDto {
 
     private String cardNumber;

@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 public class EmailServiceImpl implements EmailService {
 
     private final EmailConfig emailConfig;
-
-
     private final JavaMailSender mailSender;
 
     @Autowired
@@ -23,7 +21,6 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public SimpleMailMessage sendSimpleMessage(String to, String subject, String text) {
-
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         mailMessage.setFrom(emailConfig.getUsername());
         mailMessage.setTo(to);
