@@ -31,8 +31,8 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "photo_url")
-    private String photoURL;
+    @Column(name = "photo_name",insertable = false)
+    private String photoName;
 
     @Column(name = "blocked")
     private boolean blocked;
@@ -103,12 +103,12 @@ public class User {
         this.password = password;
     }
 
-    public String getPhotoURL() {
-        return photoURL;
+    public String getPhotoName() {
+        return photoName;
     }
 
-    public void setPhotoURL(String photoURL) {
-        this.photoURL = photoURL;
+    public void setPhotoName(String photoURL) {
+        this.photoName = photoURL;
     }
 
     public Wallet getWallet() {

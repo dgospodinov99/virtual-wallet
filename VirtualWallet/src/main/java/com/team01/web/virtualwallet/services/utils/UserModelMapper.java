@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -98,7 +97,7 @@ public class UserModelMapper {
                 user.getEmail(),
                 user.getPhoneNumber(),
                 user.getPassword(),
-                user.getPhotoURL(),
+                user.getPhotoName(),
                 status,
                 user.getWallet().getBalance(),
                 user.getCards().stream()

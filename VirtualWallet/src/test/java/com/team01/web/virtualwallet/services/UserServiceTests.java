@@ -54,7 +54,7 @@ public class UserServiceTests {
         Assertions.assertEquals("MockEmail@email.com", result.getEmail());
         Assertions.assertEquals("MockPassword12#", result.getPassword());
         Assertions.assertEquals("0123456789", result.getPhoneNumber());
-        Assertions.assertEquals("MockUsername.jpg", result.getPhotoURL());
+        Assertions.assertEquals("MockUsername.jpg", result.getPhotoName());
         Assertions.assertTrue(result.getActive());
         Assertions.assertEquals(1, result.getWallet().getId());
         Assertions.assertEquals(1, result.getCards().size());
@@ -85,7 +85,7 @@ public class UserServiceTests {
         Assertions.assertEquals("MockEmail@email.com", result.getEmail());
         Assertions.assertEquals("MockPassword12#", result.getPassword());
         Assertions.assertEquals("0123456789", result.getPhoneNumber());
-        Assertions.assertEquals("MockUsername.jpg", result.getPhotoURL());
+        Assertions.assertEquals("MockUsername.jpg", result.getPhotoName());
         Assertions.assertTrue(result.getActive());
         Assertions.assertEquals(1, result.getWallet().getId());
         Assertions.assertEquals(1, result.getCards().size());
@@ -116,7 +116,7 @@ public class UserServiceTests {
         Assertions.assertEquals("MockEmail@email.com", result.getEmail());
         Assertions.assertEquals("MockPassword12#", result.getPassword());
         Assertions.assertEquals("0123456789", result.getPhoneNumber());
-        Assertions.assertEquals("MockUsername.jpg", result.getPhotoURL());
+        Assertions.assertEquals("MockUsername.jpg", result.getPhotoName());
         Assertions.assertTrue(result.getActive());
         Assertions.assertEquals(1, result.getWallet().getId());
         Assertions.assertEquals(1, result.getCards().size());
@@ -147,7 +147,7 @@ public class UserServiceTests {
         Assertions.assertEquals("MockEmail@email.com", result.getEmail());
         Assertions.assertEquals("MockPassword12#", result.getPassword());
         Assertions.assertEquals("0123456789", result.getPhoneNumber());
-        Assertions.assertEquals("MockUsername.jpg", result.getPhotoURL());
+        Assertions.assertEquals("MockUsername.jpg", result.getPhotoName());
         Assertions.assertTrue(result.getActive());
         Assertions.assertEquals(1, result.getWallet().getId());
         Assertions.assertEquals(1, result.getCards().size());

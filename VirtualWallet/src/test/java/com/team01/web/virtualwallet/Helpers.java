@@ -29,7 +29,7 @@ public class Helpers {
         user.setEmail("MockEmail@email.com");
         user.setPassword("MockPassword12#");
         user.setPhoneNumber("0123456789");
-        user.setPhotoURL(user.getUsername() + ".jpg");
+        user.setPhotoName(user.getUsername() + ".jpg");
         user.setBlocked(false);
         user.setActive(true);
         var cardList = new HashSet<Card>();
