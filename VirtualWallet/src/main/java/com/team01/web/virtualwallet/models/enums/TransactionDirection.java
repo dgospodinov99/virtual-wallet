@@ -8,9 +8,9 @@ public enum TransactionDirection {
     public String toString() {
         switch (this) {
             case IN:
-                return "Income";
+                return "Incoming";
             case OUT:
-                return "Outcome";
+                return "Outgoing";
             default:
                 throw new IllegalArgumentException("Invalid transfer direction (can be in/out).");
         }

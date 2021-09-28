@@ -124,7 +124,6 @@ public class UserServiceImpl implements UserService {
     public void update(User user) {
         verifyUniqueEmail(user.getEmail(),user);
         verifyUniquePhoneNumber(user.getPhoneNumber(), user);
-
         isPasswordValid(user.getPassword());
         userRepository.update(user);
     }
@@ -146,7 +145,6 @@ public class UserServiceImpl implements UserService {
     public void updatePassword(User user, String newPassword) {
         isPasswordValid(newPassword);
         user.setPassword(newPassword);
-
         userRepository.update(user);
     }
 
