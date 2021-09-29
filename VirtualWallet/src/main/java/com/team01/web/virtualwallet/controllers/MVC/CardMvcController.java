@@ -10,10 +10,12 @@ import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.CardModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -47,7 +49,11 @@ public class CardMvcController {
 
     @ModelAttribute("user")
     public User populateUser(HttpSession session) {
-        return userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+        try {
+            return authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
     }
 
     @ModelAttribute("cards")
@@ -76,7 +82,7 @@ public class CardMvcController {
         try {
             authenticationHelper.tryGetUser(session);
         } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
-            return "redirect:/unauthorized";
+            return "error401";
         }
         model.addAttribute("card", new CreateCardDto());
         return "card-new";
@@ -92,7 +98,7 @@ public class CardMvcController {
         try {
             user = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-            return "redirect:/unauthorized";
+            return "error401";
         }
 
         if (errors.hasErrors()) {
@@ -114,7 +120,7 @@ public class CardMvcController {
             return "card-new";
         } catch (EntityNotFoundException e) {
             model.addAttribute("error", e.getMessage());
-            return "404";
+            return "error404";
         } catch (DateTimeException e) {
             errors.rejectValue("expirationDate", "expirationDate_error", "Please enter a valid date!");
             return "card-new";
@@ -126,7 +132,7 @@ public class CardMvcController {
         try {
             authenticationHelper.tryGetUser(session);
         } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
-            return "redirect:/unauthorized";
+            return "error401";
         }
 
         try {
@@ -137,7 +143,7 @@ public class CardMvcController {
             return "card-update";
         } catch (EntityNotFoundException e) {
             model.addAttribute("errors", e.getMessage());
-            return "404";
+            return "error404";
         }
     }
 
@@ -152,7 +158,7 @@ public class CardMvcController {
         try {
             user = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-            return "redirect:/unauthorized";
+            return "error401";
         }
         if (errors.hasErrors()) {
             return "card-update";
@@ -168,7 +174,7 @@ public class CardMvcController {
             errors.rejectValue("expirationDate", "invalid", "Invalid Date!");
             return "card-update";
         } catch (UnauthorizedOperationException e) {
-            return "redirect:/unauthorized";
+            return "error401";
         } catch (DuplicateEntityException e) {
             errors.rejectValue("cardNumber", "duplicate", e.getMessage());
             return "card-update";
@@ -185,7 +191,7 @@ public class CardMvcController {
             try {
                 user = authenticationHelper.tryGetUser(session);
             } catch (AuthenticationFailureException e) {
-                return "redirect:/unauthorized";
+                return "error401";
             }
 
             cardService.delete(id, user);
@@ -193,9 +199,9 @@ public class CardMvcController {
             return "redirect:/myaccount/cards";
         } catch (EntityNotFoundException e) {
             model.addAttribute("error", e.getMessage());
-            return "404";
+            return "error404";
         } catch (UnauthorizedOperationException e) {
-            return "redirect:/unauthorized";
+            return "error401";
         }
     }
 }
