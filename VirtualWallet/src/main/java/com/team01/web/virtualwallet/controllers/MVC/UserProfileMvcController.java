@@ -2,22 +2,24 @@ package com.team01.web.virtualwallet.controllers.MVC;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.*;
-import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.ChangePasswordDto;
-import com.team01.web.virtualwallet.models.dto.CreateCardDto;
 import com.team01.web.virtualwallet.models.dto.UpdateUserDto;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.time.format.DateTimeParseException;
 
 @Controller
 @RequestMapping("/myaccount")
@@ -43,7 +45,11 @@ public class UserProfileMvcController {
 
     @ModelAttribute("user")
     public User populateUser(HttpSession session) {
-        return userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+        try {
+            return authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
     }
 
     @GetMapping
@@ -56,7 +62,7 @@ public class UserProfileMvcController {
         try {
             authenticationHelper.tryGetUser(session);
         } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
-            return "redirect:/unauthorized";
+            return "error401";
         }
 
         try {
@@ -66,7 +72,7 @@ public class UserProfileMvcController {
             return "profile-user-update";
         } catch (EntityNotFoundException e) {
             model.addAttribute("errors", e.getMessage());
-            return "404";
+            return "error404";
         }
     }
 
@@ -79,7 +85,7 @@ public class UserProfileMvcController {
         try {
             executor = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-            return "redirect:/unauthorized";
+            return "error401";
         }
         if (errors.hasErrors()) {
             return "profile-user-update";
@@ -91,7 +97,7 @@ public class UserProfileMvcController {
 
             return "redirect:/myaccount";
         } catch (UnauthorizedOperationException e) {
-            return "redirect:/unauthorized";
+            return "error401";
         } catch (DuplicateEntityException e) {
             errors.rejectValue("email", "duplicate", e.getMessage());
             return "profile-user-update";
@@ -103,7 +109,7 @@ public class UserProfileMvcController {
         try {
             authenticationHelper.tryGetUser(session);
         } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
-            return "redirect:/unauthorized";
+            return "error401";
         }
 
         try {
@@ -112,7 +118,7 @@ public class UserProfileMvcController {
             return "profile-user-password-update";
         } catch (EntityNotFoundException e) {
             model.addAttribute("errors", e.getMessage());
-            return "404";
+            return "error404";
         }
     }
 
@@ -125,7 +131,7 @@ public class UserProfileMvcController {
         try {
             executor = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-            return "redirect:/unauthorized";
+            return "error401";
         }
         if (errors.hasErrors()) {
             return "profile-user-password-update";
@@ -137,19 +143,19 @@ public class UserProfileMvcController {
         }
 
         try {
-            authenticationHelper.verifyAuthentication(executor.getUsername(),dto.getOldPassword());
+            authenticationHelper.verifyAuthentication(executor.getUsername(), dto.getOldPassword());
 
             userService.updatePassword(executor, dto.getNewPassword());
 
             return "redirect:/myaccount";
-        } catch (AuthenticationFailureException e){
+        } catch (AuthenticationFailureException e) {
             errors.rejectValue("oldPassword", "invalid", INVALID_OLD_PASSWORD);
             return "profile-user-password-update";
-        } catch (InvalidPasswordException e){
+        } catch (InvalidPasswordException e) {
             errors.rejectValue("newPassword", "invalid", e.getMessage());
             return "profile-user-password-update";
         } catch (UnauthorizedOperationException e) {
-            return "redirect:/unauthorized";
+            return "error401";
         }
     }
 
