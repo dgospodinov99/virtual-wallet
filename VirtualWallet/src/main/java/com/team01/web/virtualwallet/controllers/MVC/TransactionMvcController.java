@@ -5,7 +5,7 @@ import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.CreateTransactionDto;
-import com.team01.web.virtualwallet.models.dto.FilterTransactionDto;
+import com.team01.web.virtualwallet.models.dto.FilterTransactionMvcDto;
 import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
 import com.team01.web.virtualwallet.models.enums.TransactionDirection;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
@@ -79,8 +79,8 @@ public class TransactionMvcController {
     }
 
     @ModelAttribute("filterDto")
-    public FilterTransactionDto populateFilterDto() {
-        return new FilterTransactionDto();
+    public FilterTransactionMvcDto populateFilterDto() {
+        return new FilterTransactionMvcDto();
     }
 
     @GetMapping("")
@@ -97,7 +97,7 @@ public class TransactionMvcController {
     }
 
     @GetMapping("/filter")
-    public String filterTransactions(@ModelAttribute FilterTransactionDto dto, HttpSession session, Model model) {
+    public String filterTransactions(@ModelAttribute("filterDto") FilterTransactionMvcDto dto, HttpSession session, Model model) {
         dto.setWalletId(populateUser(session).getWallet().getId());
         Optional<TransactionDirection> direction = dto.getDirection() == null ? Optional.empty() : Optional.of(dto.getDirection());
         Optional<LocalDateTime> startDate = dto.getStartDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getStartDate()));

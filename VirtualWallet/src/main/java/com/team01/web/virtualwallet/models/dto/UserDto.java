@@ -23,8 +23,6 @@ public class UserDto {
     @Size(min = 8, max = 100, message = "Password must be at least 8 symbols!")
     private String password;
 
-    private String photoURL;
-
     @Positive(message = "Balance must be positive!")
     private double balance;
 
@@ -39,7 +37,6 @@ public class UserDto {
                    String email,
                    String phoneNumber,
                    String password,
-                   String photoURL,
                    String status,
                    double balance,
                    List<Integer> cardsId) {
@@ -47,7 +44,6 @@ public class UserDto {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
-        this.photoURL = photoURL;
         this.balance = balance;
         this.cardsId = cardsId;
         this.status = status;
@@ -83,14 +79,6 @@ public class UserDto {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getPhotoURL() {
-        return photoURL;
-    }
-
-    public void setPhotoURL(String photoURL) {
-        this.photoURL = photoURL;
     }
 
     public double getBalance() {

@@ -3,6 +3,11 @@ package com.team01.web.virtualwallet.controllers.MVC;
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.AuthenticationFailureException;
 import com.team01.web.virtualwallet.models.User;
+import com.team01.web.virtualwallet.models.dto.FilterUserParams;
+import com.team01.web.virtualwallet.models.dto.SearchUserMvcDto;
+import com.team01.web.virtualwallet.models.dto.UserDto;
+import com.team01.web.virtualwallet.services.contracts.UserService;
+import com.team01.web.virtualwallet.services.utils.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -13,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Controller
@@ -20,10 +26,14 @@ import java.util.stream.Collectors;
 public class AdminProfileMvcController {
 
     private final AuthenticationHelper authenticationHelper;
+    private final UserService userService;
+    private final UserModelMapper userModelMapper;
 
     @Autowired
-    public AdminProfileMvcController(AuthenticationHelper authenticationHelper) {
+    public AdminProfileMvcController(AuthenticationHelper authenticationHelper, UserService userService, UserModelMapper userModelMapper) {
         this.authenticationHelper = authenticationHelper;
+        this.userService = userService;
+        this.userModelMapper = userModelMapper;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -40,14 +50,43 @@ public class AdminProfileMvcController {
         }
     }
 
+    @ModelAttribute("users")
+    public List<UserDto> populateUsers(HttpSession session) {
+        return userService.getAll()
+                .stream()
+                .map(user -> userModelMapper.toDto(user))
+                .collect(Collectors.toList());
+    }
+
+
     @GetMapping("")
     public String showAdminPage(HttpSession session, Model model) {
         User user = authenticationHelper.tryGetUser(session);
-        if(!user.isAdmin()){
+
+        if (!user.isAdmin()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Must be admin to view this!");
         }
-
+        model.addAttribute("search", new SearchUserMvcDto());
         return "admin-menu";
     }
 
+    @GetMapping("/search")
+    public String searchUsers(
+            @ModelAttribute("search") SearchUserMvcDto dto,
+            HttpStatus status,
+            Model model) {
+
+        var params = new FilterUserParams()
+                .setPhoneNumber(dto.getPhoneNumber())
+                .setUsername(dto.getUsername())
+                .setEmail(dto.getEmail());
+
+        var filtered = userService.filterUsers(params)
+                .stream()
+                .map(user -> userModelMapper.toDto(user))
+                .collect(Collectors.toList());
+        model.addAttribute("users", filtered);
+
+        return "admin-menu";
+    }
 }

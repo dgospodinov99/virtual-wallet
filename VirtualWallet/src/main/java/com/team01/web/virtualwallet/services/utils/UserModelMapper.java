@@ -97,7 +97,6 @@ public class UserModelMapper {
                 user.getEmail(),
                 user.getPhoneNumber(),
                 user.getPassword(),
-                user.getPhotoName(),
                 status,
                 user.getWallet().getBalance(),
                 user.getCards().stream()
