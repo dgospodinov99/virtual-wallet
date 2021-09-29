@@ -57,7 +57,11 @@ public class TransactionMvcController {
 
     @ModelAttribute("isAdmin")
     public boolean populateIsAdmin(HttpSession session) {
-        return authenticationHelper.tryGetUser(session).isAdmin();
+        try {
+            return authenticationHelper.tryGetUser(session).isAdmin();
+        }catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @ModelAttribute("user")
@@ -81,7 +85,7 @@ public class TransactionMvcController {
 
     @GetMapping("")
     public String showActivity(HttpSession session, Model model) {
-        User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+        User user = authenticationHelper.tryGetUser(session);
 
         var transactions = userService.getUserTransactions(user.getId(), user)
                 .stream()
@@ -133,7 +137,7 @@ public class TransactionMvcController {
             return "transaction-new";
         }
         try {
-            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+            User user = authenticationHelper.tryGetUser(session);
             Transaction transaction = transactionModelMapper.fromDto(dto);
             transaction.setSender(user.getWallet());
             transactionService.create(transaction, user);

@@ -84,7 +84,7 @@ public class DepositMvcController {
         }
 
         try {
-            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+            User user = authenticationHelper.tryGetUser(session);
             Transfer transfer = transferModelMapper.fromDto(dto, user.getWallet());
             HttpHeaders headers = new HttpHeaders();
             HttpEntity<DummyDto> entity = new HttpEntity<>(transferModelMapper.transferToDummyDto(transfer), headers);
