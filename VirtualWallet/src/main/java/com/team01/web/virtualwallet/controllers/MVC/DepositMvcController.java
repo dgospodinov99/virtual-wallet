@@ -1,5 +1,7 @@
 package com.team01.web.virtualwallet.controllers.MVC;
 
+import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
+import com.team01.web.virtualwallet.exceptions.AuthenticationFailureException;
 import com.team01.web.virtualwallet.exceptions.BadLuckException;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.Transfer;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -36,12 +39,14 @@ public class DepositMvcController {
     private final TransferModelMapper transferModelMapper;
     private final TransferService transferService;
     private final CardService cardService;
+    private final AuthenticationHelper authenticationHelper;
 
-    public DepositMvcController(UserService userService, TransferModelMapper transferModelMapper, TransferService transferService, CardService cardService) {
+    public DepositMvcController(UserService userService, TransferModelMapper transferModelMapper, TransferService transferService, CardService cardService, AuthenticationHelper authenticationHelper) {
         this.userService = userService;
         this.transferModelMapper = transferModelMapper;
         this.transferService = transferService;
         this.cardService = cardService;
+        this.authenticationHelper = authenticationHelper;
     }
 
     @GetMapping()
@@ -52,7 +57,11 @@ public class DepositMvcController {
 
     @ModelAttribute("user")
     public User populateUser(HttpSession session) {
-        return userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+        try {
+            return authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+        }
     }
 
     @ModelAttribute("cards")
