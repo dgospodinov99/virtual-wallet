@@ -43,6 +43,12 @@ public class UserProfileMvcController {
         return session.getAttribute("currentUser") != null;
     }
 
+    @ModelAttribute("isAdmin")
+    public boolean populateIsAdmin(HttpSession session) {
+        return authenticationHelper.tryGetUser(session).isAdmin();
+    }
+
+
     @ModelAttribute("user")
     public User populateUser(HttpSession session) {
         try {

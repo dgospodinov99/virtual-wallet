@@ -1,5 +1,6 @@
 package com.team01.web.virtualwallet.controllers.MVC;
 
+import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.TransactionDto;
@@ -26,13 +27,15 @@ public class IndexMvcController {
     private final TransferService transferService;
     private final TransferModelMapper transferModelMapper;
     private final TransactionModelMapper transactionModelMapper;
+    private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public IndexMvcController(UserService userService, TransferService transferService, TransferModelMapper transferModelMapper, TransactionModelMapper transactionModelMapper) {
+    public IndexMvcController(UserService userService, TransferService transferService, TransferModelMapper transferModelMapper, TransactionModelMapper transactionModelMapper, AuthenticationHelper authenticationHelper) {
         this.userService = userService;
         this.transferService = transferService;
         this.transferModelMapper = transferModelMapper;
         this.transactionModelMapper = transactionModelMapper;
+        this.authenticationHelper = authenticationHelper;
     }
 
     @GetMapping
@@ -53,10 +56,16 @@ public class IndexMvcController {
         return session.getAttribute("currentUser") != null;
     }
 
+    @ModelAttribute("isAdmin")
+    public boolean populateIsAdmin(HttpSession session) {
+        return authenticationHelper.tryGetUser(session).isAdmin();
+    }
+
+
     @ModelAttribute("balance")
     public double populateBalance(HttpSession session){
         try {
-            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+            User user = authenticationHelper.tryGetUser(session);
             return user.getWallet().getBalance();
         }catch (EntityNotFoundException e){
             showHomePage(session);
@@ -67,7 +76,7 @@ public class IndexMvcController {
     @ModelAttribute("transactions")
     public List<TransactionDto> populateTransactions(HttpSession session){
         try {
-            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+            User user = authenticationHelper.tryGetUser(session);
             return userService.getUserLatestTransactions(user)
                     .stream()
                     .map(transactionModelMapper::toDto)
@@ -82,7 +91,7 @@ public class IndexMvcController {
     @ModelAttribute("transfers")
     public List<TransferDto> populateTransfers(HttpSession session){
         try {
-            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+            User user = authenticationHelper.tryGetUser(session);
             return transferService.getUserLatestTransfers(user).stream()
                     .map(transferModelMapper::toDto)
                     .collect(Collectors.toList());
