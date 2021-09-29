@@ -104,4 +104,8 @@ public class UserDto {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public boolean isBlocked(){
+        return status.equals("Blocked");
+    }
 }
