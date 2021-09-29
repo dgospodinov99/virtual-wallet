@@ -9,12 +9,12 @@ values (1,0),
        (4,10000),
        (5,10000);
 
-insert into `virtual-wallet`.users (user_id, username, email, phone_number, password, photo_url, wallet_id)
-values  (1, 'guygilbert123', 'GuyGilbert@gmail.com', '0000000000', 'Parola123@', '',1),
-        (2, 'kevinbrown123', 'KevinBrown@gmail.com', '0000000001', 'Parola123@', '',2),
-        (3, 'roberto123', 'RobertoTamburello@gmail.com', '0000000002', 'Parola123@', '',3),
-        (4, 'dian.g123', 'DianGospodinov@gmail.com', '0000000003', 'Parola123@', '',4),
-        (5, 'bojidar.v123', 'BojidarVelichkov@gmail.com', '0000000004', 'Parola123@', '',5);
+insert into `virtual-wallet`.users (user_id, username, email, phone_number, password, wallet_id)
+values  (1, 'guygilbert123', 'GuyGilbert@gmail.com', '0000000000', 'Parola123@', 1),
+        (2, 'kevinbrown123', 'KevinBrown@gmail.com', '0000000001', 'Parola123@', 2),
+        (3, 'roberto123', 'RobertoTamburello@gmail.com', '0000000002', 'Parola123@', 3),
+        (4, 'dian.g123', 'DianGospodinov@gmail.com', '0000000003', 'Parola123@', 4),
+        (5, 'bojidar.v123', 'BojidarVelichkov@gmail.com', '0000000004', 'Parola123@', 5);
 
 insert into `virtual-wallet`.cards (card_id, card_number, holder, check_number,exp_date,user_id)
 values  (1, '1111111111111111', 'Guy Gilbert', '000','2030-01-31',1),
