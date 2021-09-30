@@ -19,7 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -55,16 +58,21 @@ public class AdminProfileMvcController {
         }
     }
 
-    @ModelAttribute("users")
-    public List<UserDto> populateUsers(HttpSession session) {
+    @ModelAttribute("usersDto")
+    public List<UserDto> populateUsersDto() {
         return userService.getAll()
                 .stream()
                 .map(user -> userModelMapper.toDto(user))
                 .collect(Collectors.toList());
     }
 
+    @ModelAttribute("users")
+    public List<User> populateUsers() {
+        return userService.getAll();
+    }
+
     @ModelAttribute("transactions")
-    public List<TransactionDto> populateTransactions(HttpSession session) {
+    public List<TransactionDto> populateTransactions() {
         return transactionService.getAll()
                 .stream()
                 .map(transaction -> transactionModelMapper.toDto(transaction))
@@ -79,14 +87,15 @@ public class AdminProfileMvcController {
         if (!user.isAdmin()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Must be admin to view this!");
         }
-        model.addAttribute("search", new SearchUserMvcDto());
+        model.addAttribute("searchUser", new SearchUserMvcDto());
         model.addAttribute("blockDto", new BlockUserDto());
+        model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
         return "admin-menu";
     }
 
-    @GetMapping("/search")
+    @GetMapping("/users/search")
     public String searchUsers(
-            @ModelAttribute("search") SearchUserMvcDto dto,
+            @ModelAttribute("searchUser") SearchUserMvcDto dto,
             HttpSession session,
             Model model) {
 
@@ -99,7 +108,8 @@ public class AdminProfileMvcController {
                 .stream()
                 .map(user -> userModelMapper.toDto(user))
                 .collect(Collectors.toList());
-        model.addAttribute("users", filtered);
+        model.addAttribute("usersDto", filtered);
+        model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
 
         return "admin-menu";
     }
@@ -113,7 +123,8 @@ public class AdminProfileMvcController {
         try {
             User user = authenticationHelper.tryGetUser(session);
             userService.blockUser(dto.getUsername(), user);
-            model.addAttribute("search", new SearchUserMvcDto());
+            model.addAttribute("searchUser", new SearchUserMvcDto());
+            model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
 
             return "redirect:/myaccount/admin";
         } catch (AuthenticationFailureException e) {
@@ -131,10 +142,47 @@ public class AdminProfileMvcController {
             User user = authenticationHelper.tryGetUser(session);
             userService.unblockUser(dto.getUsername(), user);
             model.addAttribute("search", new SearchUserMvcDto());
+            model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
 
             return "redirect:/myaccount/admin";
         } catch (AuthenticationFailureException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
+    @GetMapping("/transactions/search")
+    public String searchTransactions(
+            @ModelAttribute("filterTransaction") AdminFilterTransactionMvcDto dto,
+            HttpSession session,
+            Model model) {
+
+        Optional<LocalDateTime> startDate = dto.getStartDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getStartDate()));
+        Optional<LocalDateTime> endDate = dto.getEndDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getEndDate()));
+        Optional<Integer> senderId = dto.getSenderId() != -1 ? Optional.of(dto.getSenderId()) : Optional.empty();
+        Optional<Integer> receiverId = dto.getReceiverId() != -1 ? Optional.of(dto.getReceiverId()) : Optional.empty();
+
+
+        var params = new FilterTransactionByAdminParams()
+                .setEndDate(endDate)
+                .setStartDate(startDate)
+                .setReceiverId(receiverId)
+                .setSenderId(senderId)
+                .setSortParam("");
+
+        var filtered = transactionService.adminFilterTransactions(params)
+                .stream()
+                .map(transactions -> transactionModelMapper.toDto(transactions))
+                .collect(Collectors.toList());
+
+        model.addAttribute("transactions", filtered);
+        model.addAttribute("searchUser", new SearchUserMvcDto());
+
+        return "admin-menu";
+    }
+
+    private LocalDateTime stringToLocalDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        return LocalDateTime.parse(date, formatter);
+    }
+
 }

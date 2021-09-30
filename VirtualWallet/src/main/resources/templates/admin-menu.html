@@ -40,13 +40,13 @@
 
             <button class="btn btn-primary" type="button"
                     data-toggle="collapse" data-target="#collapseTransactions"
-                    aria-expanded="false" aria-controls="collapseTransactions">List of Transactions</button>
+                    aria-expanded="false" aria-controls="collapseTransactions">List of Transactions
+            </button>
 
 
-
-                <!-- List of Users -->
-                <div class="card shadow mb-4">
-                    <div class="collapse multi-collapse" id="collapseUsers">
+            <!-- List of Users -->
+            <div class="card shadow mb-4">
+                <div class="collapse multi-collapse" id="collapseUsers">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">List of all Users</h6>
                     </div>
@@ -54,8 +54,8 @@
                         <div class="row">
 
                             <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search"
-                                  action="#" th:action="@{/myaccount/admin/search}"
-                                  method="get" th:object="${search}">
+                                  action="#" th:action="@{/myaccount/admin/users/search}"
+                                  method="get" th:object="${searchUser}">
 
 
                                 <div class="form-group row">
@@ -117,7 +117,7 @@
                                     <th scope="col">Actions</th>
                                 </tr>
                                 </tfoot>
-                                <div th:each="user : ${users}">
+                                <div th:each="user : ${usersDto}">
                                     <tbody>
                                     <tr>
 
@@ -163,10 +163,9 @@
             </div>
 
 
-
-                <!-- List of Transactions-->
-                <div class="card shadow mb-4">
-                    <div class="collapse multi-collapse" id="collapseTransactions">
+            <!-- List of Transactions-->
+            <div class="card shadow mb-4">
+                <div class="collapse multi-collapse" id="collapseTransactions">
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">List of all Transactions</h6>
                     </div>
@@ -174,35 +173,63 @@
                         <div class="row">
 
                             <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search"
-                                  action="#" th:action="@{/myaccount/admin/search}"
-                                  method="get" th:object="${search}">
+                                  action="#" th:action="@{/myaccount/admin/transactions/search}"
+                                  method="get" th:object="${filterTransaction}">
+
+                                <div class="form-group row">
+                                    <div class="col-sm-4 mb-3 mb-sm-0">
+                                        <label class="control-label">Start Date</label>
+                                    </div>
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <label class="control-label">End Date</label>
+                                    </div>
+                                </div>
 
                                 <div class="form-group row">
 
-                                    <!--                                <label class="control-label">Username</label>-->
-                                    <input type="text" class="form-control bg-light border-0 small"
-                                           placeholder="Search by username"
-                                           aria-label="Search" aria-describedby="basic-addon2" th:field="*{username}">
-                                    <br/>
-                                    <br/>
-                                    <!--                                <label class="control-label">Email</label>-->
-                                    <input type="text" class="form-control bg-light border-0 small"
-                                           placeholder="Search by email"
-                                           aria-label="Search" aria-describedby="basic-addon2" th:field="*{email}">
-                                    <br/>
-                                    <br/>
-                                    <!--                                <label class="control-label">Phonenumber</label>-->
-                                    <input type="text" class="form-control bg-light border-0 small"
-                                           placeholder="Search by phone number"
-                                           aria-label="Search" aria-describedby="basic-addon2"
-                                           th:field="*{phoneNumber}">
 
+                                    <input class="form-control bg-light border-0 small" type="datetime-local"
+                                           th:field="*{startDate}"/>
+
+
+                                    <input class="form-control bg-light border-0 small" placeholder="DD/MM/YYYY"
+                                           type="datetime-local" th:field="*{endDate}"/>
+
+                                </div>
+
+                                <div class="form-group row">
+
+                                    <div class="row-cols-10 mb-3 mb-sm-0">
+                                        <label class="control-label">Sender</label>
+                                        <select class="form-control bg-light border-0 small" th:field="*{senderId}">
+                                            <option selected value="-1">Any</option>
+                                            <option th:each="user : ${users}"
+                                                    th:value="${user.id}"
+                                                    th:text="${user.username}">
+                                                User
+                                            </option>
+                                        </select>
+                                    </div>
                                     <br/>
                                     <br/>
-                                    <div class="input-group-append">
-                                        <button class="btn btn-primary" type="button" th:type="submit">
-                                            <i class="fas fa-search fa-sm"></i>
-                                        </button>
+                                    <div class="row-cols-10 mb-3 mb-sm-0">
+                                        <label class="control-label">Receiver</label>
+                                        <select class="form-control bg-light border-0 small" th:field="*{receiverId}">
+                                            <option selected value="-1">Any</option>
+                                            <option th:each="user : ${users}"
+                                                    th:value="${user.id}"
+                                                    th:text="${user.username}">
+                                                User
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <br/>
+                                    <br/>
+
+                                    <div class="col-sm-2">
+                                        <label class="control-label"></br></label>
+                                        <input class="form-control btn btn-primary btn-user btn-block" th:type="submit"
+                                               th:value="Filter">
                                     </div>
                                 </div>
                             </form>
@@ -235,7 +262,8 @@
                                     <tr>
 
                                         <td style="color: dodgerblue" th:text="${transaction.sender}">Sender Name</td>
-                                        <td style="color: dodgerblue" th:text="${transaction.receiver}">Receiver Name</td>
+                                        <td style="color: dodgerblue" th:text="${transaction.receiver}">Receiver Name
+                                        </td>
                                         <td style="color: dodgerblue" th:text="${transaction.amount}">Amount</td>
                                         <td style="color: dodgerblue" th:text="${transaction.timestamp}">Date</td>
 
