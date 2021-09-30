@@ -3,11 +3,10 @@ package com.team01.web.virtualwallet.controllers.MVC;
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.AuthenticationFailureException;
 import com.team01.web.virtualwallet.models.User;
-import com.team01.web.virtualwallet.models.dto.BlockUserDto;
-import com.team01.web.virtualwallet.models.dto.FilterUserParams;
-import com.team01.web.virtualwallet.models.dto.SearchUserMvcDto;
-import com.team01.web.virtualwallet.models.dto.UserDto;
+import com.team01.web.virtualwallet.models.dto.*;
+import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
+import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,12 +29,16 @@ public class AdminProfileMvcController {
     private final AuthenticationHelper authenticationHelper;
     private final UserService userService;
     private final UserModelMapper userModelMapper;
+    private final TransactionService transactionService;
+    private final TransactionModelMapper transactionModelMapper;
 
     @Autowired
-    public AdminProfileMvcController(AuthenticationHelper authenticationHelper, UserService userService, UserModelMapper userModelMapper) {
+    public AdminProfileMvcController(AuthenticationHelper authenticationHelper, UserService userService, UserModelMapper userModelMapper, TransactionService transactionService, TransactionModelMapper transactionModelMapper) {
         this.authenticationHelper = authenticationHelper;
         this.userService = userService;
         this.userModelMapper = userModelMapper;
+        this.transactionService = transactionService;
+        this.transactionModelMapper = transactionModelMapper;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -57,6 +60,14 @@ public class AdminProfileMvcController {
         return userService.getAll()
                 .stream()
                 .map(user -> userModelMapper.toDto(user))
+                .collect(Collectors.toList());
+    }
+
+    @ModelAttribute("transactions")
+    public List<TransactionDto> populateTransactions(HttpSession session) {
+        return transactionService.getAll()
+                .stream()
+                .map(transaction -> transactionModelMapper.toDto(transaction))
                 .collect(Collectors.toList());
     }
 

@@ -33,112 +33,221 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
+            <a class="btn btn-primary" data-toggle="collapse" href="#collapseUsers" role="button" aria-expanded="false"
+               aria-controls="collapseExample">
+                List of all Users
+            </a>
 
-            <!-- DataTales Example -->
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">List of all Users</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-
-                        <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search"
-                                action="#" th:action="@{/myaccount/admin/search}"
-                              method="get" th:object="${search}">
+            <button class="btn btn-primary" type="button"
+                    data-toggle="collapse" data-target="#collapseTransactions"
+                    aria-expanded="false" aria-controls="collapseTransactions">List of Transactions</button>
 
 
-                            <div class="form-group row">
 
-<!--                                <label class="control-label">Username</label>-->
-                                <input type="text" class="form-control bg-light border-0 small" placeholder="Search by username"
-                                       aria-label="Search" aria-describedby="basic-addon2"  th:field="*{username}">
-                                <br/>
-                                <br/>
-<!--                                <label class="control-label">Email</label>-->
-                                <input type="text" class="form-control bg-light border-0 small" placeholder="Search by email"
-                                       aria-label="Search" aria-describedby="basic-addon2"  th:field="*{email}">
-                                <br/>
-                                <br/>
-<!--                                <label class="control-label">Phonenumber</label>-->
-                                <input type="text" class="form-control bg-light border-0 small" placeholder="Search by phone number"
-                                       aria-label="Search" aria-describedby="basic-addon2"  th:field="*{phoneNumber}">
-
-                                <br/>
-                                <br/>
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" type="button" th:type="submit">
-                                        <i class="fas fa-search fa-sm"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
+                <!-- List of Users -->
+                <div class="card shadow mb-4">
+                    <div class="collapse multi-collapse" id="collapseUsers">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">List of all Users</h6>
                     </div>
+                    <div class="card-body">
+                        <div class="row">
 
-                    <div class="row"/>
+                            <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search"
+                                  action="#" th:action="@{/myaccount/admin/search}"
+                                  method="get" th:object="${search}">
 
-                    <div class="table-responsive">
-                        <table class="table table-striped" id="dataTable" data-page-length='50'
-                               data-order='[[1, "desc"]]' width="100%" cellspacing="0">
-                            <thead>
-                            <tr>
 
-                                <th scope="col">Username</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Phone#</th>
-                                <th scope="col">Balance</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Actions</th>
+                                <div class="form-group row">
 
-                            </tr>
-                            </thead>
+                                    <!--                                <label class="control-label">Username</label>-->
+                                    <input type="text" class="form-control bg-light border-0 small"
+                                           placeholder="Search by username"
+                                           aria-label="Search" aria-describedby="basic-addon2" th:field="*{username}">
+                                    <br/>
+                                    <br/>
+                                    <!--                                <label class="control-label">Email</label>-->
+                                    <input type="text" class="form-control bg-light border-0 small"
+                                           placeholder="Search by email"
+                                           aria-label="Search" aria-describedby="basic-addon2" th:field="*{email}">
+                                    <br/>
+                                    <br/>
+                                    <!--                                <label class="control-label">Phonenumber</label>-->
+                                    <input type="text" class="form-control bg-light border-0 small"
+                                           placeholder="Search by phone number"
+                                           aria-label="Search" aria-describedby="basic-addon2"
+                                           th:field="*{phoneNumber}">
 
-                            <tfoot>
-                            <tr>
-                                <th scope="col">Username</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Phone#</th>
-                                <th scope="col">Balance</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Actions</th>
-                            </tr>
-                            </tfoot>
-                            <div th:each="user : ${users}">
-                                <tbody>
+                                    <br/>
+                                    <br/>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button" th:type="submit">
+                                            <i class="fas fa-search fa-sm"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="row"/>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped" data-page-length='50'
+                                   data-order='[[1, "desc"]]' width="100%" cellspacing="0">
+                                <thead>
                                 <tr>
 
-                                    <td style="color: dodgerblue" th:text="${user.username}">Username</td>
-                                    <td style="color: dodgerblue" th:text="${user.email}">Email</td>
-                                    <td style="color: dodgerblue" th:text="${user.phoneNumber}">PhoneNumber</td>
-                                    <td style="color: dodgerblue" th:text="${user.balance}">100.00</td>
-
-                                    <td th:if="${user.isBlocked()}" style="color: red" th:text="${user.status}">Status</td>
-                                    <td th:unless="${user.isBlocked()}" style="color: green" th:text="${user.status}">Status</td>
-
-                                    <td th:if="${user.isBlocked()}">
-                                        <form  action="#" th:action="@{/myaccount/admin/unblock}"
-                                               method="post" th:object="${blockDto}">
-
-                                            <input type="hidden" name="username" th:value="${user.username}"/>
-                                            <input class="btn btn-primary btn-user btn-block col-6" th:type="submit" th:value="Unblock">
-                                        </form>
-                                    </td>
-
-                                    <td th:unless="${user.isBlocked()}">
-                                        <form  action="#" th:action="@{/myaccount/admin/block}"
-                                               method="post" th:object="${blockDto}">
-
-                                            <input type="hidden" name="username" th:value="${user.username}"/>
-                                            <input class="btn btn-danger btn-user btn-block col-6" th:type="submit" th:value="Block">
-                                        </form>
-                                    </td>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Phone#</th>
+                                    <th scope="col">Balance</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Actions</th>
 
                                 </tr>
-                                </tbody>
-                            </div>
-                        </table>
+                                </thead>
+
+                                <tfoot>
+                                <tr>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Phone#</th>
+                                    <th scope="col">Balance</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                                </tfoot>
+                                <div th:each="user : ${users}">
+                                    <tbody>
+                                    <tr>
+
+                                        <td style="color: dodgerblue" th:text="${user.username}">Username</td>
+                                        <td style="color: dodgerblue" th:text="${user.email}">Email</td>
+                                        <td style="color: dodgerblue" th:text="${user.phoneNumber}">PhoneNumber</td>
+                                        <td style="color: dodgerblue" th:text="${user.balance}">100.00</td>
+
+                                        <td th:if="${user.isBlocked()}" style="color: red" th:text="${user.status}">
+                                            Status
+                                        </td>
+                                        <td th:unless="${user.isBlocked()}" style="color: green"
+                                            th:text="${user.status}">Status
+                                        </td>
+
+                                        <td th:if="${user.isBlocked()}">
+                                            <form action="#" th:action="@{/myaccount/admin/unblock}"
+                                                  method="post" th:object="${blockDto}">
+
+                                                <input type="hidden" name="username" th:value="${user.username}"/>
+                                                <input class="btn btn-primary btn-user btn-block col-6" th:type="submit"
+                                                       th:value="Unblock">
+                                            </form>
+                                        </td>
+
+                                        <td th:unless="${user.isBlocked()}">
+                                            <form action="#" th:action="@{/myaccount/admin/block}"
+                                                  method="post" th:object="${blockDto}">
+
+                                                <input type="hidden" name="username" th:value="${user.username}"/>
+                                                <input class="btn btn-danger btn-user btn-block col-6" th:type="submit"
+                                                       th:value="Block">
+                                            </form>
+                                        </td>
+
+                                    </tr>
+                                    </tbody>
+                                </div>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
+
+
+
+                <!-- List of Transactions-->
+                <div class="card shadow mb-4">
+                    <div class="collapse multi-collapse" id="collapseTransactions">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">List of all Transactions</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+
+                            <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search"
+                                  action="#" th:action="@{/myaccount/admin/search}"
+                                  method="get" th:object="${search}">
+
+                                <div class="form-group row">
+
+                                    <!--                                <label class="control-label">Username</label>-->
+                                    <input type="text" class="form-control bg-light border-0 small"
+                                           placeholder="Search by username"
+                                           aria-label="Search" aria-describedby="basic-addon2" th:field="*{username}">
+                                    <br/>
+                                    <br/>
+                                    <!--                                <label class="control-label">Email</label>-->
+                                    <input type="text" class="form-control bg-light border-0 small"
+                                           placeholder="Search by email"
+                                           aria-label="Search" aria-describedby="basic-addon2" th:field="*{email}">
+                                    <br/>
+                                    <br/>
+                                    <!--                                <label class="control-label">Phonenumber</label>-->
+                                    <input type="text" class="form-control bg-light border-0 small"
+                                           placeholder="Search by phone number"
+                                           aria-label="Search" aria-describedby="basic-addon2"
+                                           th:field="*{phoneNumber}">
+
+                                    <br/>
+                                    <br/>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button" th:type="submit">
+                                            <i class="fas fa-search fa-sm"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="row"/>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="dataTable" data-page-length='50'
+                                   data-order='[[1, "desc"]]' width="100%" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Sender</th>
+                                    <th scope="col">Receiver</th>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                                </thead>
+
+                                <tfoot>
+                                <tr>
+                                    <th scope="col">Sender</th>
+                                    <th scope="col">Receiver</th>
+                                    <th scope="col">Amount</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                                </tfoot>
+                                <div th:each="transaction : ${transactions}">
+                                    <tbody>
+                                    <tr>
+
+                                        <td style="color: dodgerblue" th:text="${transaction.sender}">Sender Name</td>
+                                        <td style="color: dodgerblue" th:text="${transaction.receiver}">Receiver Name</td>
+                                        <td style="color: dodgerblue" th:text="${transaction.amount}">Amount</td>
+                                        <td style="color: dodgerblue" th:text="${transaction.timestamp}">Date</td>
+
+                                    </tr>
+                                    </tbody>
+                                </div>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <!-- /.container-fluid -->
 
