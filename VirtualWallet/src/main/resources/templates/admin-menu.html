@@ -97,24 +97,24 @@
                                 <thead>
                                 <tr>
 
-                                    <th scope="col">Username</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Phone#</th>
-                                    <th scope="col">Balance</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Actions</th>
+                                    <th scope="col" th:text="#{admin.menu.username}">Username</th>
+                                    <th scope="col" th:text="#{admin.menu.email}">Email</th>
+                                    <th scope="col" th:text="#{admin.menu.phone}">Phone#</th>
+                                    <th scope="col" th:text="#{admin.menu.balance}">Balance</th>
+                                    <th scope="col" th:text="#{admin.menu.status}">Status</th>
+                                    <th scope="col" th:text="#{admin.menu.actions}">Actions</th>
 
                                 </tr>
                                 </thead>
 
                                 <tfoot>
                                 <tr>
-                                    <th scope="col">Username</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Phone#</th>
-                                    <th scope="col">Balance</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Actions</th>
+                                    <th scope="col" th:text="#{admin.menu.username}">Username</th>
+                                    <th scope="col" th:text="#{admin.menu.email}">Email</th>
+                                    <th scope="col" th:text="#{admin.menu.phone}">Phone#</th>
+                                    <th scope="col" th:text="#{admin.menu.balance}">Balance</th>
+                                    <th scope="col" th:text="#{admin.menu.status}">Status</th>
+                                    <th scope="col" th:text="#{admin.menu.actions}">Actions</th>
                                 </tr>
                                 </tfoot>
                                 <div th:each="user : ${usersDto}">
@@ -242,19 +242,19 @@
                                    data-order='[[1, "desc"]]' width="100%" cellspacing="0">
                                 <thead>
                                 <tr>
-                                    <th scope="col">Sender</th>
-                                    <th scope="col">Receiver</th>
-                                    <th scope="col">Amount</th>
-                                    <th scope="col">Date</th>
+                                    <th scope="col" th:text="#{admin.menu.sender}">Sender</th>
+                                    <th scope="col" th:text="#{admin.menu.receiver}">Receiver</th>
+                                    <th scope="col" th:text="#{admin.menu.amount}">Amount</th>
+                                    <th scope="col" th:text="#{admin.menu.date}">Date</th>
                                 </tr>
                                 </thead>
 
                                 <tfoot>
                                 <tr>
-                                    <th scope="col">Sender</th>
-                                    <th scope="col">Receiver</th>
-                                    <th scope="col">Amount</th>
-                                    <th scope="col">Date</th>
+                                    <th scope="col" th:text="#{admin.menu.sender}">Sender</th>
+                                    <th scope="col" th:text="#{admin.menu.receiver}">Receiver</th>
+                                    <th scope="col" th:text="#{admin.menu.amount}">Amount</th>
+                                    <th scope="col" th:text="#{admin.menu.date}">Date</th>
                                 </tr>
                                 </tfoot>
                                 <div th:each="transaction : ${transactions}">
