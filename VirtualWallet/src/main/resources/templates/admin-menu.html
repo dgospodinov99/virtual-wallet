@@ -178,29 +178,24 @@
 
                                 <div class="form-group row">
                                     <div class="col-sm-4 mb-3 mb-sm-0">
-                                        <label class="control-label">Start Date</label>
+                                        <label class="control-label" th:text="#{admin.menu.filter.start.date}">Start Date</label>
                                     </div>
                                     <div class="col-sm-6 mb-3 mb-sm-0">
-                                        <label class="control-label">End Date</label>
+                                        <label class="control-label" th:text="#{admin.menu.filter.end.date}">End Date</label>
                                     </div>
                                 </div>
 
                                 <div class="form-group row">
-
-
                                     <input class="form-control bg-light border-0 small" type="datetime-local"
                                            th:field="*{startDate}"/>
-
-
                                     <input class="form-control bg-light border-0 small" placeholder="DD/MM/YYYY"
                                            type="datetime-local" th:field="*{endDate}"/>
-
                                 </div>
 
                                 <div class="form-group row">
 
                                     <div class="row-cols-10 mb-3 mb-sm-0">
-                                        <label class="control-label">Sender</label>
+                                        <label class="control-label" th:text="#{admin.menu.filter.sender}">Sender</label>
                                         <select class="form-control bg-light border-0 small" th:field="*{senderId}">
                                             <option selected value="-1">Any</option>
                                             <option th:each="user : ${users}"
@@ -213,7 +208,7 @@
                                     <br/>
                                     <br/>
                                     <div class="row-cols-10 mb-3 mb-sm-0">
-                                        <label class="control-label">Receiver</label>
+                                        <label class="control-label" th:text="#{admin.menu.filter.receiver}">Receiver</label>
                                         <select class="form-control bg-light border-0 small" th:field="*{receiverId}">
                                             <option selected value="-1">Any</option>
                                             <option th:each="user : ${users}"

@@ -53,7 +53,7 @@
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            Balance
+                                            <label th:text="#{index.balance}">Balance</label>
                                         </div>
                                         <div class="h5 mb-0 font-weight-bold text-gray-800">
                                             <h2 th:text="${balance}"></h2>
@@ -61,7 +61,8 @@
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             <a href="#" th:href="@{/myaccount/deposit}"
                                                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                                    class="fas fa-download fa-sm text-white-10"></i>  Deposit</a>
+                                                    class="fas fa-download fa-sm text-white-10"></i>
+                                                <label th:text="#{index.deposit}">Deposit</label></a>
                                         </div>
                                     </div>
                                     <div class="col-auto">
@@ -82,11 +83,11 @@
                         <div class="card shadow mb-4">
                             <!-- Card Header - Dropdown -->
                             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary">Latest Transactions</h6>
+                                <h6 class="m-0 font-weight-bold text-primary" th:text="#{index.latest.transactions}">Latest Transactions</h6>
                             </div>
                             <!-- Card Body -->
                             <div th:if="${transactions.isEmpty()}" class="card-body">
-                                <div class="row" style="color: black">No Transactions</div>
+                                <div class="row" style="color: black" th:text="#{index.transactions.empty}">No Transactions</div>
                             </div>
 
                             <div th:unless="${transactions.isEmpty()}" class="card-body"
@@ -117,11 +118,11 @@
                         <div class="card shadow mb-4">
                             <!-- Card Header - Dropdown -->
                             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary">Latest Transfers</h6>
+                                <h6 class="m-0 font-weight-bold text-primary" th:text="#{index.latest.transfers}">Latest Transfers</h6>
                             </div>
                             <!-- Card Body -->
                             <div th:if="${transfers.isEmpty()}" class="card-body">
-                                <div class="row" style="color: black">No Transfers</div>
+                                <div class="row" style="color: black" th:text="#{index.transfers.empty}">No Transfers</div>
                             </div>
 
                             <div th:unless="${transfers.isEmpty()}" class="card-body" th:each="transfer : ${transfers}">
