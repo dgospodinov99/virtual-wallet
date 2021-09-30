@@ -106,11 +106,13 @@
                                 <tbody>
                                 <tr>
 
-                                    <td style="color: green" th:text="${user.username}">Username</td>
+                                    <td style="color: dodgerblue" th:text="${user.username}">Username</td>
                                     <td style="color: dodgerblue" th:text="${user.email}">Email</td>
                                     <td style="color: dodgerblue" th:text="${user.phoneNumber}">PhoneNumber</td>
                                     <td style="color: dodgerblue" th:text="${user.balance}">100.00</td>
-                                    <td style="color: dodgerblue" th:text="${user.status}">Status</td>
+
+                                    <td th:if="${user.isBlocked()}" style="color: red" th:text="${user.status}">Status</td>
+                                    <td th:unless="${user.isBlocked()}" style="color: green" th:text="${user.status}">Status</td>
 
                                     <td th:if="${user.isBlocked()}">
                                         <form  action="#" th:action="@{/myaccount/admin/unblock}"
