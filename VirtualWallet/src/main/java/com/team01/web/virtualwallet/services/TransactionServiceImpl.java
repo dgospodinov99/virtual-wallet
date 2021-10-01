@@ -1,9 +1,6 @@
 package com.team01.web.virtualwallet.services;
 
-import com.team01.web.virtualwallet.exceptions.BlockedUserException;
-import com.team01.web.virtualwallet.exceptions.InvalidTransferException;
-import com.team01.web.virtualwallet.exceptions.InvalidUserInput;
-import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
@@ -22,6 +19,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     private static final String USER_BLOCKED_MESSAGE = "You are blocked from making transactions!";
     private static final String USER_AND_WALLET_DONT_MATCH_ERROR = "Users can make transfers only from their own or shared wallet!";
+    private static final double LARGE_TRANSACTION_AMOUNT = 1000;
+    private static final String LARGE_TRANSACTION_MESSAGE = "A verification code has been sent to your email to verify large transaction.";
 
     private final TransactionRepository transactionRepository;
     private final WalletService walletService;
@@ -69,6 +68,9 @@ public class TransactionServiceImpl implements TransactionService {
         validateUserStatus(executor);
         validateTransfer(transaction.getSender(), transaction.getAmount());
         validateTransaction(executor.getWallet(), transaction.getReceiver());
+        if (transaction.getAmount() > LARGE_TRANSACTION_AMOUNT) {
+            throw new LargeTransactionDetectedException(LARGE_TRANSACTION_MESSAGE);
+        }
         walletService.deposit(transaction.getReceiver(), transaction.getAmount()); //add money to receiver
         walletService.withdraw(transaction.getSender(), transaction.getAmount());  //remove money from sender
 
