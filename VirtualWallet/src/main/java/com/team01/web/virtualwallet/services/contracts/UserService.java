@@ -20,15 +20,21 @@ public interface UserService {
 
     User getByWallet(Wallet wallet);
 
-    User blockUser(String usernameToBlock, User executor);
+    void blockUserOnRegistration(User user);
 
-    User unblockUser(String usernameToBlock, User executor);
+    void unblockUserOnRegistration(User user);
+
+    User blockUserByAdmin(String usernameToBlock, User executor);
+
+    User unblockUserByAdmin(String usernameToBlock, User executor);
 
     List<User> filterUsers(FilterUserParams params);
 
     List<Transaction> getUserTransactions(int id, User executor);
 
     List<Transaction> getUserLatestTransactions(User executor);
+
+    User search(String searchItem);
 
     void create(User user);
 

@@ -171,7 +171,7 @@ public class UserServiceTests {
         Mockito.when(mockService.getByUsername(userToBlock.getUsername()))
                 .thenReturn(userToBlock);
         //Act
-        mockService.blockUser(userToBlock.getUsername(), createMockAdmin());
+        mockService.blockUserByAdmin(userToBlock.getUsername(), createMockAdmin());
         //Assert
         Mockito.verify(mockRepository, Mockito.times(1))
                 .update(userToBlock);
@@ -185,7 +185,7 @@ public class UserServiceTests {
                 .thenReturn(userToBlock);
         //Act, Assert
         Assertions.assertThrows(UnauthorizedOperationException.class,
-                () -> mockService.blockUser(userToBlock.getUsername(), userToBlock));
+                () -> mockService.blockUserByAdmin(userToBlock.getUsername(), userToBlock));
     }
 
     @Test
@@ -195,7 +195,7 @@ public class UserServiceTests {
                 .thenThrow(EntityNotFoundException.class);
         //Act, Assert
         Assertions.assertThrows(EntityNotFoundException.class,
-                () -> mockService.blockUser(Mockito.anyString(), createMockAdmin()));
+                () -> mockService.blockUserByAdmin(Mockito.anyString(), createMockAdmin()));
     }
 
     @Test
@@ -205,7 +205,7 @@ public class UserServiceTests {
         Mockito.when(mockService.getByUsername(userToUnblock.getUsername()))
                 .thenReturn(userToUnblock);
         //Act
-        mockService.unblockUser(userToUnblock.getUsername(), createMockAdmin());
+        mockService.unblockUserByAdmin(userToUnblock.getUsername(), createMockAdmin());
         //Assert
         Mockito.verify(mockRepository, Mockito.times(1))
                 .update(userToUnblock);
@@ -219,7 +219,7 @@ public class UserServiceTests {
                 .thenReturn(userToUnblock);
         //Act, Assert
         Assertions.assertThrows(UnauthorizedOperationException.class,
-                () -> mockService.unblockUser(userToUnblock.getUsername(), userToUnblock));
+                () -> mockService.unblockUserByAdmin(userToUnblock.getUsername(), userToUnblock));
     }
 
     @Test
@@ -229,7 +229,7 @@ public class UserServiceTests {
                 .thenThrow(EntityNotFoundException.class);
         //Act, Assert
         Assertions.assertThrows(EntityNotFoundException.class,
-                () -> mockService.unblockUser(Mockito.anyString(), createMockAdmin()));
+                () -> mockService.unblockUserByAdmin(Mockito.anyString(), createMockAdmin()));
     }
 
     @Test

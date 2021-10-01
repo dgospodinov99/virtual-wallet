@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User blockUser(String usernameToBlock, User executor) {
+    public User blockUserByAdmin(String usernameToBlock, User executor) {
         User userToBlock = getByUsername(usernameToBlock);
 
         verifyAdmin(executor);
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User unblockUser(String usernameToUnBlock, User executor) {
+    public User unblockUserByAdmin(String usernameToUnBlock, User executor) {
         User userToUnBlock = getByUsername(usernameToUnBlock);
 
         verifyAdmin(executor);
@@ -83,6 +83,18 @@ public class UserServiceImpl implements UserService {
         userToUnBlock.setBlocked(false);
         userRepository.update(userToUnBlock);
         return userToUnBlock;
+    }
+
+    @Override
+    public void blockUserOnRegistration(User user) {
+        user.setBlocked(true);
+        userRepository.update(user);
+    }
+
+    @Override
+    public void unblockUserOnRegistration(User user) {
+        user.setBlocked(false);
+        userRepository.update(user);
     }
 
     private void verifyAdmin(User executor) {
@@ -107,6 +119,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Transaction> getUserLatestTransactions(User executor) {
         return transactionService.getUserLatestTransactions(executor);
+    }
+
+    @Override
+    public User search(String searchItem) {
+        return userRepository.search(searchItem);
     }
 
     @Override

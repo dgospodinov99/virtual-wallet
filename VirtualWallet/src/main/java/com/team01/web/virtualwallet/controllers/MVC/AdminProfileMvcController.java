@@ -122,7 +122,7 @@ public class AdminProfileMvcController {
             Model model) {
         try {
             User user = authenticationHelper.tryGetUser(session);
-            userService.blockUser(dto.getUsername(), user);
+            userService.blockUserByAdmin(dto.getUsername(), user);
             model.addAttribute("searchUser", new SearchUserMvcDto());
             model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
 
@@ -140,7 +140,7 @@ public class AdminProfileMvcController {
             Model model) {
         try {
             User user = authenticationHelper.tryGetUser(session);
-            userService.unblockUser(dto.getUsername(), user);
+            userService.unblockUserByAdmin(dto.getUsername(), user);
             model.addAttribute("search", new SearchUserMvcDto());
             model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
 
