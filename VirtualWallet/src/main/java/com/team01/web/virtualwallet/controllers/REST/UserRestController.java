@@ -135,7 +135,7 @@ public class UserRestController {
     public UserDto blockUser(@RequestBody BlockUserDto dto, @RequestHeader HttpHeaders headers) {
         try {
             User executor = authenticationHelper.tryGetUser(headers);
-            User user = service.blockUser(dto.getUsername(), executor);
+            User user = service.blockUserByAdmin(dto.getUsername(), executor);
             return modelMapper.toDto(user);
         } catch (InvalidPasswordException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
@@ -148,7 +148,7 @@ public class UserRestController {
     public UserDto unblock(@RequestBody BlockUserDto dto, @RequestHeader HttpHeaders headers) {
         try {
             User executor = authenticationHelper.tryGetUser(headers);
-            User user = service.unblockUser(dto.getUsername(), executor);
+            User user = service.unblockUserByAdmin(dto.getUsername(), executor);
             return modelMapper.toDto(user);
         } catch (InvalidPasswordException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());

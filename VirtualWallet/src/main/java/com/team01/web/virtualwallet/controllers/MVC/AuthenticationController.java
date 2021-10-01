@@ -6,19 +6,20 @@ import com.team01.web.virtualwallet.exceptions.AuthenticationFailureException;
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
+import com.team01.web.virtualwallet.models.Token;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.LoginDto;
 import com.team01.web.virtualwallet.models.dto.RegisterDto;
+import com.team01.web.virtualwallet.models.dto.UserDto;
+import com.team01.web.virtualwallet.services.contracts.EmailService;
+import com.team01.web.virtualwallet.services.contracts.TokenService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -32,13 +33,17 @@ public class AuthenticationController {
     private final AuthenticationHelper authenticationHelper;
     private final UserModelMapper modelMapper;
     private final UserService userService;
+    private final TokenService tokenService;
+    private final EmailService emailService;
 
     @Autowired
-    public AuthenticationController(AuthenticationHelper authenticationHelper, UserModelMapper modelMapper, UserService userService) {
+    public AuthenticationController(AuthenticationHelper authenticationHelper, UserModelMapper modelMapper, UserService userService, TokenService tokenService, EmailService emailService) {
 
         this.authenticationHelper = authenticationHelper;
         this.modelMapper = modelMapper;
         this.userService = userService;
+        this.tokenService = tokenService;
+        this.emailService = emailService;
     }
 
     @GetMapping("/login")
@@ -94,7 +99,9 @@ public class AuthenticationController {
 
         try {
             User user = modelMapper.fromDto(register);
+            user.setBlocked(true);
             userService.create(user);
+            emailService.sendVerifyRegistrationEmail(user.getEmail());
             return "redirect:/auth/login";
         } catch (DuplicateEntityException e) {
             bindingResult.rejectValue("username", "username_error", e.getMessage());
@@ -103,5 +110,24 @@ public class AuthenticationController {
             bindingResult.rejectValue("password", "password_error", e.getMessage());
             return "register";
         }
+    }
+
+    @PostMapping("/verify/{token}")
+    public String verifyRegistration(@PathVariable String token, HttpSession session) {
+        try {
+            User user = authenticationHelper.tryGetUser(session);
+            Token toVerify = tokenService.getByToken(token);
+            user.setBlocked(false);
+            tokenService.delete(toVerify.getId());
+            userService.update(user);
+        } catch (EntityNotFoundException e) {
+            return "error404";
+        }
+        return "redirect:/";
+    }
+
+    @GetMapping("/verify/{token}")
+    public String showVerificationPage(@PathVariable String token, Model model) {
+        return "verify";
     }
 }
