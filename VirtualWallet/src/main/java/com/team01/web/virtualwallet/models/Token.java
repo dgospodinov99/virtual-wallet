@@ -1,6 +1,7 @@
 package com.team01.web.virtualwallet.models;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tokens")
@@ -20,6 +21,9 @@ public class Token {
 
     @Column(name = "is_active")
     private boolean active;
+
+    @Column(name = "expiration_time")
+    private LocalDateTime expiration;
 
     public Token() {}
 
@@ -53,5 +57,13 @@ public class Token {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public LocalDateTime getExpiration() {
+        return expiration;
+    }
+
+    public void setExpiration(LocalDateTime expiration) {
+        this.expiration = expiration;
     }
 }
