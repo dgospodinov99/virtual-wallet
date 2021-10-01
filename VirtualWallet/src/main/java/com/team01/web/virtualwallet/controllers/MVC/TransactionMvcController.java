@@ -4,22 +4,18 @@ import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
-import com.team01.web.virtualwallet.models.dto.CreateTransactionDto;
-import com.team01.web.virtualwallet.models.dto.FilterTransactionMvcDto;
-import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
+import com.team01.web.virtualwallet.models.dto.*;
 import com.team01.web.virtualwallet.models.enums.TransactionDirection;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
+import com.team01.web.virtualwallet.services.utils.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
@@ -35,16 +31,18 @@ import java.util.stream.Collectors;
 public class TransactionMvcController {
 
     private final UserService userService;
+    private final UserModelMapper userModelMapper;
     private final TransactionService transactionService;
     private final TransactionModelMapper transactionModelMapper;
     private final AuthenticationHelper authenticationHelper;
 
     @Autowired
     public TransactionMvcController(UserService userService,
-                                    TransactionService transactionService,
+                                    UserModelMapper userModelMapper, TransactionService transactionService,
                                     TransactionModelMapper transactionModelMapper,
                                     AuthenticationHelper authenticationHelper) {
         this.userService = userService;
+        this.userModelMapper = userModelMapper;
         this.transactionService = transactionService;
         this.transactionModelMapper = transactionModelMapper;
         this.authenticationHelper = authenticationHelper;
@@ -59,7 +57,7 @@ public class TransactionMvcController {
     public boolean populateIsAdmin(HttpSession session) {
         try {
             return authenticationHelper.tryGetUser(session).isAdmin();
-        }catch (AuthenticationFailureException e) {
+        } catch (AuthenticationFailureException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
     }
@@ -128,10 +126,37 @@ public class TransactionMvcController {
     @GetMapping("/new")
     public String showTransaction(Model model) {
         model.addAttribute("transaction", new CreateTransactionDto());
+        model.addAttribute("searchUser", new SearchUserMvcDto());
+        return "transaction-receiver";
+    }
+
+    @GetMapping("/users/search")
+    public String searchUsers(
+            @ModelAttribute("searchUser") SearchUserMvcDto dto,
+            HttpSession session,
+            Model model) {
+        //todo duplicate
+        var params = new FilterUserParams()
+                .setPhoneNumber(dto.getPhoneNumber())
+                .setUsername(dto.getUsername())
+                .setEmail(dto.getEmail());
+
+        var filtered = userService.filterUsers(params);
+        model.addAttribute("usersDto", filtered);
+
+        return "transaction-receiver";
+    }
+
+    @GetMapping("/new/finalize")
+    public String showTransactionFinalize(@RequestParam Integer receiverId, Model model) {
+        CreateTransactionDto dto = new CreateTransactionDto();
+        dto.setReceiverId(receiverId);
+        model.addAttribute("transaction", dto);
+        model.addAttribute("receiverUsername", userService.getById(receiverId).getUsername());
         return "transaction-new";
     }
 
-    @PostMapping("/new")
+    @PostMapping("/new/finalize")
     public String createTransaction(@Valid @ModelAttribute("transaction") CreateTransactionDto dto, BindingResult bindingResult, HttpSession session) {
         if (bindingResult.hasErrors()) {
             return "transaction-new";

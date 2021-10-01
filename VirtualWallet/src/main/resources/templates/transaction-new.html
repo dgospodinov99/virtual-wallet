@@ -39,20 +39,15 @@
                 <div class="row">
                     <!-- Border Left Utilities -->
                     <div th:align="center" class="col-lg-6">
-                        <form action="#" th:action="@{/myaccount/transactions/new}" th:object="${transaction}" method="post"
+                        <form action="#" th:action="@{/myaccount/transactions/new/finalize}" th:object="${transaction}" method="post"
                               class="user">
                             <div class="form-group col-5">
-                                <label>Select one of your cards</label>
-                                <select class="form-control" th:field="*{receiverId}">
-                                    <option th:each="user : ${users}"
-                                            th:value="${user.getWallet().getId()}"
-                                            th:text="${user.getUsername()}">
-                                        User
-                                    </option>
-                                </select>
+                                <label>User receiving the money:</label>
+                                <h2 th:text="${receiverUsername}"></h2>
                                 <label class="text-danger" th:errors="*{receiverId}">Receiver error placeholder</label></br>
                             </div>
                             <div class="form-group col-5">
+                                <input type="hidden" name="receiverId" th:value="*{receiverId}"/>
                                 <label>Enter amount to send</label>
                                 <input type="number" th:field="*{amount}" class="form-control"
                                        id="exampleAmount" placeholder="Amount">
