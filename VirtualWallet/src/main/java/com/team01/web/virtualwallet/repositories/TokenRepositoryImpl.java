@@ -32,11 +32,11 @@ public class TokenRepositoryImpl implements TokenRepository {
     @Override
     public Token getById(int id) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Token> query = session.createQuery("from Token where id = :id", Token.class);
-            if (query.list().size() == 0) {
+            Token token = session.get(Token.class, id);
+            if (token == null) {
                 throw new EntityNotFoundException("Token", id);
             }
-            return query.getSingleResult();
+            return token;
         }
     }
 

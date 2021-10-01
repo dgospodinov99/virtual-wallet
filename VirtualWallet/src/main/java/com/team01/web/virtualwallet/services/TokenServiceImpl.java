@@ -50,6 +50,8 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public void delete(int id) {
-        tokenRepository.delete(id);
+        Token token = getById(id);
+        token.setActive(false);
+        tokenRepository.update(token);
     }
 }

@@ -46,6 +46,11 @@ public class AuthenticationController {
         this.emailService = emailService;
     }
 
+    @ModelAttribute("isAuthenticated")
+    public boolean populateIsAuthenticated(HttpSession session) {
+        return session.getAttribute("currentUser") != null;
+    }
+
     @GetMapping("/login")
     public String showLoginPage(Model model) {
         model.addAttribute("login", new LoginDto());
@@ -112,22 +117,18 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("/verify/{token}")
-    public String verifyRegistration(@PathVariable String token, HttpSession session) {
+    @GetMapping("/verify/{token}")
+    public String showVerificationPage(@PathVariable String token, Model model, HttpSession session) {
         try {
+
             User user = authenticationHelper.tryGetUser(session);
             Token toVerify = tokenService.getByToken(token);
             user.setBlocked(false);
             tokenService.delete(toVerify.getId());
             userService.update(user);
-        } catch (EntityNotFoundException e) {
-            return "error404";
+        } catch (AuthenticationFailureException | EntityNotFoundException e) {
+            return "error-login-first";
         }
-        return "redirect:/";
-    }
-
-    @GetMapping("/verify/{token}")
-    public String showVerificationPage(@PathVariable String token, Model model) {
         return "verify";
     }
 }
