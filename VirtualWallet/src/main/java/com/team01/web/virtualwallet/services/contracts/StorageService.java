@@ -10,8 +10,6 @@ public interface StorageService {
 
     void store(byte[] bytes, String fileName);
 
-    Stream<Path> loadAll();
-
     Path load(String filename);
 
     Resource loadAsResource(String filename);

@@ -53,19 +53,6 @@ public class StorageServiceImpl implements StorageService {
         }
     }
 
-
-    @Override
-    public Stream<Path> loadAll() {
-        try {
-            return Files.walk(this.rootLocation, 1)
-                    .filter(path -> !path.equals(this.rootLocation))
-                    .map(this.rootLocation::relativize);
-        } catch (IOException e) {
-            throw new StorageException("Failed to read stored files", e);
-        }
-
-    }
-
     @Override
     public Path load(String filename) {
         return rootLocation.resolve(filename);
@@ -87,19 +74,4 @@ public class StorageServiceImpl implements StorageService {
             throw new StorageFileNotFoundException("Could not read file: " + filename, e);
         }
     }
-
-//    @Override
-//    public void deleteAll() {
-//        FileSystemUtils.deleteRecursively(rootLocation.toFile());
-//    }
-//
-//    @Override
-//    public void init() {
-//        try {
-//            Files.createDirectories(rootLocation);
-//        }
-//        catch (IOException e) {
-//            throw new StorageException("Could not initialize storage", e);
-//        }
-//    }
 }
