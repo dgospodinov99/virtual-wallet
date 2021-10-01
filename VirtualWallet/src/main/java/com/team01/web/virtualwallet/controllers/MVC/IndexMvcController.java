@@ -1,5 +1,7 @@
 package com.team01.web.virtualwallet.controllers.MVC;
 
+import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
+import com.team01.web.virtualwallet.exceptions.AuthenticationFailureException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.TransactionDto;
@@ -9,10 +11,12 @@ import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
 import com.team01.web.virtualwallet.services.utils.TransferModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -26,23 +30,23 @@ public class IndexMvcController {
     private final TransferService transferService;
     private final TransferModelMapper transferModelMapper;
     private final TransactionModelMapper transactionModelMapper;
+    private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public IndexMvcController(UserService userService, TransferService transferService, TransferModelMapper transferModelMapper, TransactionModelMapper transactionModelMapper) {
+    public IndexMvcController(UserService userService, TransferService transferService, TransferModelMapper transferModelMapper, TransactionModelMapper transactionModelMapper, AuthenticationHelper authenticationHelper) {
         this.userService = userService;
         this.transferService = transferService;
         this.transferModelMapper = transferModelMapper;
         this.transactionModelMapper = transactionModelMapper;
+        this.authenticationHelper = authenticationHelper;
     }
 
     @GetMapping
     public String showHomePage(HttpSession session) {
         try {
-            if(session.getAttribute("currentUser") == null){
-                return "redirect:/auth/login";
-            }
+            authenticationHelper.tryGetUser(session);
             return "index";
-        }catch (EntityNotFoundException e){
+        } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
 
@@ -53,26 +57,37 @@ public class IndexMvcController {
         return session.getAttribute("currentUser") != null;
     }
 
-    @ModelAttribute("balance")
-    public double populateBalance(HttpSession session){
+    @ModelAttribute("isAdmin")
+    public boolean populateIsAdmin(HttpSession session) {
         try {
-            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+            return authenticationHelper.tryGetUser(session).isAdmin();
+        } catch (AuthenticationFailureException e) {
+            showHomePage(session);
+            return false;
+        }
+    }
+
+
+    @ModelAttribute("balance")
+    public double populateBalance(HttpSession session) {
+        try {
+            User user = authenticationHelper.tryGetUser(session);
             return user.getWallet().getBalance();
-        }catch (EntityNotFoundException e){
+        } catch (AuthenticationFailureException e) {
             showHomePage(session);
             return 0;
         }
     }
 
     @ModelAttribute("transactions")
-    public List<TransactionDto> populateTransactions(HttpSession session){
+    public List<TransactionDto> populateTransactions(HttpSession session) {
         try {
-            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+            User user = authenticationHelper.tryGetUser(session);
             return userService.getUserLatestTransactions(user)
                     .stream()
                     .map(transactionModelMapper::toDto)
                     .collect(Collectors.toList());
-        }catch (EntityNotFoundException e){
+        } catch (AuthenticationFailureException e) {
             showHomePage(session);
             return List.of();
         }
@@ -80,14 +95,14 @@ public class IndexMvcController {
 
 
     @ModelAttribute("transfers")
-    public List<TransferDto> populateTransfers(HttpSession session){
+    public List<TransferDto> populateTransfers(HttpSession session) {
         try {
-            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+            User user = authenticationHelper.tryGetUser(session);
             return transferService.getUserLatestTransfers(user).stream()
                     .map(transferModelMapper::toDto)
                     .collect(Collectors.toList());
 
-        }catch (EntityNotFoundException e){
+        } catch (AuthenticationFailureException e) {
             showHomePage(session);
             return List.of();
         }

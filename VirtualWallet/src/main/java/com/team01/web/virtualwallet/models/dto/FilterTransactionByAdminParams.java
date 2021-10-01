@@ -32,6 +32,15 @@ public class FilterTransactionByAdminParams {
         return this;
     }
 
+    public FilterTransactionByAdminParams setSenderId(Optional<Integer> senderId) {
+        this.senderId = senderId;
+        return this;
+    }
+
+    public FilterTransactionByAdminParams setReceiverId(Optional<Integer> receiverId) {
+        this.receiverId = receiverId;
+        return this;
+    }
     public FilterTransactionByAdminParams setSortParam(String sortParam) {
         this.sortParam = Optional.ofNullable(sortParam);
         return this;

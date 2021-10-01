@@ -7,7 +7,6 @@ import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
-import com.team01.web.virtualwallet.models.dto.FilterTransactionDto;
 import com.team01.web.virtualwallet.models.dto.FilterTransactionByAdminParams;
 import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.TransactionRepository;

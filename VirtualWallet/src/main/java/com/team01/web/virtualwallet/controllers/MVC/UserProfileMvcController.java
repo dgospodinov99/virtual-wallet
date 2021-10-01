@@ -43,6 +43,7 @@ public class UserProfileMvcController {
         return session.getAttribute("currentUser") != null;
     }
 
+
     @ModelAttribute("user")
     public User populateUser(HttpSession session) {
         try {
@@ -51,6 +52,16 @@ public class UserProfileMvcController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
+    @ModelAttribute("isAdmin")
+    public boolean populateIsAdmin(HttpSession session) {
+        try {
+            return authenticationHelper.tryGetUser(session).isAdmin();
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
+
 
     @GetMapping
     public String showUserProfile() {

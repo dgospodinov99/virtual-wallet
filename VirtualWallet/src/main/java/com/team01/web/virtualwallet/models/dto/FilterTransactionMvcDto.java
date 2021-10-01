@@ -2,7 +2,7 @@ package com.team01.web.virtualwallet.models.dto;
 
 import com.team01.web.virtualwallet.models.enums.TransactionDirection;
 
-public class FilterTransactionDto {
+public class FilterTransactionMvcDto {
 
     private int walletId;
 
@@ -12,7 +12,7 @@ public class FilterTransactionDto {
 
     private TransactionDirection direction;
 
-    public FilterTransactionDto() {
+    public FilterTransactionMvcDto() {
     }
 
     public String getStartDate() {

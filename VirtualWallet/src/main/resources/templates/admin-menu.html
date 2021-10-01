@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Virtual Wallet</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="../static/vendor/fontawesome-free/css/all.min.css" th:href="@{/vendor/fontawesome-free/css/all.min.css}"
+          rel="stylesheet" type="text/css">
+    <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="../static/css/sb-admin-2.min.css" th:href="@{/css/sb-admin-2.css}" rel="stylesheet">
+
+</head>
+<body>
+
+<!-- Content Wrapper -->
+<div id="content-wrapper" class="d-flex flex-column">
+
+    <!-- Main Content -->
+    <div id="content">
+
+        <div th:replace="/fragments/navbar.html :: navbar"/>
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+            <a class="btn btn-primary" data-toggle="collapse" href="#collapseUsers" role="button" aria-expanded="false"
+               aria-controls="collapseExample">
+                List of all Users
+            </a>
+
+            <button class="btn btn-primary" type="button"
+                    data-toggle="collapse" data-target="#collapseTransactions"
+                    aria-expanded="false" aria-controls="collapseTransactions">List of Transactions
+            </button>
+
+
+            <!-- List of Users -->
+            <div class="card shadow mb-4">
+                <div class="collapse multi-collapse" id="collapseUsers">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">List of all Users</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+
+                            <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search"
+                                  action="#" th:action="@{/myaccount/admin/users/search}"
+                                  method="get" th:object="${searchUser}">
+
+
+                                <div class="form-group row">
+
+                                    <!--                                <label class="control-label">Username</label>-->
+                                    <input type="text" class="form-control bg-light border-0 small"
+                                           placeholder="Search by username"
+                                           aria-label="Search" aria-describedby="basic-addon2" th:field="*{username}">
+                                    <br/>
+                                    <br/>
+                                    <!--                                <label class="control-label">Email</label>-->
+                                    <input type="text" class="form-control bg-light border-0 small"
+                                           placeholder="Search by email"
+                                           aria-label="Search" aria-describedby="basic-addon2" th:field="*{email}">
+                                    <br/>
+                                    <br/>
+                                    <!--                                <label class="control-label">Phonenumber</label>-->
+                                    <input type="text" class="form-control bg-light border-0 small"
+                                           placeholder="Search by phone number"
+                                           aria-label="Search" aria-describedby="basic-addon2"
+                                           th:field="*{phoneNumber}">
+
+                                    <br/>
+                                    <br/>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" type="button" th:type="submit">
+                                            <i class="fas fa-search fa-sm"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="row"/>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped" data-page-length='50'
+                                   data-order='[[1, "desc"]]' width="100%" cellspacing="0">
+                                <thead>
+                                <tr>
+
+                                    <th scope="col" th:text="#{admin.menu.username}">Username</th>
+                                    <th scope="col" th:text="#{admin.menu.email}">Email</th>
+                                    <th scope="col" th:text="#{admin.menu.phone}">Phone#</th>
+                                    <th scope="col" th:text="#{admin.menu.balance}">Balance</th>
+                                    <th scope="col" th:text="#{admin.menu.status}">Status</th>
+                                    <th scope="col" th:text="#{admin.menu.actions}">Actions</th>
+
+                                </tr>
+                                </thead>
+
+                                <tfoot>
+                                <tr>
+                                    <th scope="col" th:text="#{admin.menu.username}">Username</th>
+                                    <th scope="col" th:text="#{admin.menu.email}">Email</th>
+                                    <th scope="col" th:text="#{admin.menu.phone}">Phone#</th>
+                                    <th scope="col" th:text="#{admin.menu.balance}">Balance</th>
+                                    <th scope="col" th:text="#{admin.menu.status}">Status</th>
+                                    <th scope="col" th:text="#{admin.menu.actions}">Actions</th>
+                                </tr>
+                                </tfoot>
+                                <div th:each="user : ${usersDto}">
+                                    <tbody>
+                                    <tr>
+
+                                        <td style="color: dodgerblue" th:text="${user.username}">Username</td>
+                                        <td style="color: dodgerblue" th:text="${user.email}">Email</td>
+                                        <td style="color: dodgerblue" th:text="${user.phoneNumber}">PhoneNumber</td>
+                                        <td style="color: dodgerblue" th:text="${user.balance}">100.00</td>
+
+                                        <td th:if="${user.isBlocked()}" style="color: red" th:text="${user.status}">
+                                            Status
+                                        </td>
+                                        <td th:unless="${user.isBlocked()}" style="color: green"
+                                            th:text="${user.status}">Status
+                                        </td>
+
+                                        <td th:if="${user.isBlocked()}">
+                                            <form action="#" th:action="@{/myaccount/admin/unblock}"
+                                                  method="post" th:object="${blockDto}">
+
+                                                <input type="hidden" name="username" th:value="${user.username}"/>
+                                                <input class="btn btn-primary btn-user btn-block col-6" th:type="submit"
+                                                       th:value="Unblock">
+                                            </form>
+                                        </td>
+
+                                        <td th:unless="${user.isBlocked()}">
+                                            <form action="#" th:action="@{/myaccount/admin/block}"
+                                                  method="post" th:object="${blockDto}">
+
+                                                <input type="hidden" name="username" th:value="${user.username}"/>
+                                                <input class="btn btn-danger btn-user btn-block col-6" th:type="submit"
+                                                       th:value="Block">
+                                            </form>
+                                        </td>
+
+                                    </tr>
+                                    </tbody>
+                                </div>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- List of Transactions-->
+            <div class="card shadow mb-4">
+                <div class="collapse multi-collapse" id="collapseTransactions">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">List of all Transactions</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+
+                            <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search"
+                                  action="#" th:action="@{/myaccount/admin/transactions/search}"
+                                  method="get" th:object="${filterTransaction}">
+
+                                <div class="form-group row">
+                                    <div class="col-sm-4 mb-3 mb-sm-0">
+                                        <label class="control-label" th:text="#{admin.menu.filter.start.date}">Start Date</label>
+                                    </div>
+                                    <div class="col-sm-6 mb-3 mb-sm-0">
+                                        <label class="control-label" th:text="#{admin.menu.filter.end.date}">End Date</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <input class="form-control bg-light border-0 small" type="datetime-local"
+                                           th:field="*{startDate}"/>
+                                    <input class="form-control bg-light border-0 small" placeholder="DD/MM/YYYY"
+                                           type="datetime-local" th:field="*{endDate}"/>
+                                </div>
+
+                                <div class="form-group row">
+
+                                    <div class="row-cols-10 mb-3 mb-sm-0">
+                                        <label class="control-label" th:text="#{admin.menu.filter.sender}">Sender</label>
+                                        <select class="form-control bg-light border-0 small" th:field="*{senderId}">
+                                            <option selected value="-1">Any</option>
+                                            <option th:each="user : ${users}"
+                                                    th:value="${user.id}"
+                                                    th:text="${user.username}">
+                                                User
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <br/>
+                                    <br/>
+                                    <div class="row-cols-10 mb-3 mb-sm-0">
+                                        <label class="control-label" th:text="#{admin.menu.filter.receiver}">Receiver</label>
+                                        <select class="form-control bg-light border-0 small" th:field="*{receiverId}">
+                                            <option selected value="-1">Any</option>
+                                            <option th:each="user : ${users}"
+                                                    th:value="${user.id}"
+                                                    th:text="${user.username}">
+                                                User
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <br/>
+                                    <br/>
+
+                                    <div class="col-sm-2">
+                                        <label class="control-label"></br></label>
+                                        <input class="form-control btn btn-primary btn-user btn-block" th:type="submit"
+                                               th:value="Filter">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="row"/>
+
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="dataTable" data-page-length='50'
+                                   data-order='[[1, "desc"]]' width="100%" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th scope="col" th:text="#{admin.menu.sender}">Sender</th>
+                                    <th scope="col" th:text="#{admin.menu.receiver}">Receiver</th>
+                                    <th scope="col" th:text="#{admin.menu.amount}">Amount</th>
+                                    <th scope="col" th:text="#{admin.menu.date}">Date</th>
+                                </tr>
+                                </thead>
+
+                                <tfoot>
+                                <tr>
+                                    <th scope="col" th:text="#{admin.menu.sender}">Sender</th>
+                                    <th scope="col" th:text="#{admin.menu.receiver}">Receiver</th>
+                                    <th scope="col" th:text="#{admin.menu.amount}">Amount</th>
+                                    <th scope="col" th:text="#{admin.menu.date}">Date</th>
+                                </tr>
+                                </tfoot>
+                                <div th:each="transaction : ${transactions}">
+                                    <tbody>
+                                    <tr>
+
+                                        <td style="color: dodgerblue" th:text="${transaction.sender}">Sender Name</td>
+                                        <td style="color: dodgerblue" th:text="${transaction.receiver}">Receiver Name
+                                        </td>
+                                        <td style="color: dodgerblue" th:text="${transaction.amount}">Amount</td>
+                                        <td style="color: dodgerblue" th:text="${transaction.timestamp}">Date</td>
+
+                                    </tr>
+                                    </tbody>
+                                </div>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.container-fluid -->
+
+    </div>
+    <!-- End of Main Content -->
+
+    <!-- Footer -->
+    <footer class="sticky-footer bg-white">
+        <div class="container my-auto">
+            <div class="copyright text-center my-auto">
+                <span>Team01 © Virtual Wallet 2021</span>
+            </div>
+        </div>
+    </footer>
+    <!-- End of Footer -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="#" th:href="@{/auth/logout}">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of Content Wrapper -->
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+
+<!-- Core plugin JavaScript-->
+<script th:src="@{/vendor/jquery-easing/jquery.easing.min.js}"></script>
+
+<!-- Custom scripts for all pages-->
+<script th:src="@{/js/sb-admin-2.min.js}"></script>
+
+<!-- Page level plugins -->
+<script th:src="@{/vendor/chart.js/Chart.min.js}"></script>
+
+<!-- Page level custom scripts -->
+<script th:src="@{/js/demo/chart-area-demo.js}"></script>
+<script th:src="@{/js/demo/chart-pie-demo.js}"></script>
+
+
+<!-- Include jQuery -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<!-- Include Date Range Picker -->
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
+</body>
+</html>

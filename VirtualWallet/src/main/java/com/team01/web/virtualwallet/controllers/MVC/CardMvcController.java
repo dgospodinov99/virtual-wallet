@@ -48,9 +48,11 @@ public class CardMvcController {
     }
 
     @ModelAttribute("user")
-    public User populateUser(HttpSession session) {
+    public User populateUser(HttpSession session, Model model) {
         try {
-            return authenticationHelper.tryGetUser(session);
+            User user = authenticationHelper.tryGetUser(session);
+            model.addAttribute("isAdmin", user.isAdmin());
+            return user;
         } catch (AuthenticationFailureException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
@@ -58,7 +60,7 @@ public class CardMvcController {
 
     @ModelAttribute("cards")
     public List<CardDto> populateUserCards(HttpSession session) {
-        return populateUser(session).getCards()
+        return authenticationHelper.tryGetUser(session).getCards()
                 .stream()
                 .map(card -> modelMapper.toDto(card))
                 .collect(Collectors.toList());
@@ -68,11 +70,9 @@ public class CardMvcController {
     @GetMapping()
     public String showCards(HttpSession session) {
         try {
-            if (session.getAttribute("currentUser") == null) {
-                return "redirect:/auth/login";
-            }
+            authenticationHelper.tryGetUser(session);
             return "cards";
-        } catch (EntityNotFoundException e) {
+        } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
     }

@@ -5,7 +5,7 @@ import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.CreateTransactionDto;
-import com.team01.web.virtualwallet.models.dto.FilterTransactionDto;
+import com.team01.web.virtualwallet.models.dto.FilterTransactionMvcDto;
 import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
 import com.team01.web.virtualwallet.models.enums.TransactionDirection;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
@@ -55,6 +55,15 @@ public class TransactionMvcController {
         return session.getAttribute("currentUser") != null;
     }
 
+    @ModelAttribute("isAdmin")
+    public boolean populateIsAdmin(HttpSession session) {
+        try {
+            return authenticationHelper.tryGetUser(session).isAdmin();
+        }catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
     @ModelAttribute("user")
     public User populateUser(HttpSession session) {
         try {
@@ -70,13 +79,13 @@ public class TransactionMvcController {
     }
 
     @ModelAttribute("filterDto")
-    public FilterTransactionDto populateFilterDto() {
-        return new FilterTransactionDto();
+    public FilterTransactionMvcDto populateFilterDto() {
+        return new FilterTransactionMvcDto();
     }
 
     @GetMapping("")
     public String showActivity(HttpSession session, Model model) {
-        User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+        User user = authenticationHelper.tryGetUser(session);
 
         var transactions = userService.getUserTransactions(user.getId(), user)
                 .stream()
@@ -88,7 +97,7 @@ public class TransactionMvcController {
     }
 
     @GetMapping("/filter")
-    public String filterTransactions(@ModelAttribute FilterTransactionDto dto, HttpSession session, Model model) {
+    public String filterTransactions(@ModelAttribute("filterDto") FilterTransactionMvcDto dto, HttpSession session, Model model) {
         dto.setWalletId(populateUser(session).getWallet().getId());
         Optional<TransactionDirection> direction = dto.getDirection() == null ? Optional.empty() : Optional.of(dto.getDirection());
         Optional<LocalDateTime> startDate = dto.getStartDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getStartDate()));
@@ -128,7 +137,7 @@ public class TransactionMvcController {
             return "transaction-new";
         }
         try {
-            User user = userService.getByUsername(String.valueOf(session.getAttribute("currentUser")));
+            User user = authenticationHelper.tryGetUser(session);
             Transaction transaction = transactionModelMapper.fromDto(dto);
             transaction.setSender(user.getWallet());
             transactionService.create(transaction, user);

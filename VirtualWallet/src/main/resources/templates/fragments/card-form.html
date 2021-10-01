@@ -22,19 +22,19 @@
 <form th:fragment="card-form" action="#" th:action="@{__${#httpServletRequest.requestURI}__}" th:object="${card}" method="post"
       class="user">
     <div class="form-group col-5">
-        <label>Card Number</label><br/>
+        <label th:text="#{card.form.number}">Card Number</label><br/>
         <input type="text" class="form-control" placeholder="Enter card number" th:field="*{cardNumber}"/>
         <label class="text-danger" th:errors="*{cardNumber}">Card number error placeholder</label>
         <br/>
-        <label>Card Holder</label><br/>
+        <label th:text="#{card.form.holder}">Card Holder</label><br/>
         <input type="text" class="form-control" placeholder="First and last name" th:field="*{holder}"/>
         <label class="text-danger" th:errors="*{holder}">Holder error placeholder</label>
         <br/>
-        <label>Check Number</label><br/>
+        <label th:text="#{card.form.check}">Check Number</label><br/>
         <input type="text" class="form-control" placeholder="Security code" th:field="*{checkNumber}" />
         <label class="text-danger" th:errors="*{checkNumber}">Check Number error placeholder</label>
         <br/>
-        <label>Expiration Date</label><br/>
+        <label th:text="#{card.form.exp.date}">Expiration Date</label><br/>
         <input type="text" class="form-control" placeholder="mm/yyyy" th:field="*{expirationDate}"/>
         <label class="text-danger" th:errors="*{expirationDate}">Expiration Date error placeholder</label>
         <br/>

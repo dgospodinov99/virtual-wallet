@@ -48,18 +48,18 @@
                               method="get">
                             <div class="form-group row"> <!-- Date input -->
                                 <div class="col-sm-4 mb-3 mb-sm-0">
-                                    <label class="control-label">Start Date</label>
+                                    <label class="control-label" th:text="#{activity.filter.start.date}">Start Date</label>
                                     <input class="form-control" type="datetime-local" th:field="*{startDate}"/>
                                 </div>
 
                                 <div class="col-sm-4">
-                                    <label class="control-label">End Date</label>
+                                    <label class="control-label" th:text="#{activity.filter.end.date}">End Date</label>
                                     <input class="form-control" placeholder="DD/MM/YYYY" th:field="*{endDate}"
                                            type="datetime-local"/>
                                 </div>
 
                                 <div class="col-sm-2">
-                                    <label class="control-label">Direction</label>
+                                    <label class="control-label" th:text="#{activity.filter.direction}">Direction</label>
                                     <!--                                    <select class="form-check">-->
                                     <select class="form-control" th:field="*{direction}">
                                         <option selected value="">Any</option>
@@ -94,20 +94,20 @@
                             <thead>
                             <tr>
 
-                                <th scope="col">Amount</th>
-                                <th scope="col">From</th>
-                                <th scope="col">To</th>
-                                <th scope="col">Date</th>
+                                <th scope="col" th:text="#{activity.transaction.amount}">Amount</th>
+                                <th scope="col" th:text="#{activity.transaction.from}">From</th>
+                                <th scope="col" th:text="#{activity.transaction.to}">To</th>
+                                <th scope="col" th:text="#{activity.transaction.date}">Date</th>
 
                             </tr>
                             </thead>
 
                             <tfoot>
                             <tr>
-                                <th>Amount</th>
-                                <th>From</th>
-                                <th>To</th>
-                                <th>Date</th>
+                                <th th:text="#{activity.transaction.amount}">Amount</th>
+                                <th th:text="#{activity.transaction.from}">From</th>
+                                <th th:text="#{activity.transaction.to}">To</th>
+                                <th th:text="#{activity.transaction.date}">Date</th>
                             </tr>
                             </tfoot>
                             <div th:each="transaction : ${transactions}">

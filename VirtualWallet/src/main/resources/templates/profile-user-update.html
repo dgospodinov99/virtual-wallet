@@ -42,11 +42,11 @@
                         <form action="#" th:action="@{/myaccount/update}" th:object="${dto}" method="post"
                               class="user">
                             <div class="form-group col-5">
-                                <label>Email</label><br/>
+                                <label th:text="#{user.profile.email}">Email</label><br/>
                                 <input type="text" class="form-control" placeholder="Email" th:field="*{email}"/>
                                 <label class="text-danger" th:errors="*{email}">Email error placeholder</label>
                                 </br>
-                                <label>Phone Number</label><br/>
+                                <label th:text="#{user.profile.phone}">Phone Number</label><br/>
                                 <input type="text" class="form-control" placeholder="Phone Number" th:field="*{phoneNumber}"/>
                                 <label class="text-danger" th:errors="*{phoneNumber}">PhoneNumber error placeholder</label>
                                 </br>
