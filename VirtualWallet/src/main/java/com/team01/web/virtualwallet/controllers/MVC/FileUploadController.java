@@ -58,8 +58,7 @@ public class FileUploadController {
             byte[] bytes = file.getBytes();
 
             storageService.store(bytes, filename);
-            redirectAttributes.addFlashAttribute("message",
-                    "You successfully uploaded " + file.getOriginalFilename() + "!");
+            session.setAttribute("currentUserImage", filename);
         } catch (StorageException e) {
             redirectAttributes.addFlashAttribute("message", e.getMessage());
         }
