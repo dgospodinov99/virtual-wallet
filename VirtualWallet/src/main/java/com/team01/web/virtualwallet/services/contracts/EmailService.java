@@ -9,6 +9,6 @@ public interface EmailService {
 
     Token sendVerifyRegistrationEmail(String recipientEmail);
 
-    void sendVerifyTransactionEmail(String recipientEmail, int code);
+    Token sendVerifyTransactionEmail(String recipientEmail);
 
 }

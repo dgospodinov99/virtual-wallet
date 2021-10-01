@@ -13,10 +13,16 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.Message;
 import javax.mail.internet.InternetAddress;
+import java.time.LocalDateTime;
 import java.util.Random;
 
 @Service
 public class EmailServiceImpl implements EmailService {
+
+    private final static int TOKEN_EXPIRATION_MINUTES = 30;
+    private final static String VERIFICATION_URL = "http://localhost:8080/auth/verify/";
+    private final static String VERIFY_EMAIL_SUBJECT = "Email Verification";
+    private final static String LARGE_TRANSACTION_VERIFICATION_SUBJECT = "Large Transaction Verification";
 
     private final EmailConfig emailConfig;
     private final JavaMailSender mailSender;
@@ -44,26 +50,11 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public Token sendVerifyRegistrationEmail(String recipientEmail) {
-        int leftLimit = 48; // numeral '0'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 10;
-        Random random = new Random();
-
-        String token = random.ints(leftLimit, rightLimit + 1)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-        SimpleMailMessage toSend = new SimpleMailMessage();
-        String url="http://localhost:8080/auth/verify/" + token;
+        String token = generateToken();
+        String url=VERIFICATION_URL + token;
         String content="<a href='"+url+"'>"+url+"</a>";
         String message = "Please click on the following link to complete your registration: \n" + content;
-        MimeMessagePreparator preparator = mimeMessage -> {
-            mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(recipientEmail));
-            mimeMessage.setFrom(new InternetAddress(emailConfig.getUsername()));
-            mimeMessage.setSubject("Email Verification");
-            mimeMessage.setText(message, "UTF-8", "html");
-        };
+        MimeMessagePreparator preparator = prepareMessage(recipientEmail, VERIFY_EMAIL_SUBJECT, message);
         Token tokenToSave = new Token();
         tokenToSave.setActive(true);
         tokenToSave.setUser(userService.getByEmail(recipientEmail));
@@ -74,9 +65,40 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendVerifyTransactionEmail(String recipientEmail, int code) {
-        String message = "Please confirm large transaction using the code: " + code;
-        sendSimpleMessage(recipientEmail, "Large Transaction Verification", message);
+    public Token sendVerifyTransactionEmail(String recipientEmail) {
+        String token = generateToken();
+        String message = "Please confirm large transaction using the code: " + token;
+        MimeMessagePreparator preparator = prepareMessage(recipientEmail,
+                LARGE_TRANSACTION_VERIFICATION_SUBJECT, message);
+        Token tokenToSave = new Token();
+        tokenToSave.setExpiration(LocalDateTime.now().plusMinutes(TOKEN_EXPIRATION_MINUTES));
+        tokenToSave.setUser(userService.getByEmail(recipientEmail));
+        tokenToSave.setToken(token);
+        tokenService.create(tokenToSave);
+        mailSender.send(preparator);
+        return tokenToSave;
+    }
+
+    private String generateToken() {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        return random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+    }
+
+    public MimeMessagePreparator prepareMessage(String recipient, String subject, String message) {
+        return mimeMessage -> {
+            mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
+            mimeMessage.setFrom(new InternetAddress(emailConfig.getUsername()));
+            mimeMessage.setSubject(subject);
+            mimeMessage.setText(message, "UTF-8", "html");
+        };
     }
 
 }
