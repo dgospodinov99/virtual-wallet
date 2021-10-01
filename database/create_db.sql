@@ -69,11 +69,12 @@ create table cards
 
 create table tokens
 (
-    token_id  int auto_increment
+    token_id        int auto_increment
         primary key,
-    token     varchar(10) not null,
-    user_id   int         not null,
-    is_active tinyint(1)  not null,
+    token           varchar(10) not null,
+    user_id         int         not null,
+    is_active       tinyint(1)  not null,
+    expiration_time datetime    null,
     constraint tokens_users_user_id_fk
         foreign key (user_id) references users (user_id)
 );
