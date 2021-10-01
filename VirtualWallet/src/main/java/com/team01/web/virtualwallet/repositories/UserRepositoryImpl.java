@@ -92,6 +92,21 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public User search(String searchItem) {
+        try (Session session = sessionFactory.openSession()){
+            Query<User> query = session.createQuery("from User where " +
+                    "username like concat('%', :searchItem, '%') " +
+                    "or email like concat('%', :searchItem, '%') " +
+                    "or phoneNumber like concat('%', :searchItem, '%')");
+            query.setParameter("searchItem", searchItem);
+            if (query.list().size() == 0) {
+                throw new EntityNotFoundException("User", "Property", searchItem);
+            }
+            return query.getSingleResult();
+        }
+    }
+
+    @Override
     public List<User> filterUsers(FilterUserParams fup) {
         try (Session session = sessionFactory.openSession()) {
             StringBuilder baseQuery = new StringBuilder().append("from User");

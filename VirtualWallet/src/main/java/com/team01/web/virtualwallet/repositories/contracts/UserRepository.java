@@ -19,6 +19,8 @@ public interface UserRepository {
 
     User getByPhoneNumber(String phoneNumber);
 
+    User search(String searchItem);
+
     void create(User user);
 
     void update(User user);
