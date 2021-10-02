@@ -30,16 +30,10 @@ public class CardServiceTests {
     @Test
     public void getAll_Should_Call_Repository() {
         //Arrange, Act
-        mockService.getAll(createMockAdmin());
+        mockService.getAll();
         // Assert
         Mockito.verify(mockRepository, Mockito.times(1))
                 .getAll();
-    }
-
-    @Test
-    public void getAll_Should_Throw_If_User_Not_Admin() {
-        Assertions.assertThrows(UnauthorizedOperationException.class,
-                () -> mockService.getAll(createMockUser()));
     }
 
     @Test
