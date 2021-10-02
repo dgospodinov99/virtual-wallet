@@ -21,6 +21,7 @@ public class TransactionServiceImpl implements TransactionService {
     private static final String USER_AND_WALLET_DONT_MATCH_ERROR = "Users can make transfers only from their own or shared wallet!";
     private static final double LARGE_TRANSACTION_AMOUNT = 1000;
     private static final String LARGE_TRANSACTION_MESSAGE = "A verification code has been sent to your email to verify large transaction.";
+    private static final String BALANCE_IS_NOT_ENOUGH = "Balance is not enough";
 
     private final TransactionRepository transactionRepository;
     private final WalletService walletService;
@@ -65,8 +66,8 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public void create(Transaction transaction, User executor) {
         validateUser(executor, transaction.getSender());
-        validateUserStatus(executor);
-        validateTransfer(transaction.getSender(), transaction.getAmount());
+        validateUserNotBlocked(executor);
+        validateBalance(transaction.getSender(), transaction.getAmount());
         validateTransaction(executor.getWallet(), transaction.getReceiver());
         if (transaction.getAmount() > LARGE_TRANSACTION_AMOUNT) {
             throw new LargeTransactionDetectedException(LARGE_TRANSACTION_MESSAGE);
@@ -77,13 +78,13 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.create(transaction);
     }
 
-    private void validateTransfer(Wallet sender, double amount) {
+    private void validateBalance(Wallet sender, double amount) {
         if (amount > sender.getBalance()) {
-            throw new InvalidTransferException("Balance is not enough");
+            throw new InvalidTransferException(BALANCE_IS_NOT_ENOUGH);
         }
     }
 
-    private void validateUserStatus(User user) {
+    private void validateUserNotBlocked(User user) {
         if (user.isBlocked()) {
             throw new BlockedUserException(USER_BLOCKED_MESSAGE);
         }
