@@ -34,7 +34,7 @@ public class CustomErrorController implements ErrorController {
             }
 
         }
-        return "error500";
+        return getErrorPath();
     }
 
     public String getErrorPath() {
