@@ -9,6 +9,7 @@ import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.*;
 import com.team01.web.virtualwallet.models.enums.UserSortOptions;
+import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
@@ -29,6 +30,7 @@ public class UserRestController {
 
     private final UserService service;
     private final UserModelMapper modelMapper;
+    private final TransactionService transactionService;
     private final TransactionModelMapper transactionModelMapper;
     private final AuthenticationHelper authenticationHelper;
     private final GlobalExceptionHandler globalExceptionHandler;
@@ -36,10 +38,11 @@ public class UserRestController {
     @Autowired
     public UserRestController(UserService service,
                               UserModelMapper modelMapper,
-                              TransactionModelMapper transactionModelMapper, AuthenticationHelper authenticationHelper,
+                              TransactionService transactionService, TransactionModelMapper transactionModelMapper, AuthenticationHelper authenticationHelper,
                               GlobalExceptionHandler globalExceptionHandler) {
         this.service = service;
         this.modelMapper = modelMapper;
+        this.transactionService = transactionService;
         this.transactionModelMapper = transactionModelMapper;
         this.authenticationHelper = authenticationHelper;
         this.globalExceptionHandler = globalExceptionHandler;
@@ -94,8 +97,8 @@ public class UserRestController {
                                                  @RequestParam(required = false) String direction) {
         try {
             User executor = authenticationHelper.tryGetUser(headers);
-
-            return service.getUserTransactions(id,executor)
+            User user = service.getById(id);
+            return transactionService.getUserTransactions(user)
                     .stream()
                     .map(transfer -> transactionModelMapper.toDto(transfer))
                     .collect(Collectors.toList());

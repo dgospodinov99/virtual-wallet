@@ -30,10 +30,6 @@ public interface UserService {
 
     List<User> filterUsers(FilterUserParams params);
 
-    List<Transaction> getUserTransactions(int id, User executor);
-
-    List<Transaction> getUserLatestTransactions(User executor);
-
     User search(String searchItem);
 
     void create(User user);

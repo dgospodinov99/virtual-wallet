@@ -109,19 +109,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Transaction> getUserTransactions(int id, User executor) {
-        User user = getById(id);
-        validateUser(executor,user.getWallet());
-
-        return transactionService.getUserTransactions(user);
-    }
-
-    @Override
-    public List<Transaction> getUserLatestTransactions(User executor) {
-        return transactionService.getUserLatestTransactions(executor);
-    }
-
-    @Override
     public User search(String searchItem) {
         return userRepository.search(searchItem);
     }

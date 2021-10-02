@@ -85,7 +85,7 @@ public class TransactionMvcController {
     public String showActivity(HttpSession session, Model model) {
         User user = authenticationHelper.tryGetUser(session);
 
-        var transactions = userService.getUserTransactions(user.getId(), user)
+        var transactions = transactionService.getUserTransactions(user)
                 .stream()
                 .map(transaction -> transactionModelMapper.toDto(transaction))
                 .collect(Collectors.toList());
@@ -127,7 +127,7 @@ public class TransactionMvcController {
     public String showTransaction(Model model) {
         model.addAttribute("transaction", new CreateTransactionDto());
         model.addAttribute("searchUser", new SearchUserMvcDto());
-        return "transaction-receiver";
+        return "transaction-new";
     }
 
     @GetMapping("/users/search")
@@ -144,7 +144,7 @@ public class TransactionMvcController {
         var filtered = userService.filterUsers(params);
         model.addAttribute("usersDto", filtered);
 
-        return "transaction-receiver";
+        return "transaction-new";
     }
 
     @GetMapping("/new/finalize")
@@ -153,13 +153,13 @@ public class TransactionMvcController {
         dto.setReceiverId(receiverId);
         model.addAttribute("transaction", dto);
         model.addAttribute("receiverUsername", userService.getById(receiverId).getUsername());
-        return "transaction-new";
+        return "transaction-finalize";
     }
 
     @PostMapping("/new/finalize")
     public String createTransaction(@Valid @ModelAttribute("transaction") CreateTransactionDto dto, BindingResult bindingResult, HttpSession session) {
         if (bindingResult.hasErrors()) {
-            return "transaction-new";
+            return "transaction-finalize";
         }
         try {
             User user = authenticationHelper.tryGetUser(session);
@@ -169,10 +169,10 @@ public class TransactionMvcController {
             return "redirect:/myaccount/transactions";
         } catch (InvalidTransferException e) {
             bindingResult.rejectValue("amount", "amount_error", e.getMessage());
-            return "transaction-new";
+            return "transaction-finalize";
         } catch (InvalidUserInput | BlockedUserException | UnauthorizedOperationException e) {
             bindingResult.rejectValue("receiverId", "transaction_error", e.getMessage());
-            return "transaction-new";
+            return "transaction-finalize";
         }
     }
 
