@@ -33,15 +33,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final WalletService walletService;
     private final CardService cardService;
-    private final TransactionService transactionService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, WalletService walletService, CardService cardService, TransactionService transactionService) {
+    public UserServiceImpl(UserRepository userRepository, WalletService walletService, CardService cardService) {
         this.userRepository = userRepository;
         this.walletService = walletService;
         this.cardService = cardService;
 
-        this.transactionService = transactionService;
     }
 
     @Override
