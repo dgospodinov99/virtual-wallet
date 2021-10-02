@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class TransactionRepositoryImpl extends BaseGetRepositoryImpl<Transaction> implements TransactionRepository {
+public class TransactionRepositoryImpl extends BaseModifyRepositoryImpl<Transaction> implements TransactionRepository {
 
     private static final int LATEST_TRANSACTIONS_SIZE = 5;
 
@@ -145,14 +145,5 @@ public class TransactionRepositoryImpl extends BaseGetRepositoryImpl<Transaction
             return query.list();
         }
     }
-
-
-    @Override
-    public void create(Transaction transaction) {
-        try (Session session = getSessionFactory().openSession()) {
-            session.save(transaction);
-        }
-    }
-
 
 }

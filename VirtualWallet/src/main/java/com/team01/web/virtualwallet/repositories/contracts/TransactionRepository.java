@@ -8,6 +8,7 @@ import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
 import java.util.List;
 
 public interface TransactionRepository extends BaseGetRepository<Transaction> {
+
     List<Transaction> getAllWalletTransactions(Wallet wallet);
 
     List<Transaction> getWalletLatestTransactions(Wallet wallet);

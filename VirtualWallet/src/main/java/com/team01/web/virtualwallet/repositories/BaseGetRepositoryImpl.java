@@ -39,7 +39,6 @@ public abstract class BaseGetRepositoryImpl<T> implements BaseGetRepository<T> {
             Query<T> query = session.createQuery("from " + clazz.getSimpleName(), clazz);
             return query.list();
         }
-
     }
 
     @Override

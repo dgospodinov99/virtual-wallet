@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Repository
-public class UserRepositoryImpl extends BaseGetRepositoryImpl<User> implements UserRepository {
+public class UserRepositoryImpl extends BaseModifyRepositoryImpl<User> implements UserRepository {
 
     @Autowired
     public UserRepositoryImpl(SessionFactory sessionFactory) {
@@ -117,34 +117,4 @@ public class UserRepositoryImpl extends BaseGetRepositoryImpl<User> implements U
                     .list();
         }
     }
-
-    @Override
-    public void create(User user) {
-        try (Session session = getSessionFactory().openSession()) {
-            session.beginTransaction();
-            session.save(user);
-            session.getTransaction().commit();
-        }
-    }
-
-    @Override
-    public void update(User user) {
-        try (Session session = getSessionFactory().openSession()) {
-            session.beginTransaction();
-            session.update(user);
-            session.getTransaction().commit();
-        }
-    }
-
-    @Override
-    public void delete(int id) {
-        try (Session session = getSessionFactory().openSession()) {
-            session.beginTransaction();
-            User user = getById(id);
-            session.delete(user);
-            session.getTransaction().commit();
-        }
-    }
-
-
 }

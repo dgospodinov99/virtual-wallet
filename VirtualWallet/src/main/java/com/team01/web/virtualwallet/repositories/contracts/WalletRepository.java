@@ -4,11 +4,5 @@ import com.team01.web.virtualwallet.models.Wallet;
 
 import java.util.List;
 
-public interface WalletRepository extends BaseGetRepository<Wallet> {
-
-    void update(Wallet wallet);
-
-    void create(Wallet wallet);
-
-    void delete(Wallet wallet);
+public interface WalletRepository extends BaseGetRepository<Wallet>, BaseModifyRepository<Wallet> {
 }

@@ -2,6 +2,7 @@ package com.team01.web.virtualwallet.repositories;
 
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.models.Token;
+import com.team01.web.virtualwallet.repositories.contracts.BaseModifyRepository;
 import com.team01.web.virtualwallet.repositories.contracts.TokenRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class TokenRepositoryImpl extends BaseGetRepositoryImpl<Token> implements TokenRepository {
+public class TokenRepositoryImpl extends BaseModifyRepositoryImpl<Token> implements TokenRepository {
 
     @Autowired
     public TokenRepositoryImpl(SessionFactory sessionFactory) {
@@ -46,35 +47,6 @@ public class TokenRepositoryImpl extends BaseGetRepositoryImpl<Token> implements
                 throw new EntityNotFoundException("Tokens", "code", token);
             }
             return query.getSingleResult();
-        }
-    }
-
-    @Override
-    public void create(Token token) {
-        try (Session session = getSessionFactory().openSession()) {
-            session.beginTransaction();
-            session.save(token);
-            session.getTransaction().commit();
-        }
-    }
-
-    @Override
-    public void update(Token token) {
-        try (Session session = getSessionFactory().openSession()) {
-            session.beginTransaction();
-            session.update(token);
-            session.getTransaction().commit();
-        }
-    }
-
-    @Override
-    public void delete(int id) {
-        try (Session session = getSessionFactory().openSession()) {
-            Token token = getById(id);
-            token.setActive(false);
-            session.beginTransaction();
-            session.update(token);
-            session.getTransaction().commit();
         }
     }
 }

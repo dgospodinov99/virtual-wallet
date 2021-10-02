@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class CardRepositoryImpl extends BaseGetRepositoryImpl<Card> implements CardRepository {
+public class CardRepositoryImpl extends BaseModifyRepositoryImpl<Card> implements CardRepository {
 
     @Autowired
     public CardRepositoryImpl(SessionFactory sessionFactory) {
@@ -31,34 +31,5 @@ public class CardRepositoryImpl extends BaseGetRepositoryImpl<Card> implements C
             return result.get(0);
         }
     }
-
-    @Override
-    public void create(Card card) {
-        try (Session session = getSessionFactory().openSession()) {
-            session.beginTransaction();
-            session.save(card);
-            session.getTransaction().commit();
-        }
-    }
-
-    @Override
-    public void update(Card card) {
-        try (Session session = getSessionFactory().openSession()) {
-            session.beginTransaction();
-            session.update(card);
-            session.getTransaction().commit();
-        }
-    }
-
-    @Override
-    public void delete(int id) {
-        try (Session session = getSessionFactory().openSession()) {
-            session.beginTransaction();
-            Card card = getById(id);
-            session.delete(card);
-            session.getTransaction().commit();
-        }
-    }
-
 
 }

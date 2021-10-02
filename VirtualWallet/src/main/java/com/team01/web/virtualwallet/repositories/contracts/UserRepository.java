@@ -5,23 +5,17 @@ import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 
 import java.util.List;
 
-public interface UserRepository extends BaseGetRepository<User> {
+public interface UserRepository extends BaseGetRepository<User>, BaseModifyRepository<User> {
 
-    User getByUsername(String username);
+    User getByUsername(String username);    //field
 
-    User getByEmail(String email);
+    User getByEmail(String email);  //field
 
     User getByWallet(int id);
 
-    User getByPhoneNumber(String phoneNumber);
+    User getByPhoneNumber(String phoneNumber); //field
 
     User search(String searchItem);
-
-    void create(User user);
-
-    void update(User user);
-
-    void delete(int id);
 
     List<User> filterUsers(FilterUserParams params);
 

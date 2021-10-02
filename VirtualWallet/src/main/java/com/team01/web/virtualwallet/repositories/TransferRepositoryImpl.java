@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class TransferRepositoryImpl extends BaseGetRepositoryImpl<Transfer> implements TransferRepository {
+public class TransferRepositoryImpl extends BaseModifyRepositoryImpl<Transfer> implements TransferRepository {
 
     private static final int LATEST_TRANSFER_SIZE = 5;
 
@@ -39,14 +39,4 @@ public class TransferRepositoryImpl extends BaseGetRepositoryImpl<Transfer> impl
             return query.list();
         }
     }
-
-    @Override
-    public void create(Transfer transfer) {
-        try (Session session = getSessionFactory().openSession()) {
-            session.beginTransaction();
-            session.save(transfer);
-            session.getTransaction().commit();
-        }
-    }
-
 }
