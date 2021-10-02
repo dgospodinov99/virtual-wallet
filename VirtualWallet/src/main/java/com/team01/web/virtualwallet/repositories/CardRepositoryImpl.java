@@ -32,4 +32,13 @@ public class CardRepositoryImpl extends BaseModifyRepositoryImpl<Card> implement
         }
     }
 
+    @Override
+    public List<Card> getUserCards(int id) {
+        try (Session session = getSessionFactory().openSession()) {
+            Query<Card> query = session.createQuery("from Card where user.id = :id", Card.class);
+            query.setParameter("id", id);
+            return query.list();
+        }
+    }
+
 }

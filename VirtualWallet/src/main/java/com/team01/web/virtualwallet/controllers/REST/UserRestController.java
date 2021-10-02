@@ -9,8 +9,10 @@ import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.*;
 import com.team01.web.virtualwallet.models.enums.UserSortOptions;
+import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
+import com.team01.web.virtualwallet.services.utils.CardModelMapper;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,20 +32,24 @@ public class UserRestController {
 
     private final UserService service;
     private final UserModelMapper modelMapper;
+    private final CardService cardService;
     private final TransactionService transactionService;
     private final TransactionModelMapper transactionModelMapper;
+    private final CardModelMapper cardModelMapper;
     private final AuthenticationHelper authenticationHelper;
     private final GlobalExceptionHandler globalExceptionHandler;
 
     @Autowired
     public UserRestController(UserService service,
                               UserModelMapper modelMapper,
-                              TransactionService transactionService, TransactionModelMapper transactionModelMapper, AuthenticationHelper authenticationHelper,
+                              CardService cardService, TransactionService transactionService, TransactionModelMapper transactionModelMapper, CardModelMapper cardModelMapper, AuthenticationHelper authenticationHelper,
                               GlobalExceptionHandler globalExceptionHandler) {
         this.service = service;
         this.modelMapper = modelMapper;
+        this.cardService = cardService;
         this.transactionService = transactionService;
         this.transactionModelMapper = transactionModelMapper;
+        this.cardModelMapper = cardModelMapper;
         this.authenticationHelper = authenticationHelper;
         this.globalExceptionHandler = globalExceptionHandler;
     }
@@ -74,7 +80,6 @@ public class UserRestController {
         try {
 
 
-
             var params = new FilterUserParams()
                     .setUsername(username)
                     .setEmail(email)
@@ -101,6 +106,22 @@ public class UserRestController {
             return transactionService.getUserTransactions(user)
                     .stream()
                     .map(transfer -> transactionModelMapper.toDto(transfer))
+                    .collect(Collectors.toList());
+
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/cards")
+    public List<CardDto> getUserCards(@PathVariable int id,
+                                      @RequestHeader HttpHeaders headers) {
+        try {
+            User executor = authenticationHelper.tryGetUser(headers);
+            User user = service.getById(id);
+            return cardService.getUserCards(user)
+                    .stream()
+                    .map(card -> cardModelMapper.toDto(card))
                     .collect(Collectors.toList());
 
         } catch (EntityNotFoundException e) {

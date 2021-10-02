@@ -9,6 +9,8 @@ public interface CardService extends BaseGetService<Card> {
 
     Card getByCardNumber(String cardName);
 
+    List<Card> getUserCards(User user);
+
     void create(Card card);
 
     void update(Card card, User executor);

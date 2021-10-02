@@ -36,6 +36,11 @@ public class CardServiceImpl extends BaseGetServiceImpl<Card> implements CardSer
     }
 
     @Override
+    public List<Card> getUserCards(User user) {
+        return cardRepository.getUserCards(user.getId());
+    }
+
+    @Override
     public void create(Card card) {
         verifyUniqueCardNumber(card);
         validateCardNumber(card.getCardNumber());
