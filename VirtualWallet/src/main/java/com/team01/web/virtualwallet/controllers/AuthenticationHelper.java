@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 public class AuthenticationHelper {
 
     private static final String WRONG_USERNAME_OR_PASSWORD = "Wrong username or password.";
+    private static final String UNAUTHORIZED = "Unauthorized";
     private final String AUTHORIZATION_HEADER_NAME = "Authorization";
 
     private final UserService userService;
@@ -42,10 +43,19 @@ public class AuthenticationHelper {
     public User tryGetUser(HttpSession session) {
         String currentUser = (String) session.getAttribute("currentUser");
         if (currentUser == null) {
-            throw new AuthenticationFailureException("Unauthorized");
+            throw new AuthenticationFailureException(UNAUTHORIZED);
         }
 
         return userService.getByUsername(currentUser);
+    }
+
+    public User tryGetAdmin(HttpHeaders headers) {
+        User user = tryGetUser(headers);
+        if(!user.isAdmin()){
+            throw new AuthenticationFailureException(UNAUTHORIZED);
+        }
+
+        return user;
     }
 
     public User verifyAuthentication(String username, String password) {
