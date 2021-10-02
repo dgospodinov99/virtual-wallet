@@ -51,7 +51,7 @@ public class CardRestController {
     public List<CardDto> getAll(@RequestHeader HttpHeaders headers) {
         try {
             User executor = authenticationHelper.tryGetUser(headers);
-            return cardService.getAll(executor).stream()
+            return cardService.getAll().stream()
                     .map(card -> modelMapper.toDto(card))
                     .collect(Collectors.toList());
         } catch (UnauthorizedOperationException e) {
@@ -77,6 +77,8 @@ public class CardRestController {
 
             cardService.update(card, executor);
             return modelMapper.toDto(card);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         } catch (UnauthorizedOperationException e) {
