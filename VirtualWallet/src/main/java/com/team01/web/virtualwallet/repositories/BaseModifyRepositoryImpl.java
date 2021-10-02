@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public abstract class BaseModifyRepositoryImpl<T> extends BaseGetRepositoryImpl<T> implements BaseModifyRepository<T> {
 
-
     public BaseModifyRepositoryImpl(Class<T> clazz, SessionFactory sessionFactory) {
         super(clazz, sessionFactory);
     }

@@ -6,7 +6,5 @@ public interface BaseGetRepository<T> {
 
     List<T> getAll();
 
-    <V> T getByField(String fieldName, V fieldValue);
-
     T getById(int id);
 }
