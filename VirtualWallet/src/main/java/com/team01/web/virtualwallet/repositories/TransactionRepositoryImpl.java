@@ -15,39 +15,18 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class TransactionRepositoryImpl implements TransactionRepository {
+public class TransactionRepositoryImpl extends BaseGetRepositoryImpl<Transaction> implements TransactionRepository {
 
     private static final int LATEST_TRANSACTIONS_SIZE = 5;
 
-    private final SessionFactory sessionFactory;
-
     @Autowired
     public TransactionRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
-    @Override
-    public List<Transaction> getAll() {
-        try (Session session = sessionFactory.openSession()) {
-            Query<Transaction> query = session.createQuery("from Transaction order by id", Transaction.class);
-            return query.list();
-        }
-    }
-
-    @Override
-    public Transaction getById(int id) {
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.get(Transaction.class, id);
-            if (transaction == null) {
-                throw new EntityNotFoundException("Transaction", id);
-            }
-            return transaction;
-        }
+        super(Transaction.class, sessionFactory);
     }
 
     @Override
     public List<Transaction> adminFilterTransactions(FilterTransactionByAdminParams params) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             String queryString = "from Transaction where 1 = 1";
 
             if (params.getReceiverId().isPresent()) {
@@ -100,7 +79,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     @Override
     public List<Transaction> userFilterTransactions(FilterTransactionsByUserParams params) {
 
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             String queryString = "from Transaction where 1 = 1";
 
             if (params.getDirection().isPresent()) {
@@ -149,7 +128,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public List<Transaction> getAllWalletTransactions(Wallet wallet) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             Query<Transaction> query = session.createQuery("from Transaction where sender.id = :walletId or receiver.id = :walletId", Transaction.class);
             query.setParameter("walletId", wallet.getId());
             return query.list();
@@ -158,7 +137,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public List<Transaction> getWalletLatestTransactions(Wallet wallet) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             Query<Transaction> query = session.createQuery(
                     "from Transaction where sender.id = :walletId or receiver.id = :walletId order by timestamp desc", Transaction.class);
             query.setParameter("walletId", wallet.getId());
@@ -170,7 +149,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public void create(Transaction transaction) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             session.save(transaction);
         }
     }

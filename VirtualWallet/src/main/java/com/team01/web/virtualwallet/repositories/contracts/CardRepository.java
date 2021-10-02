@@ -4,11 +4,7 @@ import com.team01.web.virtualwallet.models.Card;
 
 import java.util.List;
 
-public interface CardRepository {
-
-    List<Card> getAll();
-
-    Card getById(int id);
+public interface CardRepository extends BaseGetRepository<Card>{
 
     Card getByCardNumber(String cardNumber);
 

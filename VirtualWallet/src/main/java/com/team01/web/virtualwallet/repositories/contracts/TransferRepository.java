@@ -1,16 +1,11 @@
 package com.team01.web.virtualwallet.repositories.contracts;
 
-import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.Wallet;
 
 import java.util.List;
 
-public interface TransferRepository {
-
-    List<Transfer> getAll();
-
-    Transfer getById(int id);
+public interface TransferRepository extends BaseGetRepository<Transfer> {
 
     void create(Transfer transfer);
 

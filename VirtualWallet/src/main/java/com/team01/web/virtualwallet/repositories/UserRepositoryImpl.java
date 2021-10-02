@@ -3,6 +3,7 @@ package com.team01.web.virtualwallet.repositories;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
+import com.team01.web.virtualwallet.repositories.contracts.BaseGetRepository;
 import com.team01.web.virtualwallet.repositories.contracts.UserRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -15,37 +16,16 @@ import java.util.HashMap;
 import java.util.List;
 
 @Repository
-public class UserRepositoryImpl implements UserRepository {
-
-    private final SessionFactory sessionFactory;
+public class UserRepositoryImpl extends BaseGetRepositoryImpl<User> implements UserRepository {
 
     @Autowired
     public UserRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
-    @Override
-    public List<User> getAll() {
-        try (Session session = sessionFactory.openSession()) {
-            Query<User> query = session.createQuery("from User where active = true order by id", User.class);
-            return query.list();
-        }
-    }
-
-    @Override
-    public User getById(int id) {
-        try (Session session = sessionFactory.openSession()) {
-            User user = session.get(User.class, id);
-            if (user == null) {
-                throw new EntityNotFoundException("User", id);
-            }
-            return user;
-        }
+        super(User.class, sessionFactory);
     }
 
     @Override
     public User getByUsername(String username) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             Query<User> query = session.createQuery("from User where username = :username", User.class);
             query.setParameter("username", username);
             if (query.list().size() == 0) {
@@ -57,7 +37,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User getByEmail(String email) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             Query<User> query = session.createQuery("from User where email = :email", User.class);
             query.setParameter("email", email);
             if (query.list().size() == 0) {
@@ -69,7 +49,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User getByPhoneNumber(String phoneNumber) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             Query<User> query = session.createQuery("from User where phoneNumber = :phoneNumber", User.class);
             query.setParameter("phoneNumber", phoneNumber);
             if (query.list().size() == 0) {
@@ -81,7 +61,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User getByWallet(int id) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             Query<User> query = session.createQuery("from User where wallet.id = :id", User.class);
             query.setParameter("id", id);
             if (query.list().size() == 0) {
@@ -93,7 +73,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User search(String searchItem) {
-        try (Session session = sessionFactory.openSession()){
+        try (Session session = getSessionFactory().openSession()){
             Query<User> query = session.createQuery("from User where " +
                     "username like concat('%', :searchItem, '%') " +
                     "or email like concat('%', :searchItem, '%') " +
@@ -108,7 +88,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> filterUsers(FilterUserParams fup) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             StringBuilder baseQuery = new StringBuilder().append("from User");
             var filters = new ArrayList<String>();
             var params = new HashMap<String, String>();
@@ -140,7 +120,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void create(User user) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             session.beginTransaction();
             session.save(user);
             session.getTransaction().commit();
@@ -149,7 +129,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void update(User user) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             session.beginTransaction();
             session.update(user);
             session.getTransaction().commit();
@@ -158,7 +138,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void delete(int id) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             session.beginTransaction();
             User user = getById(id);
             session.delete(user);

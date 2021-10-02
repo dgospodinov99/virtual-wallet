@@ -4,11 +4,7 @@ import com.team01.web.virtualwallet.models.Wallet;
 
 import java.util.List;
 
-public interface WalletRepository {
-
-    List<Wallet> getAll();
-
-    Wallet getById(int id);
+public interface WalletRepository extends BaseGetRepository<Wallet> {
 
     void update(Wallet wallet);
 

@@ -5,11 +5,7 @@ import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 
 import java.util.List;
 
-public interface UserRepository {
-
-    List<User> getAll();
-
-    User getById(int id);
+public interface UserRepository extends BaseGetRepository<User> {
 
     User getByUsername(String username);
 

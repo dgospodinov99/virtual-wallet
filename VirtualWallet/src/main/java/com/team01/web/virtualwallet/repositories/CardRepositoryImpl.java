@@ -12,37 +12,16 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class CardRepositoryImpl implements CardRepository {
-
-    private final SessionFactory sessionFactory;
+public class CardRepositoryImpl extends BaseGetRepositoryImpl<Card> implements CardRepository {
 
     @Autowired
     public CardRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
-
-    @Override
-    public List<Card> getAll() {
-        try (Session session = sessionFactory.openSession()) {
-            Query<Card> query = session.createQuery("from Card where active = true order by id", Card.class);
-            return query.list();
-        }
-    }
-
-    @Override
-    public Card getById(int id) {
-        try (Session session = sessionFactory.openSession()) {
-            Card card = session.get(Card.class, id);
-            if (card == null) {
-                throw new EntityNotFoundException("Card", id);
-            }
-            return card;
-        }
+        super(Card.class, sessionFactory);
     }
 
     @Override
     public Card getByCardNumber(String cardNumber) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             Query<Card> query = session.createQuery("from Card where cardNumber = :cardNumber", Card.class);
             query.setParameter("cardNumber", cardNumber);
             List<Card> result = query.list();
@@ -55,7 +34,7 @@ public class CardRepositoryImpl implements CardRepository {
 
     @Override
     public void create(Card card) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             session.beginTransaction();
             session.save(card);
             session.getTransaction().commit();
@@ -64,7 +43,7 @@ public class CardRepositoryImpl implements CardRepository {
 
     @Override
     public void update(Card card) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             session.beginTransaction();
             session.update(card);
             session.getTransaction().commit();
@@ -73,7 +52,7 @@ public class CardRepositoryImpl implements CardRepository {
 
     @Override
     public void delete(int id) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             session.beginTransaction();
             Card card = getById(id);
             session.delete(card);

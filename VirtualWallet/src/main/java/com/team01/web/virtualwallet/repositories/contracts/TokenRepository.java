@@ -5,11 +5,9 @@ import com.team01.web.virtualwallet.models.User;
 
 import java.util.List;
 
-public interface TokenRepository {
+public interface TokenRepository extends BaseGetRepository<Token> {
 
     List<Token> getAllActive();
-
-    Token getById(int id);
 
     List<Token> getUserTokens(int userId);
 

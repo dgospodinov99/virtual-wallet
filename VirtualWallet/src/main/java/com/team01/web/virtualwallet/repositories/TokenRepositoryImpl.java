@@ -12,37 +12,24 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class TokenRepositoryImpl implements TokenRepository {
-
-    private final SessionFactory sessionFactory;
+public class TokenRepositoryImpl extends BaseGetRepositoryImpl<Token> implements TokenRepository {
 
     @Autowired
     public TokenRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+        super(Token.class, sessionFactory);
     }
 
     @Override
     public List<Token> getAllActive() {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             Query<Token> query = session.createQuery("from Token where active = true order by id", Token.class);
             return query.list();
         }
     }
 
     @Override
-    public Token getById(int id) {
-        try (Session session = sessionFactory.openSession()) {
-            Token token = session.get(Token.class, id);
-            if (token == null) {
-                throw new EntityNotFoundException("Token", id);
-            }
-            return token;
-        }
-    }
-
-    @Override
     public List<Token> getUserTokens(int id) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             Query<Token> query = session.createQuery("from Token where user.id = :id", Token.class);
             if (query.list().size() == 0) {
                 throw new EntityNotFoundException("Tokens for user", "id", String.valueOf(id));
@@ -53,7 +40,7 @@ public class TokenRepositoryImpl implements TokenRepository {
 
     @Override
     public Token getByToken(String token) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             Query<Token> query = session.createQuery("from Token where token = token", Token.class);
             if (query.list().size() == 0) {
                 throw new EntityNotFoundException("Tokens", "code", token);
@@ -64,7 +51,7 @@ public class TokenRepositoryImpl implements TokenRepository {
 
     @Override
     public void create(Token token) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             session.beginTransaction();
             session.save(token);
             session.getTransaction().commit();
@@ -73,7 +60,7 @@ public class TokenRepositoryImpl implements TokenRepository {
 
     @Override
     public void update(Token token) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             session.beginTransaction();
             session.update(token);
             session.getTransaction().commit();
@@ -82,7 +69,7 @@ public class TokenRepositoryImpl implements TokenRepository {
 
     @Override
     public void delete(int id) {
-        try (Session session = sessionFactory.openSession()) {
+        try (Session session = getSessionFactory().openSession()) {
             Token token = getById(id);
             token.setActive(false);
             session.beginTransaction();
