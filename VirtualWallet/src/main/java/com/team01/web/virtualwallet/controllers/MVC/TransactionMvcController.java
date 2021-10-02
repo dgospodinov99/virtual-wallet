@@ -135,7 +135,7 @@ public class TransactionMvcController {
             @ModelAttribute("searchUser") SearchUserMvcDto dto,
             HttpSession session,
             Model model) {
-        //todo duplicate
+
         var params = new FilterUserParams()
                 .setPhoneNumber(dto.getPhoneNumber())
                 .setUsername(dto.getUsername())

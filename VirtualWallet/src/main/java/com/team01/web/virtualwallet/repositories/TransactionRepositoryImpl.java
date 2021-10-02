@@ -1,6 +1,5 @@
 package com.team01.web.virtualwallet.repositories;
 
-import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.models.dto.FilterTransactionByAdminParams;
@@ -61,14 +60,10 @@ public class TransactionRepositoryImpl extends BaseModifyRepositoryImpl<Transact
             if (params.getSenderId().isPresent()) {
                 query.setParameter("senderId", params.getSenderId().orElse(null));
             }
-
-            //set date params in query
-            if (params.getStartDate().isPresent() && params.getEndDate().isPresent()) {
+            if (params.getStartDate().isPresent()) {
                 query.setParameter("startDate", params.getStartDate().get());
-                query.setParameter("endDate", params.getEndDate().get());
-            } else if (params.getStartDate().isPresent()) {
-                query.setParameter("startDate", params.getStartDate().get());
-            } else if (params.getEndDate().isPresent()) {
+            }
+            if (params.getEndDate().isPresent()) {
                 query.setParameter("endDate", params.getEndDate().get());
             }
 
@@ -106,20 +101,14 @@ public class TransactionRepositoryImpl extends BaseModifyRepositoryImpl<Transact
 
 
             Query<Transaction> query = session.createQuery(queryString, Transaction.class);
-
-            //todo refactor maybe
-            //set date params in query
-            if (params.getStartDate().isPresent() && params.getEndDate().isPresent()) {
-                query.setParameter("startDate", params.getStartDate().get());
-                query.setParameter("endDate", params.getEndDate().get());
-            } else if (params.getStartDate().isPresent()) {
-                query.setParameter("startDate", params.getStartDate().get());
-            } else if (params.getEndDate().isPresent()) {
-                query.setParameter("endDate", params.getEndDate().get());
-            }
-
             if (params.getDirection().isPresent()) {
                 query.setParameter("walletId", params.getWalletId().get());
+            }
+            if (params.getStartDate().isPresent()) {
+                query.setParameter("startDate", params.getStartDate().get());
+            }
+            if (params.getEndDate().isPresent()) {
+                query.setParameter("endDate", params.getEndDate().get());
             }
 
             return query.list();
