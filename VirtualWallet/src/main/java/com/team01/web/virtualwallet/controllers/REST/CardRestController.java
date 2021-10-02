@@ -7,8 +7,6 @@ import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.CardDto;
 import com.team01.web.virtualwallet.models.dto.CreateCardDto;
-import com.team01.web.virtualwallet.models.dto.UpdateUserDto;
-import com.team01.web.virtualwallet.models.dto.UserDto;
 import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.CardModelMapper;
@@ -50,19 +48,22 @@ public class CardRestController {
     @GetMapping()
     public List<CardDto> getAll(@RequestHeader HttpHeaders headers) {
         try {
-            User executor = authenticationHelper.tryGetUser(headers);
+            authenticationHelper.tryGetAdmin(headers);
             return cardService.getAll().stream()
                     .map(card -> modelMapper.toDto(card))
                     .collect(Collectors.toList());
-        } catch (UnauthorizedOperationException e) {
+        } catch (AuthenticationFailureException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
     @GetMapping("/{id}")
-    public CardDto getById(@PathVariable int id) {
+    public CardDto getById(@PathVariable int id, @RequestHeader HttpHeaders headers) {
         try {
+            authenticationHelper.tryGetAdmin(headers);
             return modelMapper.toDto(cardService.getById(id));
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -94,7 +95,7 @@ public class CardRestController {
             Card card = modelMapper.fromCreateDto(dto, user);
             cardService.create(card);
 
-            Set<Card> newCardSet =  user.getCards();
+            Set<Card> newCardSet = user.getCards();
             newCardSet.add(card);
             user.setCards(newCardSet);
             userService.update(user);
@@ -114,7 +115,7 @@ public class CardRestController {
             User executor = authenticationHelper.tryGetUser(headers);
             Card card = cardService.getById(id);
             CardDto dto = modelMapper.toDto(card);
-            cardService.delete(id,executor);
+            cardService.delete(id, executor);
             return dto;
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
