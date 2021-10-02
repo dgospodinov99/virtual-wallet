@@ -23,7 +23,6 @@ public class CardServiceImpl implements CardService {
 
     private final CardRepository cardRepository;
 
-
     @Autowired
     public CardServiceImpl(CardRepository cardRepository) {
         this.cardRepository = cardRepository;
@@ -46,19 +45,10 @@ public class CardServiceImpl implements CardService {
         return cardRepository.getByCardNumber(cardNumber);
     }
 
-
     @Override
     public void create(Card card) {
-        boolean duplicateCardNumberExists = true;
-        try {
-            getByCardNumber(card.getCardNumber());
-        } catch (EntityNotFoundException e) {
-            duplicateCardNumberExists = false;
-        }
-
-        if (duplicateCardNumberExists) {
-            throw new DuplicateEntityException("Card", "number", card.getCardNumber());
-        }
+        verifyUniqueCardNumber(card);
+        validateCardNumber(card.getCardNumber());
         cardRepository.create(card);
     }
 
@@ -78,14 +68,27 @@ public class CardServiceImpl implements CardService {
         cardRepository.update(card);
     }
 
+    private void verifyUniqueCardNumber(Card card) {
+        boolean duplicateCardNumberExists = true;
+        try {
+            getByCardNumber(card.getCardNumber());
+        } catch (EntityNotFoundException e) {
+            duplicateCardNumberExists = false;
+        }
+
+        if (duplicateCardNumberExists) {
+            throw new DuplicateEntityException("Card", "number", card.getCardNumber());
+        }
+    }
+
     private void validateUser(User executor, Card card) {
-        if(!executor.isAdmin() && card.getUser().getId() != executor.getId()){
+        if (!executor.isAdmin() && card.getUser().getId() != executor.getId()) {
             throw new UnauthorizedOperationException(INVALID_CARD_OWNER);
         }
     }
 
     private void validateAdmin(User executor) {
-        if(!executor.isAdmin()){
+        if (!executor.isAdmin()) {
             throw new UnauthorizedOperationException(NOT_ADMIN_MESSAGE);
         }
     }

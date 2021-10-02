@@ -1,11 +1,12 @@
 package com.team01.web.virtualwallet.services;
 
-import com.team01.web.virtualwallet.exceptions.*;
+import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
+import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
+import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
+import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.Card;
-import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
-import com.team01.web.virtualwallet.models.dto.ChangePasswordDto;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.UserRepository;
 import com.team01.web.virtualwallet.services.contracts.CardService;
@@ -23,6 +24,11 @@ public class UserServiceImpl implements UserService {
 
     private static final String USER_NOT_ADMIN_MESSAGE = "You are not an administrator!";
     private static final String USER_AND_WALLET_DONT_MATCH = "You can only list your own transactions!";
+    private static final String PASSWORD_LENGTH_ERROR = "Password must be at least 8 symbols long!";
+    private static final String PASSWORD_SYMBOL_ERROR = "Password must contain a special symbol!";
+    private static final String PASSWORD_UPPER_CASE_ERROR = "Password must contain an upper-case letter!";
+    private static final String PASSWORD_LOWER_CASE_ERROR = "Password must contain a lower-case letter!";
+    private static final String PASSWORD_NUMBER_ERROR = "Password must contain a number!";
 
     private final UserRepository userRepository;
     private final WalletService walletService;
@@ -115,8 +121,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void create(User user) {
-        verifyUniqueEmail(user.getEmail(),user);
-        verifyUniqueUsername(user.getUsername(),user);
+        verifyUniqueEmail(user.getEmail(), user);
+        verifyUniqueUsername(user.getUsername(), user);
         verifyUniquePhoneNumber(user.getPhoneNumber(), user);
         isPasswordValid(user.getPassword());
         Wallet wallet = walletService.create(new Wallet());
@@ -126,7 +132,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(User user) {
-        verifyUniqueEmail(user.getEmail(),user);
+        verifyUniqueEmail(user.getEmail(), user);
         verifyUniquePhoneNumber(user.getPhoneNumber(), user);
         isPasswordValid(user.getPassword());
         userRepository.update(user);
@@ -159,19 +165,19 @@ public class UserServiceImpl implements UserService {
         Pattern digitPattern = Pattern.compile("[0-9 ]");
 
         if (password.length() < 8) {
-            throw new InvalidPasswordException("Password must be at least 8 symbols long!");
+            throw new InvalidPasswordException(PASSWORD_LENGTH_ERROR);
         }
         if (!specialSymbolPattern.matcher(password).find()) {
-            throw new InvalidPasswordException("Password must contain a special symbol!");
+            throw new InvalidPasswordException(PASSWORD_SYMBOL_ERROR);
         }
         if (!upperCasePattern.matcher(password).find()) {
-            throw new InvalidPasswordException("Password must contain an upper-case letter!");
+            throw new InvalidPasswordException(PASSWORD_UPPER_CASE_ERROR);
         }
         if (!lowerCasePattern.matcher(password).find()) {
-            throw new InvalidPasswordException("Password must contain a lower-case letter!");
+            throw new InvalidPasswordException(PASSWORD_LOWER_CASE_ERROR);
         }
         if (!digitPattern.matcher(password).find()) {
-            throw new InvalidPasswordException("Password must contain a number!");
+            throw new InvalidPasswordException(PASSWORD_NUMBER_ERROR);
         }
     }
 
@@ -179,7 +185,7 @@ public class UserServiceImpl implements UserService {
         boolean duplicateExists = true;
         try {
             User existingUser = userRepository.getByEmail(email);
-            if(existingUser.getId() == user.getId()){
+            if (existingUser.getId() == user.getId()) {
                 duplicateExists = false;
             }
         } catch (EntityNotFoundException e) {
@@ -194,7 +200,7 @@ public class UserServiceImpl implements UserService {
         boolean duplicateExists = true;
         try {
             User existingUser = userRepository.getByUsername(username);
-            if(existingUser.getId() == user.getId()){
+            if (existingUser.getId() == user.getId()) {
                 duplicateExists = false;
             }
         } catch (EntityNotFoundException e) {
@@ -209,7 +215,7 @@ public class UserServiceImpl implements UserService {
         boolean duplicateExists = true;
         try {
             User existingUser = userRepository.getByPhoneNumber(phoneNumber);
-            if(existingUser.getId() == user.getId()){
+            if (existingUser.getId() == user.getId()) {
                 duplicateExists = false;
             }
         } catch (EntityNotFoundException e) {
@@ -217,12 +223,6 @@ public class UserServiceImpl implements UserService {
         }
         if (duplicateExists) {
             throw new DuplicateEntityException("User", "phone number", phoneNumber);
-        }
-    }
-
-    protected void validateUser(User executor,Wallet wallet) {
-        if (!executor.isAdmin() && executor.getWallet().getId() != wallet.getId()) {
-            throw new UnauthorizedOperationException(USER_AND_WALLET_DONT_MATCH);
         }
     }
 }
