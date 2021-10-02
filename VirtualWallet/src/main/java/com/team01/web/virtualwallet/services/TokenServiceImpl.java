@@ -9,23 +9,19 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class TokenServiceImpl implements TokenService {
+public class TokenServiceImpl extends BaseGetServiceImpl<Token> implements TokenService {
 
     private final TokenRepository tokenRepository;
 
     @Autowired
     public TokenServiceImpl(TokenRepository tokenRepository) {
+        super(tokenRepository);
         this.tokenRepository = tokenRepository;
     }
 
     @Override
     public List<Token> getAllActive() {
         return tokenRepository.getAllActive();
-    }
-
-    @Override
-    public Token getById(int id) {
-        return tokenRepository.getById(id);
     }
 
     @Override

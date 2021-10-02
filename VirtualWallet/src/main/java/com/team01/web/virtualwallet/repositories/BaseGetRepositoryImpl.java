@@ -12,14 +12,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+
 public abstract class BaseGetRepositoryImpl<T> implements BaseGetRepository<T> {
 
     private final Class<T> clazz;
 
     private final SessionFactory sessionFactory;
 
-    @Autowired
     public BaseGetRepositoryImpl(Class<T> clazz, SessionFactory sessionFactory) {
         this.clazz = clazz;
         this.sessionFactory = sessionFactory;

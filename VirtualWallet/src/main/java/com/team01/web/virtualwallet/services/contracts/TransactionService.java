@@ -7,11 +7,7 @@ import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
 
 import java.util.List;
 
-public interface TransactionService {
-
-    List<Transaction> getAll();
-
-    Transaction getById(int id);
+public interface TransactionService extends BaseGetService<Transaction> {
 
     List<Transaction> getUserTransactions(User user);
 

@@ -9,24 +9,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class WalletServiceImpl implements WalletService {
+public class WalletServiceImpl extends BaseGetServiceImpl<Wallet> implements WalletService {
 
     private final WalletRepository walletRepository;
 
     @Autowired
     public WalletServiceImpl(WalletRepository walletRepository) {
+        super(walletRepository);
         this.walletRepository = walletRepository;
-    }
-
-
-    @Override
-    public List<Wallet> getAll() {
-        return walletRepository.getAll();
-    }
-
-    @Override
-    public Wallet getById(int id) {
-        return walletRepository.getById(id);
     }
 
     @Override

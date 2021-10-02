@@ -7,15 +7,11 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 
-public interface TransferService {
-
-    List<Transfer> getAll();
+public interface TransferService extends BaseGetService<Transfer> {
 
     List<Transfer> getUserTransfers(User user);
 
     List<Transfer> getUserLatestTransfers(User user);
-
-    Transfer getById(int id);
 
     void create(Transfer transfer) throws IOException;
 }

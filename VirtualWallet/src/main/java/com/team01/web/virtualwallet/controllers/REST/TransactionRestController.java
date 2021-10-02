@@ -99,7 +99,7 @@ public class TransactionRestController {
             return modelMapper.toDto(transaction);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (InvalidTransferException e) {
+        } catch (InvalidTransferException | InvalidUserInput e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (BlockedUserException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());

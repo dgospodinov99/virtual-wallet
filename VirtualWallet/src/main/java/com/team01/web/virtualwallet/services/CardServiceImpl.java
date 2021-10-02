@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CardServiceImpl implements CardService {
+public class CardServiceImpl extends BaseGetServiceImpl<Card> implements CardService {
 
     private static final String ONLY_DIGITS = "[0-9]+";
     private static final String INVALID_CARD_OWNER = "Invalid card owner!";
@@ -24,19 +24,9 @@ public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
 
     @Autowired
-    public CardServiceImpl(CardRepository cardRepository) {
-        this.cardRepository = cardRepository;
-    }
-
-    @Override
-    public List<Card> getAll(User executor) {
-        validateAdmin(executor);
-        return cardRepository.getAll();
-    }
-
-    @Override
-    public Card getById(int id) {
-        return cardRepository.getById(id);
+    public CardServiceImpl(CardRepository cardRepository, CardRepository cardRepository1) {
+        super(cardRepository);
+        this.cardRepository = cardRepository1;
     }
 
     @Override

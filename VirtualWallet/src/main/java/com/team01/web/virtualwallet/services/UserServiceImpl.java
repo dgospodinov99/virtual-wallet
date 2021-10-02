@@ -10,7 +10,6 @@ import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.UserRepository;
 import com.team01.web.virtualwallet.services.contracts.CardService;
-import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends BaseGetServiceImpl<User> implements UserService {
 
     private static final String USER_NOT_ADMIN_MESSAGE = "You are not an administrator!";
     private static final String USER_AND_WALLET_DONT_MATCH = "You can only list your own transactions!";
@@ -36,20 +35,11 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, WalletService walletService, CardService cardService) {
+        super(userRepository);
         this.userRepository = userRepository;
         this.walletService = walletService;
         this.cardService = cardService;
 
-    }
-
-    @Override
-    public List<User> getAll() {
-        return userRepository.getAll();
-    }
-
-    @Override
-    public User getById(int id) {
-        return userRepository.getById(id);
     }
 
     @Override

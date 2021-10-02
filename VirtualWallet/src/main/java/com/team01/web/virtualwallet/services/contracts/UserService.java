@@ -1,18 +1,12 @@
 package com.team01.web.virtualwallet.services.contracts;
 
-import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
-import com.team01.web.virtualwallet.models.dto.ChangePasswordDto;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 
 import java.util.List;
 
-public interface UserService {
-
-    List<User> getAll();
-
-    User getById(int id);
+public interface UserService extends BaseGetService<User> {
 
     User getByUsername(String username);
 

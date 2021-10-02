@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class TransactionServiceImpl implements TransactionService {
+public class TransactionServiceImpl extends BaseGetServiceImpl<Transaction> implements TransactionService {
 
     private static final String USER_BLOCKED_MESSAGE = "You are blocked from making transactions!";
     private static final String USER_AND_WALLET_DONT_MATCH_ERROR = "Users can make transfers only from their own or shared wallet!";
@@ -28,18 +28,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Autowired
     public TransactionServiceImpl(TransactionRepository transactionRepository, WalletService walletService) {
+        super(transactionRepository);
         this.transactionRepository = transactionRepository;
         this.walletService = walletService;
-    }
-
-    @Override
-    public List<Transaction> getAll() {
-        return transactionRepository.getAll();
-    }
-
-    @Override
-    public Transaction getById(int id) {
-        return transactionRepository.getById(id);
     }
 
     @Override

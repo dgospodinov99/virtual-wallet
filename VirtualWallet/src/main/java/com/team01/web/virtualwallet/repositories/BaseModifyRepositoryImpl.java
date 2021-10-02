@@ -3,13 +3,12 @@ package com.team01.web.virtualwallet.repositories;
 import com.team01.web.virtualwallet.repositories.contracts.BaseModifyRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public abstract class BaseModifyRepositoryImpl<T> extends BaseGetRepositoryImpl<T> implements BaseModifyRepository<T> {
 
-    @Autowired
+
     public BaseModifyRepositoryImpl(Class<T> clazz, SessionFactory sessionFactory) {
         super(clazz, sessionFactory);
     }

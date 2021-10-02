@@ -5,11 +5,7 @@ import com.team01.web.virtualwallet.models.User;
 
 import java.util.List;
 
-public interface CardService {
-
-    List<Card> getAll(User executor);
-
-    Card getById(int id);
+public interface CardService extends BaseGetService<Card> {
 
     Card getByCardNumber(String cardName);
 
