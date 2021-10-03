@@ -6,6 +6,7 @@ import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.*;
 import com.team01.web.virtualwallet.models.enums.TransactionDirection;
+import com.team01.web.virtualwallet.models.enums.UserSortOptions;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
@@ -72,8 +73,15 @@ public class TransactionMvcController {
     }
 
     @ModelAttribute("users")
-    public List<User> populateUsersList() {
-        return userService.getAll();
+    public List<User> populateUsersList(HttpSession session) {
+        try {
+            var users = userService.getAll();
+            users.remove(authenticationHelper.tryGetUser(session));
+            return users;
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+
     }
 
     @ModelAttribute("filterDto")
@@ -136,12 +144,15 @@ public class TransactionMvcController {
             HttpSession session,
             Model model) {
 
+        User executor = authenticationHelper.tryGetUser(session);
         var params = new FilterUserParams()
                 .setPhoneNumber(dto.getPhoneNumber())
                 .setUsername(dto.getUsername())
-                .setEmail(dto.getEmail());
+                .setEmail(dto.getEmail())
+                .setSortParam(UserSortOptions.valueOfPreview(String.valueOf(dto.getSortParam())));
 
         var filtered = userService.filterUsers(params);
+        filtered.remove(executor);
         model.addAttribute("usersDto", filtered);
 
         return "transaction-new";

@@ -2,10 +2,10 @@ package com.team01.web.virtualwallet.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Column;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -31,7 +31,7 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "photo_name",insertable = false)
+    @Column(name = "photo_name", insertable = false)
     private String photoName;
 
     @Column(name = "blocked")
@@ -121,8 +121,8 @@ public class User {
 
     public Set<Card> getCards() {
         Set<Card> activeCards = new HashSet<>();
-        for (Card card: cards) {
-            if(card.isActive()){
+        for (Card card : cards) {
+            if (card.isActive()) {
                 activeCards.add(card);
             }
         }
@@ -161,5 +161,13 @@ public class User {
     public boolean isAdmin() {
         return getRoles().stream()
                 .anyMatch(role -> role.getName().equals("Administrator"));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return this.id == user.id && Objects.equals(this.username, user.username);
     }
 }
