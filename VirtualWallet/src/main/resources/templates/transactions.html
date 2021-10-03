@@ -48,7 +48,8 @@
                               method="get">
                             <div class="form-group row"> <!-- Date input -->
                                 <div class="col-sm-4 mb-3 mb-sm-0">
-                                    <label class="control-label" th:text="#{activity.filter.start.date}">Start Date</label>
+                                    <label class="control-label" th:text="#{activity.filter.start.date}">Start
+                                        Date</label>
                                     <input class="form-control" type="datetime-local" th:field="*{startDate}"/>
                                 </div>
 
@@ -59,7 +60,8 @@
                                 </div>
 
                                 <div class="col-sm-2">
-                                    <label class="control-label" th:text="#{activity.filter.direction}">Direction</label>
+                                    <label class="control-label"
+                                           th:text="#{activity.filter.direction}">Direction</label>
                                     <!--                                    <select class="form-check">-->
                                     <select class="form-control" th:field="*{direction}">
                                         <option selected value="">Any</option>
@@ -77,35 +79,25 @@
                                 </div>
                             </div>
                         </form>
-                        <div class="col-sm-2">
-<!--                            filter ?-->
-                        </div>
                     </div>
 
                     <div class="row"/>
 
                     <div class="table-responsive">
-                        <table class="table table-striped" id="dataTable" data-page-length='50'
+                        <table class="table" id="dataTable" data-page-length='50'
                                data-order='[[1, "desc"]]' width="100%" cellspacing="0">
                             <thead>
-                            <tr>
 
-                                <th scope="col" th:text="#{activity.transaction.amount}">Amount</th>
-                                <th scope="col" th:text="#{activity.transaction.from}">From</th>
-                                <th scope="col" th:text="#{activity.transaction.to}">To</th>
-                                <th scope="col" th:text="#{activity.transaction.date}">Date</th>
+                            <th scope="col" th:text="#{activity.transaction.amount}"
+                                style="user-select: none; cursor: pointer" onclick="sortTableAmount()">Amount
+                            </th>
+                            <th scope="col" th:text="#{activity.transaction.from}" style="user-select: none">From</th>
+                            <th scope="col" th:text="#{activity.transaction.to}" style="user-select: none">To</th>
+                            <th scope="col" th:text="#{activity.transaction.date}"
+                                style="user-select: none; cursor: pointer" onclick="sortTableDate()">Date
+                            </th>
 
-                            </tr>
                             </thead>
-
-                            <tfoot>
-                            <tr>
-                                <th th:text="#{activity.transaction.amount}">Amount</th>
-                                <th th:text="#{activity.transaction.from}">From</th>
-                                <th th:text="#{activity.transaction.to}">To</th>
-                                <th th:text="#{activity.transaction.date}">Date</th>
-                            </tr>
-                            </tfoot>
                             <div th:each="transaction : ${transactions}">
                                 <tbody>
                                 <tr>
@@ -181,6 +173,7 @@
 <!-- Page level custom scripts -->
 <script th:src="@{/js/demo/chart-area-demo.js}"></script>
 <script th:src="@{/js/demo/chart-pie-demo.js}"></script>
+<script th:src="@{/js/moment.js}"></script>
 
 
 <!-- Include jQuery -->
@@ -191,6 +184,85 @@
         src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+<script>
+    function sortTableAmount() {
+        let table, rows, switching, i, x, y, dir, shouldSwitch, switchcount = 0;
+        table = document.getElementById("dataTable");
+        switching = true;
+        dir = "asc";
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[0];
+                y = rows[i + 1].getElementsByTagName("TD")[0];
+                if (dir === "asc") {
+                    if (parseFloat(x.innerHTML) > parseFloat(y.innerHTML)) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir === "desc") {
+                    if (parseFloat(x.innerHTML) < parseFloat(y.innerHTML)) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                if (switchcount === 0 && dir === "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+
+    }
+
+    function sortTableDate() {
+        let table, rows, switching, i, x, y, dir, shouldSwitch, switchcount = 0;
+        table = document.getElementById("dataTable");
+        switching = true;
+        dir = "asc";
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[3];
+                let momentDateX = moment(x.innerHTML, 'YYYY-MM-DD HH:mm:ss')
+                y = rows[i + 1].getElementsByTagName("TD")[3];
+                let momentDateY = moment(y.innerHTML, 'YYYY-MM-DD HH:mm:ss')
+                if (dir === "asc") {
+                    if (moment(momentDateX).isAfter(momentDateY)) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir === "desc") {
+                    if (moment(momentDateX).isBefore(momentDateY)) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                if (switchcount === 0 && dir === "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+
+    }
+</script>
 
 </body>
 </html>
