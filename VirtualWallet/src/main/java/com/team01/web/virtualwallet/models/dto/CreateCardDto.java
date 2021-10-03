@@ -1,5 +1,7 @@
 package com.team01.web.virtualwallet.models.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -11,7 +13,7 @@ public class CreateCardDto {
     @Size(min = 16, max = 16, message = "Card number must be 16 digits")
     private String cardNumber;
 
-    @Size(min = 2, max = 20, message = "Card holder must be between 2 and 20 symbols")
+    @Size(min = 2, max = 30, message = "Card holder must be between 2 and 30 symbols")
     private String holder;
 
     @Pattern(regexp = "[0-9]+", message = "Card check number must contain only digits")
