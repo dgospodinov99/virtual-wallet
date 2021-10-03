@@ -24,7 +24,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.UNAUTHORIZED.name(),
                 e.getMessage(),
                 request.getServletPath());
-        return new ResponseEntity(json, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(value = EntityNotFoundException.class)
@@ -36,13 +36,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getMessage(),
                 request.getServletPath());
 
-        return new ResponseEntity(json, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(json, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = {
             IllegalArgumentException.class,
             DuplicateEntityException.class,
-            InvalidPasswordException.class,
             InvalidTransferException.class})
     private ResponseEntity<Object> conflict(RuntimeException e, HttpServletRequest request) {
         CustomJsonReturn json = new CustomJsonReturn(
@@ -51,15 +50,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.CONFLICT.name(),
                 e.getMessage(),
                 request.getServletPath());
-        return new ResponseEntity(json, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(json, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(value = {DateTimeException.class, InvalidUserInput.class, BadLuckException.class})
+    @ExceptionHandler(value = {DateTimeException.class, InvalidUserInput.class, BadLuckException.class, InvalidPasswordException.class})
     private ResponseEntity<Object> badRequest(RuntimeException e, HttpServletRequest request) {
         CustomJsonReturn json = new CustomJsonReturn(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.CONFLICT.name(),
+                HttpStatus.BAD_REQUEST.name(),
                 e.getMessage(),
                 request.getServletPath());
         return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
@@ -67,7 +66,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     public void checkValidFields(BindingResult result) {
         if (result.hasErrors()) {
-            throw new IllegalArgumentException(result.getFieldError().getDefaultMessage());
+            throw new InvalidUserInput(result.getFieldError().getDefaultMessage());
         }
     }
 }
