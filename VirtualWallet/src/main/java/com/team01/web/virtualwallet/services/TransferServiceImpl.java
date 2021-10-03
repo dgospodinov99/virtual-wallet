@@ -1,5 +1,6 @@
 package com.team01.web.virtualwallet.services;
 
+import com.team01.web.virtualwallet.exceptions.InvalidUserInput;
 import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.repositories.contracts.TransferRepository;
@@ -34,8 +35,15 @@ public class TransferServiceImpl extends BaseGetServiceImpl<Transfer> implements
     }
 
     @Override
-    public void create(Transfer transfer) {
+    public void create(Transfer transfer, User executor) {
+        validateDepositUserMatchesWallet(transfer, executor);
         transferRepository.create(transfer);
         walletService.deposit(transfer.getWallet(), transfer.getAmount());
+    }
+
+    public void validateDepositUserMatchesWallet(Transfer transfer, User executor) {
+        if (!transfer.getCard().getUser().equals(executor)) {
+            throw new InvalidUserInput("At least you tried");
+        }
     }
 }

@@ -91,7 +91,7 @@ public class DepositMvcController {
             RestTemplate template = new RestTemplate();
             ResponseEntity<String> response = template.exchange(DUMMY_END_POINT, HttpMethod.POST, entity, String.class);
             if (response.getStatusCode().equals(HttpStatus.OK)) {
-                transferService.create(transfer);
+                transferService.create(transfer, user);
             }
 
             return "redirect:/";
