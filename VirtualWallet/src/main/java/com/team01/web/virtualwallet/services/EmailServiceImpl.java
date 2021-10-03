@@ -71,6 +71,7 @@ public class EmailServiceImpl implements EmailService {
         MimeMessagePreparator preparator = prepareMessage(recipientEmail,
                 LARGE_TRANSACTION_VERIFICATION_SUBJECT, message);
         Token tokenToSave = new Token();
+        tokenToSave.setActive(true);
         tokenToSave.setExpiration(LocalDateTime.now().plusMinutes(TOKEN_EXPIRATION_MINUTES));
         tokenToSave.setUser(userService.getByEmail(recipientEmail));
         tokenToSave.setToken(token);
