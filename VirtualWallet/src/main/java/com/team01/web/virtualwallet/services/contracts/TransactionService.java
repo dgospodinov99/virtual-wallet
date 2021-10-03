@@ -18,4 +18,6 @@ public interface TransactionService extends BaseGetService<Transaction> {
     List<Transaction> userFilterTransactions(FilterTransactionsByUserParams params);
 
     void create(Transaction transaction, User executor);
+
+    void createLargeTransaction(Transaction transaction, String token, User executor);
 }

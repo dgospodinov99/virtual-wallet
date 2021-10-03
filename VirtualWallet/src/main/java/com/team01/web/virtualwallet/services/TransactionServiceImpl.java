@@ -1,17 +1,20 @@
 package com.team01.web.virtualwallet.services;
 
 import com.team01.web.virtualwallet.exceptions.*;
+import com.team01.web.virtualwallet.models.Token;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.models.dto.FilterTransactionByAdminParams;
 import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.TransactionRepository;
+import com.team01.web.virtualwallet.services.contracts.TokenService;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,12 +28,14 @@ public class TransactionServiceImpl extends BaseGetServiceImpl<Transaction> impl
 
     private final TransactionRepository transactionRepository;
     private final WalletService walletService;
+    private final TokenService tokenService;
 
     @Autowired
-    public TransactionServiceImpl(TransactionRepository transactionRepository, WalletService walletService) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, WalletService walletService, TokenService tokenService) {
         super(transactionRepository);
         this.transactionRepository = transactionRepository;
         this.walletService = walletService;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -62,6 +67,26 @@ public class TransactionServiceImpl extends BaseGetServiceImpl<Transaction> impl
         validateTransaction(executor.getWallet(), transaction.getReceiver());
         if (transaction.getAmount() > LARGE_TRANSACTION_AMOUNT) {
             throw new LargeTransactionDetectedException(LARGE_TRANSACTION_MESSAGE);
+        }
+        walletService.deposit(transaction.getReceiver(), transaction.getAmount()); //add money to receiver
+        walletService.withdraw(transaction.getSender(), transaction.getAmount());  //remove money from sender
+
+        transactionRepository.create(transaction);
+    }
+
+    @Override
+    public void createLargeTransaction(Transaction transaction, String token, User executor) {
+        validateUser(executor, transaction.getSender());
+        validateUserNotBlocked(executor);
+        validateBalance(transaction.getSender(), transaction.getAmount());
+        validateTransaction(executor.getWallet(), transaction.getReceiver());
+        Token toValidate = tokenService.getByToken(token);
+        if (!tokenService.getUserTokens(executor.getId()).contains(toValidate.getToken())) {
+            throw new InvalidTokenException("Invalid verification code!");
+        }
+        if (toValidate.getExpiration().isBefore(LocalDateTime.now())) {
+            tokenService.delete(toValidate.getId());
+            throw new InvalidTokenException("Verification code has expired!");
         }
         walletService.deposit(transaction.getReceiver(), transaction.getAmount()); //add money to receiver
         walletService.withdraw(transaction.getSender(), transaction.getAmount());  //remove money from sender
