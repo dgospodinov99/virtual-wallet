@@ -90,7 +90,7 @@ public class TransactionRestController {
 
     @PostMapping
     public TransactionDto create(@Valid @RequestBody CreateTransactionDto dto, @RequestHeader HttpHeaders headers, BindingResult result) {
-        globalExceptionHandler.checkValidFields(result);
+//        globalExceptionHandler.checkValidFields(result);
         try {
             User executor = authenticationHelper.tryGetUser(headers);
             Transaction transaction = modelMapper.fromDto(dto);

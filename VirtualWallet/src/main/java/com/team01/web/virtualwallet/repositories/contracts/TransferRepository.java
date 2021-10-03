@@ -5,8 +5,9 @@ import com.team01.web.virtualwallet.models.Wallet;
 
 import java.util.List;
 
-public interface TransferRepository extends BaseGetRepository<Transfer> {
+public interface TransferRepository extends BaseGetRepository<Transfer>{
 
+    //todo
     void create(Transfer transfer);
 
     List<Transfer> getWalletTransfers(Wallet wallet);

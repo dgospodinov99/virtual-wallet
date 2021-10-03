@@ -13,6 +13,7 @@ public interface TransactionRepository extends BaseGetRepository<Transaction> {
 
     List<Transaction> getWalletLatestTransactions(Wallet wallet);
 
+    //todo CreatableRepository interface?
     void create(Transaction transaction);
 
     List<Transaction> adminFilterTransactions(FilterTransactionByAdminParams params);

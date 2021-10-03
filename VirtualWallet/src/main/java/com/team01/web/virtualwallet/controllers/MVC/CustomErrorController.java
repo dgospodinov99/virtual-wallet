@@ -4,7 +4,6 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -12,7 +11,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-@Controller
+@Controller()
 public class CustomErrorController implements ErrorController {
 
     @ModelAttribute("isAuthenticated")
@@ -24,8 +23,9 @@ public class CustomErrorController implements ErrorController {
     public String handleError(HttpServletRequest request,
                               Model model) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+        String header = request.getHeader("Accept");
 
-        if (status != null) {
+        if (status != null && !header.equals("application/json")) {
             Integer statusCode = Integer.valueOf(status.toString());
             model.addAttribute("error", request.getAttribute(RequestDispatcher.ERROR_MESSAGE));
 
@@ -33,11 +33,11 @@ public class CustomErrorController implements ErrorController {
                 return "error404";
             } else if (statusCode == HttpStatus.UNAUTHORIZED.value()) {
                 return "error401";
-            }  else if (statusCode == HttpStatus.BAD_REQUEST.value()) {
+            } else if (statusCode == HttpStatus.BAD_REQUEST.value()) {
                 return "error400";
-            }    else if (statusCode == HttpStatus.CONFLICT.value()) {
+            } else if (statusCode == HttpStatus.CONFLICT.value()) {
                 return "error409";
-            }   else if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
+            } else if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 return "error500";
             }
 

@@ -178,9 +178,6 @@ public class CardMvcController {
         } catch (DuplicateEntityException e) {
             errors.rejectValue("cardNumber", "duplicate", e.getMessage());
             return "card-update";
-        } catch (InvalidCardInformation e) {
-            errors.rejectValue("cardNumber", "invalid", e.getMessage());
-            return "card-update";
         }
     }
 

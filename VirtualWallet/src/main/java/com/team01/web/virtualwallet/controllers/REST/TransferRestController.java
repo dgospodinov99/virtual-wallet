@@ -55,7 +55,7 @@ public class TransferRestController {
 
     @PostMapping
     public TransferDto create(@Valid @RequestBody TransferDto dto, BindingResult result) {
-        globalExceptionHandler.checkValidFields(result);
+//        globalExceptionHandler.checkValidFields(result);
         try {
             Transfer transfer = modelMapper.fromDto(dto);
             HttpHeaders headers = new HttpHeaders();

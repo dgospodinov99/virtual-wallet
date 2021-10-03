@@ -2,7 +2,6 @@ package com.team01.web.virtualwallet.controllers.REST;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
-import com.team01.web.virtualwallet.exceptions.*;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.CardDto;
@@ -12,10 +11,8 @@ import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.CardModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -47,81 +44,53 @@ public class CardRestController {
 
     @GetMapping()
     public List<CardDto> getAll(@RequestHeader HttpHeaders headers) {
-        try {
-            authenticationHelper.tryGetAdmin(headers);
-            return cardService.getAll().stream()
-                    .map(card -> modelMapper.toDto(card))
-                    .collect(Collectors.toList());
-        } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
+        authenticationHelper.tryGetAdmin(headers);
+        return cardService.getAll().stream()
+                .map(card -> modelMapper.toDto(card))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public CardDto getById(@PathVariable int id, @RequestHeader HttpHeaders headers) {
-        try {
-            authenticationHelper.tryGetAdmin(headers);
-            return modelMapper.toDto(cardService.getById(id));
-        } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        authenticationHelper.tryGetAdmin(headers);
+        return modelMapper.toDto(cardService.getById(id));
     }
 
     @PutMapping("/{id}")
     public CardDto update(@PathVariable int id, @RequestHeader HttpHeaders headers, @Valid @RequestBody CreateCardDto dto, BindingResult result) {
         globalExceptionHandler.checkValidFields(result);
-        try {
-            User executor = authenticationHelper.tryGetUser(headers);
-            Card card = modelMapper.fromCreateDto(dto, id);
 
-            cardService.update(card, executor);
-            return modelMapper.toDto(card);
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (DuplicateEntityException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
+        User executor = authenticationHelper.tryGetUser(headers);
+        Card card = modelMapper.fromCreateDto(dto, id);
+
+        cardService.update(card, executor);
+        return modelMapper.toDto(card);
     }
 
     @PostMapping
     public CardDto create(@RequestHeader HttpHeaders headers, @Valid @RequestBody CreateCardDto dto, BindingResult result) {
         globalExceptionHandler.checkValidFields(result);
-        try {
-            User user = authenticationHelper.tryGetUser(headers);
-            Card card = modelMapper.fromCreateDto(dto, user);
-            cardService.create(card);
 
-            Set<Card> newCardSet = user.getCards();
-            newCardSet.add(card);
-            user.setCards(newCardSet);
-            userService.update(user);
+        User user = authenticationHelper.tryGetUser(headers);
+        Card card = modelMapper.fromCreateDto(dto, user);
+        cardService.create(card);
 
-            return modelMapper.toDto(card);
-        } catch (InvalidCardInformation e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (DuplicateEntityException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        }
+        Set<Card> newCardSet = user.getCards();
+        newCardSet.add(card);
+        user.setCards(newCardSet);
+        userService.update(user);
+
+        return modelMapper.toDto(card);
     }
 
     @DeleteMapping("/{id}")
     public CardDto delete(@PathVariable int id, @RequestHeader HttpHeaders headers) {
-        try {
+        User executor = authenticationHelper.tryGetUser(headers);
+        Card card = cardService.getById(id);
+        CardDto dto = modelMapper.toDto(card);
+        cardService.delete(id, executor);
+        return dto;
 
-            User executor = authenticationHelper.tryGetUser(headers);
-            Card card = cardService.getById(id);
-            CardDto dto = modelMapper.toDto(card);
-            cardService.delete(id, executor);
-            return dto;
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
     }
 }
 

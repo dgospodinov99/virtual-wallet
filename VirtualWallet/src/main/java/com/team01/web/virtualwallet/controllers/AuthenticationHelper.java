@@ -26,13 +26,13 @@ public class AuthenticationHelper {
 
     public User tryGetUser(HttpHeaders headers) {
         if (!headers.containsKey(AUTHORIZATION_HEADER_NAME)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The requested resource requires authentication.");
+            throw new AuthenticationFailureException("The requested resource requires authentication.");
         }
 
         try {
             String username = headers.getFirst(AUTHORIZATION_HEADER_NAME);
             if (username.isBlank()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The requested resource requires administrator rights.");
+                throw new AuthenticationFailureException("The requested resource requires administrator rights.");
             }
             return userService.getByUsername(username);
         } catch (EntityNotFoundException e) {

@@ -2,7 +2,6 @@ package com.team01.web.virtualwallet.services;
 
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
-import com.team01.web.virtualwallet.exceptions.InvalidCardInformation;
 import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.User;
@@ -31,26 +30,27 @@ public class CardServiceImpl extends BaseGetServiceImpl<Card> implements CardSer
 
     @Override
     public Card getByCardNumber(String cardNumber) {
-        validateCardNumber(cardNumber);
         return cardRepository.getByCardNumber(cardNumber);
     }
 
     @Override
-    public List<Card> getUserCards(User user) {
+    public List<Card> getUserCards(User user, User executor) {
+        if(!executor.isAdmin() && user.getId() != executor.getId()){
+            throw new UnauthorizedOperationException(INVALID_CARD_OWNER);
+        }
         return cardRepository.getUserCards(user.getId());
     }
 
     @Override
     public void create(Card card) {
         verifyUniqueCardNumber(card);
-        validateCardNumber(card.getCardNumber());
         cardRepository.create(card);
     }
 
     @Override
     public void update(Card card, User executor) {
         validateUser(executor, card);
-        validateCardNumber(card.getCardNumber());
+        verifyUniqueCardNumber(card);
         cardRepository.update(card);
     }
 
@@ -79,18 +79,6 @@ public class CardServiceImpl extends BaseGetServiceImpl<Card> implements CardSer
     private void validateUser(User executor, Card card) {
         if (!executor.isAdmin() && card.getUser().getId() != executor.getId()) {
             throw new UnauthorizedOperationException(INVALID_CARD_OWNER);
-        }
-    }
-
-    private void validateAdmin(User executor) {
-        if (!executor.isAdmin()) {
-            throw new UnauthorizedOperationException(NOT_ADMIN_MESSAGE);
-        }
-    }
-
-    private void validateCardNumber(String cardNumber) {
-        if (!cardNumber.matches(ONLY_DIGITS) || cardNumber.length() != 16) { //validates card number is only digits
-            throw new InvalidCardInformation(CARD_ONLY_DIGITS_MESSAGE);
         }
     }
 }

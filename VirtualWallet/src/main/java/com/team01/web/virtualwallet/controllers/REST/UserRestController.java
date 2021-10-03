@@ -2,10 +2,7 @@ package com.team01.web.virtualwallet.controllers.REST;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
-import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
-import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
-import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.*;
 import com.team01.web.virtualwallet.models.enums.UserSortOptions;
@@ -55,19 +52,17 @@ public class UserRestController {
     }
 
     @GetMapping
-    public List<UserDto> getAll() {
+    public List<UserDto> getAll(@RequestHeader HttpHeaders headers) {
+        authenticationHelper.tryGetAdmin(headers);
         return service.getAll().stream()
                 .map(modelMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public UserDto getById(@PathVariable int id) {
-        try {
-            return modelMapper.toDto(service.getById(id));
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public UserDto getById(@PathVariable int id, @RequestHeader HttpHeaders headers) {
+        authenticationHelper.tryGetAdmin(headers);
+        return modelMapper.toDto(service.getById(id));
     }
 
 
@@ -77,108 +72,88 @@ public class UserRestController {
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String phoneNumber,
             @RequestParam(required = false) String sortParam) {
-        try {
+
+        //todo authorization
+        var params = new FilterUserParams()
+                .setUsername(username)
+                .setEmail(email)
+                .setPhoneNumber(phoneNumber)
+                .setSortParam(UserSortOptions.valueOfPreview(sortParam));
+
+        return service.filterUsers(params)
+                .stream()
+                .map(user -> modelMapper.toDto(user))
+                .collect(Collectors.toList());
 
 
-            var params = new FilterUserParams()
-                    .setUsername(username)
-                    .setEmail(email)
-                    .setPhoneNumber(phoneNumber)
-                    .setSortParam(UserSortOptions.valueOfPreview(sortParam));
-
-            return service.filterUsers(params)
-                    .stream()
-                    .map(user -> modelMapper.toDto(user))
-                    .collect(Collectors.toList());
-
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
     }
 
     @GetMapping("/{id}/transfers")
     public List<TransactionDto> getUserTransfers(@PathVariable int id,
                                                  @RequestHeader HttpHeaders headers,
                                                  @RequestParam(required = false) String direction) {
-        try {
-            User executor = authenticationHelper.tryGetUser(headers);
-            User user = service.getById(id);
-            return transactionService.getUserTransactions(user)
-                    .stream()
-                    .map(transfer -> transactionModelMapper.toDto(transfer))
-                    .collect(Collectors.toList());
 
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        //todo check user and executor
+        User executor = authenticationHelper.tryGetUser(headers);
+        User user = service.getById(id);
+        return transactionService.getUserTransactions(user)
+                .stream()
+                .map(transfer -> transactionModelMapper.toDto(transfer))
+                .collect(Collectors.toList());
+
+
     }
 
     @GetMapping("/{id}/cards")
     public List<CardDto> getUserCards(@PathVariable int id,
                                       @RequestHeader HttpHeaders headers) {
-        try {
-            User executor = authenticationHelper.tryGetUser(headers);
-            User user = service.getById(id);
-            return cardService.getUserCards(user)
-                    .stream()
-                    .map(card -> cardModelMapper.toDto(card))
-                    .collect(Collectors.toList());
 
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        User executor = authenticationHelper.tryGetUser(headers);
+        User user = service.getById(id);
+        return cardService.getUserCards(user, executor)
+                .stream()
+                .map(card -> cardModelMapper.toDto(card))
+                .collect(Collectors.toList());
+
     }
 
     @PostMapping
     public UserDto create(@Valid @RequestBody CreateUserDto dto, BindingResult result) {
         globalExceptionHandler.checkValidFields(result);
-        try {
+        User user = modelMapper.fromDto(dto);
+        service.create(user);
+        return modelMapper.toDto(user);
 
-            User user = modelMapper.fromDto(dto);
-            service.create(user);
-
-            return modelMapper.toDto(user);
-        } catch (DuplicateEntityException | InvalidPasswordException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        }
     }
 
     @PutMapping("/{id}")
     public UserDto update(@PathVariable int id, @Valid @RequestBody UpdateUserDto dto, BindingResult result) {
+        //todo add authentication
+//        authenticationHelper.tryGetUser(headers);
         globalExceptionHandler.checkValidFields(result);
-        try {
-            User user = modelMapper.fromDto(dto, id);
-            service.update(user);
-            return modelMapper.toDto(user);
-        } catch (DuplicateEntityException | InvalidPasswordException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        }
+
+        User user = modelMapper.fromDto(dto, id);
+        service.update(user);
+        return modelMapper.toDto(user);
+
     }
 
     @PutMapping("/block")
     public UserDto blockUser(@RequestBody BlockUserDto dto, @RequestHeader HttpHeaders headers) {
-        try {
-            User executor = authenticationHelper.tryGetUser(headers);
-            User user = service.blockUserByAdmin(dto.getUsername(), executor);
-            return modelMapper.toDto(user);
-        } catch (InvalidPasswordException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
+
+        User executor = authenticationHelper.tryGetUser(headers);
+        User user = service.blockUserByAdmin(dto.getUsername(), executor);
+        return modelMapper.toDto(user);
+
     }
 
     @PutMapping("/unblock")
     public UserDto unblock(@RequestBody BlockUserDto dto, @RequestHeader HttpHeaders headers) {
-        try {
-            User executor = authenticationHelper.tryGetUser(headers);
-            User user = service.unblockUserByAdmin(dto.getUsername(), executor);
-            return modelMapper.toDto(user);
-        } catch (InvalidPasswordException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
+
+        User executor = authenticationHelper.tryGetUser(headers);
+        User user = service.unblockUserByAdmin(dto.getUsername(), executor);
+        return modelMapper.toDto(user);
+
     }
 
     @DeleteMapping("/{id}")

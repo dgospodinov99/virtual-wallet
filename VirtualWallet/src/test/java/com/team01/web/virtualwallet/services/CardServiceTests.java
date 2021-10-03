@@ -2,7 +2,6 @@ package com.team01.web.virtualwallet.services;
 
 import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
-import com.team01.web.virtualwallet.exceptions.InvalidCardInformation;
 import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.repositories.contracts.CardRepository;
@@ -91,13 +90,6 @@ public class CardServiceTests {
     }
 
     @Test
-    public void getByCardNumber_Should_Throw_If_CardNumber_Is_Invalid() {
-        //Arrange, Act, Assert
-        Assertions.assertThrows(InvalidCardInformation.class,
-                () -> mockService.getByCardNumber("Invalid Number"));
-    }
-
-    @Test
     public void create_Should_Call_Repository_When_CardNumber_Unique() {
         //Arrange
         var card = createMockCard();
@@ -138,16 +130,6 @@ public class CardServiceTests {
         //Act, Assert
         Assertions.assertThrows(UnauthorizedOperationException.class,
                 () -> mockService.update(card, user));
-    }
-
-    @Test
-    public void update_Should_Throw_When_Invalid_CardNumber() {
-        //Arrange
-        var card = createMockCard();
-        card.setCardNumber("Invalid Number");
-        //Act, Assert
-        Assertions.assertThrows(InvalidCardInformation.class,
-                () -> mockService.update(card, createMockAdmin()));
     }
 
     @Test

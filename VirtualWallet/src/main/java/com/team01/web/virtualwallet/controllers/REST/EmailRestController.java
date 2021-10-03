@@ -26,7 +26,7 @@ public class EmailRestController {
 
     @PostMapping("/verify-registration")
     public void sendVerification(@Valid @RequestBody RegisterDto dto, BindingResult result) {
-        globalExceptionHandler.checkValidFields(result);
+//        globalExceptionHandler.checkValidFields(result);
 //        emailService.sendVerifyRegistrationEmail(dto.getEmail(), 333333);
     }
 
