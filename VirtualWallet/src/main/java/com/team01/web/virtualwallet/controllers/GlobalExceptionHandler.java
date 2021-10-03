@@ -4,20 +4,19 @@ import com.team01.web.virtualwallet.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {AuthenticationFailureException.class, UnauthorizedOperationException.class})
+    @ExceptionHandler(value = {AuthenticationFailureException.class, UnauthorizedOperationException.class, BlockedUserException.class})
     private ResponseEntity<Object> unauthorized(RuntimeException e, HttpServletRequest request) {
         CustomJsonReturn json = new CustomJsonReturn(
                 LocalDateTime.now(),
@@ -40,7 +39,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity(json, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = {IllegalArgumentException.class, DuplicateEntityException.class, InvalidPasswordException.class})
+    @ExceptionHandler(value = {
+            IllegalArgumentException.class,
+            DuplicateEntityException.class,
+            InvalidPasswordException.class,
+            InvalidTransferException.class})
     private ResponseEntity<Object> conflict(RuntimeException e, HttpServletRequest request) {
         CustomJsonReturn json = new CustomJsonReturn(
                 LocalDateTime.now(),
@@ -51,7 +54,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity(json, HttpStatus.CONFLICT);
     }
 
-    //soon bad request DateTimeException + \/
+    @ExceptionHandler(value = {DateTimeException.class, InvalidUserInput.class, BadLuckException.class})
+    private ResponseEntity<Object> badRequest(RuntimeException e, HttpServletRequest request) {
+        CustomJsonReturn json = new CustomJsonReturn(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.CONFLICT.name(),
+                e.getMessage(),
+                request.getServletPath());
+        return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+    }
 
     public void checkValidFields(BindingResult result) {
         if (result.hasErrors()) {
