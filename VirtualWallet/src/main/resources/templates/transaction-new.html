@@ -104,7 +104,7 @@
                                         <form action="#" th:action="@{/myaccount/transactions/new/finalize}"
                                               method="get" th:object="${transaction}">
 
-                                            <input type="hidden" name="receiverId" th:value="${user.id}"/>
+                                            <input type="hidden" name="receiverId" th:value="${user.wallet.id}"/>
                                             <input class="btn btn-primary btn-user btn-block col-6" th:type="submit"
                                                    th:value="Send">
                                         </form>
