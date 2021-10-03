@@ -81,6 +81,32 @@ public class CardServiceTests {
     }
 
     @Test
+    public void getUserCards_Should_Throw_When_User_Not_Admin() {
+        //Arrange
+        var user = createMockUser();
+        var user2 = createMockUser();
+        user2.setId(2);
+
+        //Assert
+        Assertions.assertThrows(UnauthorizedOperationException.class,
+                () -> mockService.getUserCards(user, user2));
+    }
+
+    @Test
+    public void getUserCards_Should_Call_Repo_When_Valid() {
+        //Arrange
+        var user = createMockUser();
+        var user2 = createMockUser();
+
+        //Act
+        mockService.getUserCards(user,user2);
+
+        //Assert
+        Mockito.verify(mockRepository, Mockito.times(1))
+                .getUserCards(1);
+    }
+
+    @Test
     public void getByCardNumber_Should_Throw_When_Match_Doesnt_Exist() {
         //Arrange
         Mockito.when(mockRepository.getByCardNumber("1234567890111213"))
@@ -89,6 +115,7 @@ public class CardServiceTests {
         Assertions.assertThrows(EntityNotFoundException.class,
                 () -> mockService.getByCardNumber("1234567890111213"));
     }
+
 
     @Test
     public void create_Should_Call_Repository_When_CardNumber_Unique() {
