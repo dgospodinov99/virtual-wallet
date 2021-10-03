@@ -2,6 +2,7 @@ package com.team01.web.virtualwallet.services.utils;
 
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.dto.CreateTransactionDto;
+import com.team01.web.virtualwallet.models.dto.LargeTransactionDto;
 import com.team01.web.virtualwallet.models.dto.TransactionDto;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
@@ -41,9 +42,24 @@ public class TransactionModelMapper {
         dto.setSender(userService.getById(transaction.getSender().getId()).getUsername());
         dto.setReceiver(userService.getById(transaction.getReceiver().getId()).getUsername());
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm  dd-MM-yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String date = transaction.getTimestamp().format(formatter);
         dto.setTimestamp(date);
         return dto;
+    }
+
+    public LargeTransactionDto toLargeDto(CreateTransactionDto ctDTO) {
+        LargeTransactionDto dto = new LargeTransactionDto();
+        dto.setReceiverId(ctDTO.getReceiverId());
+        dto.setAmount(ctDTO.getAmount());
+        return dto;
+    }
+
+    public Transaction fromLargeDto(LargeTransactionDto dto) {
+        Transaction transaction = new Transaction();
+        transaction.setAmount(dto.getAmount());
+        transaction.setReceiver(walletService.getById(dto.getReceiverId()));
+        transaction.setTimestamp(LocalDateTime.now());
+        return transaction;
     }
 }
