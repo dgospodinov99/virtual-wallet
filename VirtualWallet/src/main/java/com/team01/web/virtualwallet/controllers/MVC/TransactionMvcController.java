@@ -6,7 +6,9 @@ import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.*;
 import com.team01.web.virtualwallet.models.enums.TransactionDirection;
+import com.team01.web.virtualwallet.services.contracts.EmailService;
 import com.team01.web.virtualwallet.models.enums.UserSortOptions;
+import com.team01.web.virtualwallet.services.contracts.TokenService;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
@@ -36,17 +38,22 @@ public class TransactionMvcController {
     private final TransactionService transactionService;
     private final TransactionModelMapper transactionModelMapper;
     private final AuthenticationHelper authenticationHelper;
+    private final EmailService emailService;
+    private final TokenService tokenService;
 
     @Autowired
     public TransactionMvcController(UserService userService,
                                     UserModelMapper userModelMapper, TransactionService transactionService,
                                     TransactionModelMapper transactionModelMapper,
-                                    AuthenticationHelper authenticationHelper) {
+                                    AuthenticationHelper authenticationHelper, EmailService emailService,
+                                    TokenService tokenService) {
         this.userService = userService;
         this.userModelMapper = userModelMapper;
         this.transactionService = transactionService;
         this.transactionModelMapper = transactionModelMapper;
         this.authenticationHelper = authenticationHelper;
+        this.emailService = emailService;
+        this.tokenService = tokenService;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -168,7 +175,7 @@ public class TransactionMvcController {
     }
 
     @PostMapping("/new/finalize")
-    public String createTransaction(@Valid @ModelAttribute("transaction") CreateTransactionDto dto, BindingResult bindingResult, HttpSession session) {
+    public String createTransaction(@Valid @ModelAttribute("transaction") CreateTransactionDto dto, BindingResult bindingResult, HttpSession session, Model model) {
         if (bindingResult.hasErrors()) {
             return "transaction-finalize";
         }
@@ -184,7 +191,43 @@ public class TransactionMvcController {
         } catch (InvalidUserInput | BlockedUserException | UnauthorizedOperationException e) {
             bindingResult.rejectValue("receiverId", "transaction_error", e.getMessage());
             return "transaction-finalize";
+        } catch (LargeTransactionDetectedException e) {
+            emailService.sendVerifyTransactionEmail(authenticationHelper.tryGetUser(session).getEmail());
+            return showTransactionVerification(dto, model, session);
         }
+    }
+
+    @GetMapping("/new/finalize/verify")
+    public String showTransactionVerification(CreateTransactionDto dto, Model model, HttpSession session) {
+        var largeDTO = transactionModelMapper.toLargeDto(dto);
+        model.addAttribute("transactionDto", largeDTO);
+        model.addAttribute("receiverUsername", userService.getById(dto.getReceiverId()).getUsername());
+        session.setAttribute("receiverId", dto.getReceiverId());
+        session.setAttribute("amount", dto.getAmount());
+        return "transaction-verify";
+    }
+
+    @PostMapping("/new/finalize/verify")
+    public String handleLargeTransaction(@ModelAttribute("transactionDto") LargeTransactionDto dto,
+                                         BindingResult bindingResult,
+                                         HttpSession session) {
+        if (bindingResult.hasErrors()) {
+            return "transaction-verify";
+        }
+        try {
+            dto.setAmount((Double) session.getAttribute("amount"));
+            dto.setReceiverId((Integer) session.getAttribute("receiverId"));
+            Transaction transaction = transactionModelMapper.fromLargeDto(dto);
+            User sender = authenticationHelper.tryGetUser(session);
+            transaction.setSender(sender.getWallet());
+            transactionService.createLargeTransaction(transaction, dto.getToken(), sender);
+            return "transaction-verify";
+        } catch (InvalidTokenException | EntityNotFoundException e) {
+            bindingResult.rejectValue("token", "token_error", e.getMessage());
+            return "transaction-verify";
+        }
+
+
     }
 
 }
