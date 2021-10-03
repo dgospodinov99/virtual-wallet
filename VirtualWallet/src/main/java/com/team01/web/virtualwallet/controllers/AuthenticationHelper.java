@@ -2,6 +2,7 @@ package com.team01.web.virtualwallet.controllers;
 
 import com.team01.web.virtualwallet.exceptions.AuthenticationFailureException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
+import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import org.springframework.http.HttpHeaders;
@@ -15,7 +16,7 @@ import javax.servlet.http.HttpSession;
 public class AuthenticationHelper {
 
     private static final String WRONG_USERNAME_OR_PASSWORD = "Wrong username or password.";
-    private static final String UNAUTHORIZED = "Unauthorized";
+    private static final String UNAUTHORIZED = "This resource requires admin rights!";
     private final String AUTHORIZATION_HEADER_NAME = "Authorization";
 
     private final UserService userService;
@@ -28,16 +29,11 @@ public class AuthenticationHelper {
         if (!headers.containsKey(AUTHORIZATION_HEADER_NAME)) {
             throw new AuthenticationFailureException("The requested resource requires authentication.");
         }
-
-        try {
-            String username = headers.getFirst(AUTHORIZATION_HEADER_NAME);
-            if (username.isBlank()) {
-                throw new AuthenticationFailureException("The requested resource requires administrator rights.");
-            }
-            return userService.getByUsername(username);
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid username.");
+        String username = headers.getFirst(AUTHORIZATION_HEADER_NAME);
+        if (username.isBlank()) {
+            throw new AuthenticationFailureException("The requested resource requires administrator rights.");
         }
+        return userService.getByUsername(username);
     }
 
     public User tryGetUser(HttpSession session) {
@@ -51,8 +47,8 @@ public class AuthenticationHelper {
 
     public User tryGetAdmin(HttpHeaders headers) {
         User user = tryGetUser(headers);
-        if(!user.isAdmin()){
-            throw new AuthenticationFailureException(UNAUTHORIZED);
+        if (!user.isAdmin()) {
+            throw new UnauthorizedOperationException(UNAUTHORIZED);
         }
 
         return user;
