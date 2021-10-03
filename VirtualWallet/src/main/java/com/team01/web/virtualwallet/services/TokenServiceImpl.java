@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TokenServiceImpl extends BaseGetServiceImpl<Token> implements TokenService {
@@ -25,8 +26,10 @@ public class TokenServiceImpl extends BaseGetServiceImpl<Token> implements Token
     }
 
     @Override
-    public List<Token> getUserTokens(int userId) {
-        return tokenRepository.getUserTokens(userId);
+    public List<String> getUserTokens(int userId) {
+        return tokenRepository.getUserTokens(userId).stream()
+                .map(token -> token.getToken())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -50,4 +53,11 @@ public class TokenServiceImpl extends BaseGetServiceImpl<Token> implements Token
         token.setActive(false);
         tokenRepository.update(token);
     }
+
+    @Override
+    public boolean isCorrectToken(Token token, String toCompare) {
+        return token.equals(tokenRepository.getByToken(toCompare));
+    }
+
+
 }

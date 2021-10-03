@@ -8,7 +8,7 @@ public interface TokenService extends BaseGetService<Token> {
 
     List<Token> getAllActive();
 
-    List<Token> getUserTokens(int userId);
+    List<String> getUserTokens(int userId);
 
     Token getByToken(String token);
 
@@ -17,4 +17,6 @@ public interface TokenService extends BaseGetService<Token> {
     void update(Token token);
 
     void delete(int id);
+
+    boolean isCorrectToken(Token token, String toCompare);
 }
