@@ -90,7 +90,6 @@ public class CardRestController {
         CardDto dto = modelMapper.toDto(card);
         cardService.delete(id, executor);
         return dto;
-
     }
 }
 

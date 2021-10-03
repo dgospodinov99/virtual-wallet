@@ -34,12 +34,10 @@ import java.util.stream.Collectors;
 public class TransactionMvcController {
 
     private final UserService userService;
-    private final UserModelMapper userModelMapper;
     private final TransactionService transactionService;
     private final TransactionModelMapper transactionModelMapper;
     private final AuthenticationHelper authenticationHelper;
     private final EmailService emailService;
-    private final TokenService tokenService;
 
     @Autowired
     public TransactionMvcController(UserService userService,
@@ -48,12 +46,10 @@ public class TransactionMvcController {
                                     AuthenticationHelper authenticationHelper, EmailService emailService,
                                     TokenService tokenService) {
         this.userService = userService;
-        this.userModelMapper = userModelMapper;
         this.transactionService = transactionService;
         this.transactionModelMapper = transactionModelMapper;
         this.authenticationHelper = authenticationHelper;
         this.emailService = emailService;
-        this.tokenService = tokenService;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -226,8 +222,5 @@ public class TransactionMvcController {
             bindingResult.rejectValue("token", "token_error", e.getMessage());
             return "transaction-verify";
         }
-
-
     }
-
 }
