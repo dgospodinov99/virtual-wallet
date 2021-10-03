@@ -31,7 +31,8 @@ public class TokenRepositoryImpl extends BaseModifyRepositoryImpl<Token> impleme
     @Override
     public List<Token> getUserTokens(int id) {
         try (Session session = getSessionFactory().openSession()) {
-            Query<Token> query = session.createQuery("from Token where user.id = :id", Token.class);
+            Query<Token> query = session.createQuery("from Token where user.id = :id and active = true", Token.class);
+            query.setParameter("id", id);
             if (query.list().size() == 0) {
                 throw new EntityNotFoundException("Tokens for user", "id", String.valueOf(id));
             }
@@ -42,7 +43,8 @@ public class TokenRepositoryImpl extends BaseModifyRepositoryImpl<Token> impleme
     @Override
     public Token getByToken(String token) {
         try (Session session = getSessionFactory().openSession()) {
-            Query<Token> query = session.createQuery("from Token where token = token", Token.class);
+            Query<Token> query = session.createQuery("from Token where token = :token", Token.class);
+            query.setParameter("token", token);
             if (query.list().size() == 0) {
                 throw new EntityNotFoundException("Tokens", "code", token);
             }
