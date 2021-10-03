@@ -49,7 +49,7 @@ public class CardServiceImpl extends BaseGetServiceImpl<Card> implements CardSer
 
     @Override
     public void update(Card card, User executor) {
-        validateUser(executor, card);
+        validateUserIsOwner(executor, card);
         verifyUniqueCardNumber(card);
         cardRepository.update(card);
     }
@@ -57,7 +57,7 @@ public class CardServiceImpl extends BaseGetServiceImpl<Card> implements CardSer
     @Override
     public void delete(int id, User executor) {
         Card card = getById(id);
-        validateUser(executor, card);
+        validateUserIsOwner(executor, card);
         card.setActive(false);
 
         cardRepository.update(card);
@@ -76,7 +76,7 @@ public class CardServiceImpl extends BaseGetServiceImpl<Card> implements CardSer
         }
     }
 
-    private void validateUser(User executor, Card card) {
+    private void validateUserIsOwner(User executor, Card card) {
         if (!executor.isAdmin() && card.getUser().getId() != executor.getId()) {
             throw new UnauthorizedOperationException(INVALID_CARD_OWNER);
         }
