@@ -14,10 +14,6 @@ public interface UserService extends BaseGetService<User> {
 
     User getByWallet(Wallet wallet);
 
-    void blockUserOnRegistration(User user);
-
-    void unblockUserOnRegistration(User user);
-
     User blockUserByAdmin(String usernameToBlock, User executor);
 
     User unblockUserByAdmin(String usernameToBlock, User executor);

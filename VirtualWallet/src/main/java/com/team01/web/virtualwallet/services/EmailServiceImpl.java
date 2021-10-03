@@ -38,17 +38,6 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public SimpleMailMessage sendSimpleMessage(String to, String subject, String text) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom(emailConfig.getUsername());
-        mailMessage.setTo(to);
-        mailMessage.setSubject(subject);
-        mailMessage.setText(text);
-        mailSender.send(mailMessage);
-        return mailMessage;
-    }
-
-    @Override
     public Token sendVerifyRegistrationEmail(String recipientEmail) {
         String token = generateToken();
         String url=VERIFICATION_URL + token;

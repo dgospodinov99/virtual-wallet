@@ -93,4 +93,14 @@ public class Helpers {
         return user;
     }
 
+    public static Token createMockToken() {
+        var token = new Token();
+        token.setId(1);
+        token.setToken("mockToken");
+        token.setActive(true);
+        token.setUser(createMockUser());
+        token.setExpiration(LocalDateTime.MAX);
+
+        return token;
+    }
 }

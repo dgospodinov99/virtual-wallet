@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.team01.web.virtualwallet.Helpers.*;
+import static com.team01.web.virtualwallet.Helpers.createMockWallet;
 
 @ExtendWith(MockitoExtension.class)
 public class WalletServiceTests {

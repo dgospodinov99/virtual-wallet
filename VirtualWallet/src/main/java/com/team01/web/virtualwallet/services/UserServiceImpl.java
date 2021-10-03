@@ -79,18 +79,6 @@ public class UserServiceImpl extends BaseGetServiceImpl<User> implements UserSer
         return userToUnBlock;
     }
 
-    @Override
-    public void blockUserOnRegistration(User user) {
-        user.setBlocked(true);
-        userRepository.update(user);
-    }
-
-    @Override
-    public void unblockUserOnRegistration(User user) {
-        user.setBlocked(false);
-        userRepository.update(user);
-    }
-
     private void verifyAdmin(User executor) {
         if (!executor.isAdmin()) {
             throw new UnauthorizedOperationException(USER_NOT_ADMIN_MESSAGE);
