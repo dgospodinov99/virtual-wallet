@@ -3,7 +3,6 @@ package com.team01.web.virtualwallet.services;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.repositories.contracts.TransferRepository;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
-import com.team01.web.virtualwallet.services.services.TransferServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

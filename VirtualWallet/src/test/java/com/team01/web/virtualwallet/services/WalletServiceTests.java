@@ -2,7 +2,6 @@ package com.team01.web.virtualwallet.services;
 
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.repositories.contracts.WalletRepository;
-import com.team01.web.virtualwallet.services.services.WalletServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.team01.web.virtualwallet.Helpers.*;
+import static com.team01.web.virtualwallet.Helpers.createMockWallet;
 
 @ExtendWith(MockitoExtension.class)
 public class WalletServiceTests {

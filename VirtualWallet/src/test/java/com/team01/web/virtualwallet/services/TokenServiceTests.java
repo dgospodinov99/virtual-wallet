@@ -4,7 +4,6 @@ package com.team01.web.virtualwallet.services;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.models.Token;
 import com.team01.web.virtualwallet.repositories.contracts.TokenRepository;
-import com.team01.web.virtualwallet.services.services.TokenServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.team01.web.virtualwallet.Helpers.*;
+import static com.team01.web.virtualwallet.Helpers.createMockToken;
+import static com.team01.web.virtualwallet.Helpers.createMockUser;
 
 @ExtendWith(MockitoExtension.class)
 public class TokenServiceTests {
@@ -127,7 +127,7 @@ public class TokenServiceTests {
         //Act
         mockService.isCorrectToken(token, tokenName);
         //Assert
-        Assertions.assertTrue(mockService.isCorrectToken(token,tokenName));
+        Assertions.assertTrue(mockService.isCorrectToken(token, tokenName));
     }
 
 }

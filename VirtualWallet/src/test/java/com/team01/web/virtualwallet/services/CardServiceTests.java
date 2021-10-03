@@ -5,7 +5,6 @@ import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.repositories.contracts.CardRepository;
-import com.team01.web.virtualwallet.services.services.CardServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -99,7 +98,7 @@ public class CardServiceTests {
         var user2 = createMockUser();
 
         //Act
-        mockService.getUserCards(user,user2);
+        mockService.getUserCards(user, user2);
 
         //Assert
         Mockito.verify(mockRepository, Mockito.times(1))

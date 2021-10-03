@@ -7,8 +7,6 @@ import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.dto.FilterTransactionByAdminParams;
 import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.TransactionRepository;
-import com.team01.web.virtualwallet.services.services.TransactionServiceImpl;
-import com.team01.web.virtualwallet.services.services.WalletServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
