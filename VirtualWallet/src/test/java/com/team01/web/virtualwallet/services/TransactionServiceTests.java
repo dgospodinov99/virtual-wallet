@@ -70,7 +70,7 @@ public class TransactionServiceTests {
         //Arrange
         var user = createMockUser();
         //Act
-        mockService.getUserTransactions(user);
+        mockService.getUserTransactions(user, user);
         //Assert
         Mockito.verify(mockRepository, Mockito.times(1))
                 .getAllWalletTransactions(user.getWallet());

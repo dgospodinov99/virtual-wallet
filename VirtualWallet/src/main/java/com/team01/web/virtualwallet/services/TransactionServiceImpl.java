@@ -39,7 +39,8 @@ public class TransactionServiceImpl extends BaseGetServiceImpl<Transaction> impl
     }
 
     @Override
-    public List<Transaction> getUserTransactions(User user) {
+    public List<Transaction> getUserTransactions(User user, User executor) {
+        validateUser(executor, user.getWallet());
         return transactionRepository.getAllWalletTransactions(user.getWallet());
     }
 

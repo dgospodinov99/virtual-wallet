@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface TransactionService extends BaseGetService<Transaction> {
 
-    List<Transaction> getUserTransactions(User user);
+    List<Transaction> getUserTransactions(User user, User executor);
 
     List<Transaction>  getUserLatestTransactions(User user);
 

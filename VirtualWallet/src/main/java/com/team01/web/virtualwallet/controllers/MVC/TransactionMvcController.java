@@ -96,7 +96,7 @@ public class TransactionMvcController {
     public String showActivity(HttpSession session, Model model) {
         User user = authenticationHelper.tryGetUser(session);
 
-        var transactions = transactionService.getUserTransactions(user)
+        var transactions = transactionService.getUserTransactions(user, user)
                 .stream()
                 .map(transaction -> transactionModelMapper.toDto(transaction))
                 .collect(Collectors.toList());
