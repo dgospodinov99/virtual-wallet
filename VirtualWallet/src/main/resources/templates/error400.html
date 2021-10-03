@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>401 Unauthorized</title>
+  <title>400 Bad Request</title>
 
   <!-- Custom fonts for this template-->
   <link href="../static/vendor/fontawesome-free/css/all.min.css" th:href="@{/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
@@ -38,12 +38,11 @@
       <!-- Begin Page Content -->
       <div class="container-fluid">
 
-        <!-- 401 Error Text -->
+        <!-- 400 Error Text -->
         <div class="text-center">
-          <div class="error mx-auto" data-text="401">401</div>
-          <p class="lead text-gray-800 mb-5">Unauthorized</p>
+          <div class="error mx-auto" data-text="400">400</div>
+          <p class="lead text-gray-800 mb-5">Bad Request</p>
           <label class="text-danger" th:text="${error}">Error placeholder</label>
-          <p class="text-gray-500 mb-0">Please log in or register</p>
         </div>
 
       </div>
