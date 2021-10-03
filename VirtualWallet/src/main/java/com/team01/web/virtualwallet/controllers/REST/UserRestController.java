@@ -2,7 +2,6 @@ package com.team01.web.virtualwallet.controllers.REST;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
-import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.*;
 import com.team01.web.virtualwallet.models.enums.UserSortOptions;
@@ -14,10 +13,8 @@ import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -71,9 +68,11 @@ public class UserRestController {
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String phoneNumber,
-            @RequestParam(required = false) String sortParam) {
+            @RequestParam(required = false) String sortParam,
+            @RequestHeader HttpHeaders headers) {
 
-        //todo authorization
+        authenticationHelper.tryGetAdmin(headers);
+
         var params = new FilterUserParams()
                 .setUsername(username)
                 .setEmail(email)
@@ -84,24 +83,19 @@ public class UserRestController {
                 .stream()
                 .map(user -> modelMapper.toDto(user))
                 .collect(Collectors.toList());
-
-
     }
 
-    @GetMapping("/{id}/transfers")
+    @GetMapping("/{id}/transactions")
     public List<TransactionDto> getUserTransfers(@PathVariable int id,
                                                  @RequestHeader HttpHeaders headers,
                                                  @RequestParam(required = false) String direction) {
 
-        //todo check user and executor
         User executor = authenticationHelper.tryGetUser(headers);
         User user = service.getById(id);
-        return transactionService.getUserTransactions(user)
+        return transactionService.getUserTransactions(user, executor)
                 .stream()
                 .map(transfer -> transactionModelMapper.toDto(transfer))
                 .collect(Collectors.toList());
-
-
     }
 
     @GetMapping("/{id}/cards")
@@ -123,48 +117,38 @@ public class UserRestController {
         User user = modelMapper.fromDto(dto);
         service.create(user);
         return modelMapper.toDto(user);
-
     }
 
     @PutMapping("/{id}")
-    public UserDto update(@PathVariable int id, @Valid @RequestBody UpdateUserDto dto, BindingResult result) {
-        //todo add authentication
-//        authenticationHelper.tryGetUser(headers);
+    public UserDto update(@PathVariable int id, @Valid @RequestBody UpdateUserDto dto, BindingResult result, @RequestHeader HttpHeaders headers) {
+        authenticationHelper.tryGetUser(headers);
         globalExceptionHandler.checkValidFields(result);
 
         User user = modelMapper.fromDto(dto, id);
         service.update(user);
         return modelMapper.toDto(user);
-
     }
 
     @PutMapping("/block")
     public UserDto blockUser(@RequestBody BlockUserDto dto, @RequestHeader HttpHeaders headers) {
-
-        User executor = authenticationHelper.tryGetUser(headers);
+        User executor = authenticationHelper.tryGetAdmin(headers);
         User user = service.blockUserByAdmin(dto.getUsername(), executor);
         return modelMapper.toDto(user);
-
     }
 
     @PutMapping("/unblock")
     public UserDto unblock(@RequestBody BlockUserDto dto, @RequestHeader HttpHeaders headers) {
-
-        User executor = authenticationHelper.tryGetUser(headers);
+        User executor = authenticationHelper.tryGetAdmin(headers);
         User user = service.unblockUserByAdmin(dto.getUsername(), executor);
         return modelMapper.toDto(user);
-
     }
 
     @DeleteMapping("/{id}")
-    public UserDto delete(@PathVariable int id) {
-        try {
-            User user = service.getById(id);
-            UserDto dto = modelMapper.toDto(user);
-            service.delete(id);
-            return dto;
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+    public UserDto delete(@PathVariable int id, @RequestHeader HttpHeaders headers) {
+        authenticationHelper.tryGetAdmin(headers);
+        User user = service.getById(id);
+        UserDto dto = modelMapper.toDto(user);
+        service.delete(id);
+        return dto;
     }
 }
