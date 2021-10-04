@@ -16,52 +16,28 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = {AuthenticationFailureException.class, UnauthorizedOperationException.class, BlockedUserException.class})
-    private ResponseEntity<Object> unauthorized(RuntimeException e, HttpServletRequest request) {
-        CustomJsonReturn json = new CustomJsonReturn(
-                LocalDateTime.now(),
-                HttpStatus.UNAUTHORIZED.value(),
-                HttpStatus.UNAUTHORIZED.name(),
-                e.getMessage(),
-                request.getServletPath());
-        return new ResponseEntity<>(json, HttpStatus.UNAUTHORIZED);
+    @ExceptionHandler(value = {AuthenticationFailureException.class, UnauthorizedOperationException.class})
+    private ResponseEntity<JsonResponse> unauthorized(RuntimeException e, HttpServletRequest request) {
+        return new ResponseEntity<JsonResponse>(getJson(e,request, HttpStatus.UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(value = EntityNotFoundException.class)
-    private ResponseEntity<Object> entityNotFound(RuntimeException e, HttpServletRequest request) {
-        CustomJsonReturn json = new CustomJsonReturn(
-                LocalDateTime.now(),
-                HttpStatus.NOT_FOUND.value(),
-                HttpStatus.NOT_FOUND.name(),
-                e.getMessage(),
-                request.getServletPath());
 
-        return new ResponseEntity<>(json, HttpStatus.NOT_FOUND);
+    @ExceptionHandler(value = EntityNotFoundException.class)
+    private ResponseEntity<JsonResponse> entityNotFound(RuntimeException e, HttpServletRequest request) {
+        return new ResponseEntity<JsonResponse>(getJson(e,request, HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = {
             IllegalArgumentException.class,
             DuplicateEntityException.class,
             InvalidTransferException.class})
-    private ResponseEntity<Object> conflict(RuntimeException e, HttpServletRequest request) {
-        CustomJsonReturn json = new CustomJsonReturn(
-                LocalDateTime.now(),
-                HttpStatus.CONFLICT.value(),
-                HttpStatus.CONFLICT.name(),
-                e.getMessage(),
-                request.getServletPath());
-        return new ResponseEntity<>(json, HttpStatus.CONFLICT);
+    private ResponseEntity<JsonResponse> conflict(RuntimeException e, HttpServletRequest request) {
+        return new ResponseEntity<JsonResponse>(getJson(e,request,HttpStatus.CONFLICT), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = {DateTimeException.class, InvalidUserInput.class, BadLuckException.class, InvalidPasswordException.class})
-    private ResponseEntity<Object> badRequest(RuntimeException e, HttpServletRequest request) {
-        CustomJsonReturn json = new CustomJsonReturn(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.name(),
-                e.getMessage(),
-                request.getServletPath());
-        return new ResponseEntity<>(json, HttpStatus.BAD_REQUEST);
+    private ResponseEntity<JsonResponse> badRequest(RuntimeException e, HttpServletRequest request) {
+        return new ResponseEntity<JsonResponse>(getJson(e,request,HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }
 
     public void checkValidFields(BindingResult result) {
@@ -69,9 +45,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             throw new InvalidUserInput(result.getFieldError().getDefaultMessage());
         }
     }
+
+    private JsonResponse getJson(RuntimeException e, HttpServletRequest request, HttpStatus status){
+        return new JsonResponse(
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                e.getMessage(),
+                request.getServletPath());
+    }
+
 }
 
-class CustomJsonReturn {
+class JsonResponse {
     private LocalDateTime timestamp;
 
     private int status;
@@ -82,7 +68,7 @@ class CustomJsonReturn {
 
     private String path;
 
-    public CustomJsonReturn(LocalDateTime timestamp, int status, String error, String message, String path) {
+    public JsonResponse(LocalDateTime timestamp, int status, String error, String message, String path) {
         this.timestamp = timestamp;
         this.status = status;
         this.error = error;
