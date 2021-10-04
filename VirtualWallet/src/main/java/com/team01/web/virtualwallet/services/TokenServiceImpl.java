@@ -1,11 +1,14 @@
 package com.team01.web.virtualwallet.services;
 
+import com.team01.web.virtualwallet.exceptions.InvalidTokenException;
 import com.team01.web.virtualwallet.models.Token;
+import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.repositories.contracts.TokenRepository;
 import com.team01.web.virtualwallet.services.contracts.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,8 +58,13 @@ public class TokenServiceImpl extends BaseGetServiceImpl<Token> implements Token
     }
 
     @Override
-    public boolean isCorrectToken(Token token, String toCompare) {
-        return token.equals(tokenRepository.getByToken(toCompare));
+    public void validateCorrectToken(Token token, User user) {
+        if (!getUserTokens(user.getId()).contains(token.getToken())) {
+            throw new InvalidTokenException("This verification code is invalid!");
+        }
+        if (token.getExpiration().isBefore(LocalDateTime.now())) {
+            throw new InvalidTokenException("Your verification code is expired!");
+        }
     }
 
 

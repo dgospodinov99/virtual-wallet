@@ -1,6 +1,7 @@
 package com.team01.web.virtualwallet.services.contracts;
 
 import com.team01.web.virtualwallet.models.Token;
+import com.team01.web.virtualwallet.models.User;
 
 import java.util.List;
 
@@ -18,5 +19,5 @@ public interface TokenService extends BaseGetService<Token> {
 
     void delete(int id);
 
-    boolean isCorrectToken(Token token, String toCompare);
+    void validateCorrectToken(Token token, User user);
 }
