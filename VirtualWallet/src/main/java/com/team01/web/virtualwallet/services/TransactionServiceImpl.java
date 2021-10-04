@@ -8,7 +8,6 @@ import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.models.dto.FilterTransactionByAdminParams;
 import com.team01.web.virtualwallet.models.dto.FilterTransactionsByUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.TransactionRepository;
-import com.team01.web.virtualwallet.services.contracts.TokenService;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +27,12 @@ public class TransactionServiceImpl extends BaseGetServiceImpl<Transaction> impl
 
     private final TransactionRepository transactionRepository;
     private final WalletService walletService;
-    private final TokenService tokenService;
 
     @Autowired
-    public TransactionServiceImpl(TransactionRepository transactionRepository, WalletService walletService, TokenService tokenService) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, WalletService walletService) {
         super(transactionRepository);
         this.transactionRepository = transactionRepository;
         this.walletService = walletService;
-        this.tokenService = tokenService;
     }
 
     @Override
@@ -76,22 +73,13 @@ public class TransactionServiceImpl extends BaseGetServiceImpl<Transaction> impl
     }
 
     @Override
-    public void createLargeTransaction(Transaction transaction, String token, User executor) {
+    public void createLargeTransaction(Transaction transaction, User executor) {
         validateUser(executor, transaction.getSender());
         validateUserNotBlocked(executor);
         validateBalance(transaction.getSender(), transaction.getAmount());
         validateTransaction(executor.getWallet(), transaction.getReceiver());
-        Token toValidate = tokenService.getByToken(token);
-        if (!tokenService.getUserTokens(executor.getId()).contains(toValidate.getToken())) {
-            throw new InvalidTokenException("Invalid verification code!");
-        }
-        if (toValidate.getExpiration().isBefore(LocalDateTime.now())) {
-            tokenService.delete(toValidate.getId());
-            throw new InvalidTokenException("Verification code has expired!");
-        }
         walletService.deposit(transaction.getReceiver(), transaction.getAmount()); //add money to receiver
         walletService.withdraw(transaction.getSender(), transaction.getAmount());  //remove money from sender
-
         transactionRepository.create(transaction);
     }
 
@@ -118,5 +106,4 @@ public class TransactionServiceImpl extends BaseGetServiceImpl<Transaction> impl
             throw new InvalidUserInput("Ain't gonna happen");
         }
     }
-
 }
