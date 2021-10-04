@@ -34,7 +34,7 @@
         <div class="container-fluid">
 
             <a class="btn btn-primary" data-toggle="collapse" href="#collapseUsers" role="button" aria-expanded="false"
-               aria-controls="collapseExample">
+               aria-controls="collapseUsers">
                 List of all Users
             </a>
 
@@ -233,33 +233,28 @@
                         <div class="row"/>
 
                         <div class="table-responsive">
-                            <table class="table table-striped" id="dataTable" data-page-length='50'
+                            <table class="table" id="dataTable" data-page-length='50'
                                    data-order='[[1, "desc"]]' width="100%" cellspacing="0">
                                 <thead>
-                                <tr>
-                                    <th scope="col" th:text="#{admin.menu.sender}">Sender</th>
-                                    <th scope="col" th:text="#{admin.menu.receiver}">Receiver</th>
-                                    <th scope="col" th:text="#{admin.menu.amount}">Amount</th>
-                                    <th scope="col" th:text="#{admin.menu.date}">Date</th>
-                                </tr>
+                                <th scope="col" th:text="#{activity.transaction.amount}"
+                                    style="user-select: none; cursor: pointer" onclick="sortTableAmount()">
+                                </th>
+                                <th scope="col" th:text="#{activity.transaction.from}" style="user-select: none">From</th>
+                                <th scope="col" th:text="#{activity.transaction.to}" style="user-select: none">To</th>
+                                <th scope="col" th:text="#{activity.transaction.date}"
+                                    style="user-select: none; cursor: pointer" onclick="sortTableDate()">
+                                </th>
+
                                 </thead>
 
-                                <tfoot>
-                                <tr>
-                                    <th scope="col" th:text="#{admin.menu.sender}">Sender</th>
-                                    <th scope="col" th:text="#{admin.menu.receiver}">Receiver</th>
-                                    <th scope="col" th:text="#{admin.menu.amount}">Amount</th>
-                                    <th scope="col" th:text="#{admin.menu.date}">Date</th>
-                                </tr>
-                                </tfoot>
                                 <div th:each="transaction : ${transactions}">
                                     <tbody>
                                     <tr>
 
+                                        <td style="color: dodgerblue" th:text="${transaction.amount}">Amount</td>
                                         <td style="color: dodgerblue" th:text="${transaction.sender}">Sender Name</td>
                                         <td style="color: dodgerblue" th:text="${transaction.receiver}">Receiver Name
                                         </td>
-                                        <td style="color: dodgerblue" th:text="${transaction.amount}">Amount</td>
                                         <td style="color: dodgerblue" th:text="${transaction.timestamp}">Date</td>
 
                                     </tr>
@@ -322,7 +317,9 @@
 <!-- Page level custom scripts -->
 <script th:src="@{/js/demo/chart-area-demo.js}"></script>
 <script th:src="@{/js/demo/chart-pie-demo.js}"></script>
-
+<script th:src="@{/js/demo/chart-pie-demo.js}"></script>
+<script th:src="@{/js/moment.js}"></script>
+<script th:src="@{/js/sort.js}"></script>
 
 <!-- Include jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
