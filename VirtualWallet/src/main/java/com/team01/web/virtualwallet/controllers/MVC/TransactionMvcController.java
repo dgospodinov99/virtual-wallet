@@ -212,22 +212,23 @@ public class TransactionMvcController {
             bindingResult.rejectValue("receiverId", "transaction_error", e.getMessage());
             return "transaction-finalize";
         } catch (LargeTransactionDetectedException e) {
+            session.setAttribute("createDto", dto);
+            session.setAttribute("amount", dto.getAmount());
+            session.setAttribute("receiverId", dto.getReceiverId());
             emailService.sendVerifyTransactionEmail(authenticationHelper.tryGetUser(session).getEmail());
-            return "redirect:/myaccount/transaction/verify";
+            return "redirect:/myaccount/transactions/verify";
         }
     }
 
     @GetMapping("/verify")
-    public String showTransactionVerification(@ModelAttribute("transaction") CreateTransactionDto dto,
-                                              Model model,
+    public String showTransactionVerification(Model model,
                                               HttpSession session) {
         try {
             authenticationHelper.tryGetUser(session);
-            var largeDTO = transactionModelMapper.toLargeDto(dto);
+            User receiver = userService.getById((Integer) session.getAttribute("receiverId"));
+            var largeDTO = transactionModelMapper.toLargeDto((CreateTransactionDto) session.getAttribute("createDto"));
             model.addAttribute("transactionDto", largeDTO);
-            model.addAttribute("receiverUsername", userService.getById(dto.getReceiverId()).getUsername());
-            session.setAttribute("receiverId", dto.getReceiverId());
-            session.setAttribute("amount", dto.getAmount());
+            model.addAttribute("receiverUsername", receiver.getUsername());
             return "transaction-verify";
 
         } catch (AuthenticationFailureException e) {

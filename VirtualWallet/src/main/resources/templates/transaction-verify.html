@@ -32,7 +32,7 @@
                 <div class="row">
                     <!-- Border Left Utilities -->
                     <div th:align="center" class="col-lg-6">
-                        <form action="#" th:action="@{/myaccount/transactions/new/finalize/verify}" th:object="${transactionDto}" method="post"
+                        <form action="#" th:action="@{/myaccount/transactions/new/finalize/verify}" method="post" th:object="${transactionDto}"
                               class="user">
                             <div class="form-group col-5">
                                 <label>User receiving the money:</label>
@@ -40,7 +40,7 @@
                             </div>
                             <div class="form-group col-5">
                                 <label>Amount you are sending:</label>
-                                <h2 th:text="${amount}"></h2>
+                                <h2 th:text="${session.amount}"></h2>
                             </div>
 
                             <div class="form-group col-5">
