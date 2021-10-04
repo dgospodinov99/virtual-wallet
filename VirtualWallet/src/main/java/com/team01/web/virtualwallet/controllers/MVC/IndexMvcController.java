@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/")
 public class IndexMvcController {
 
-    private final UserService userService;
     private final TransactionService transactionService;
     private final TransferService transferService;
     private final TransferModelMapper transferModelMapper;
@@ -34,8 +33,7 @@ public class IndexMvcController {
     private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public IndexMvcController(UserService userService, TransactionService transactionService, TransferService transferService, TransferModelMapper transferModelMapper, TransactionModelMapper transactionModelMapper, AuthenticationHelper authenticationHelper) {
-        this.userService = userService;
+    public IndexMvcController(TransactionService transactionService, TransferService transferService, TransferModelMapper transferModelMapper, TransactionModelMapper transactionModelMapper, AuthenticationHelper authenticationHelper) {
         this.transactionService = transactionService;
         this.transferService = transferService;
         this.transferModelMapper = transferModelMapper;
