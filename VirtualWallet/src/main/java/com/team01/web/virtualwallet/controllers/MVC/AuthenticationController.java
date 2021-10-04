@@ -64,16 +64,16 @@ public class AuthenticationController {
         if (bindingResult.hasErrors()) {
             return "login";
         }
-
+        User user;
         try {
-            User user = authenticationHelper.verifyAuthentication(login.getUsername(), login.getPassword());
-            session.setAttribute("currentUser", login.getUsername());
-            session.setAttribute("currentUserImage", user.getPhotoName());
-            return "redirect:/";
+            user = authenticationHelper.verifyAuthentication(login.getUsername(), login.getPassword());
         } catch (AuthenticationFailureException | EntityNotFoundException e) {
             bindingResult.rejectValue("password", "auth_error", e.getMessage());
             return "login";
         }
+            session.setAttribute("currentUser", login.getUsername());
+            session.setAttribute("currentUserImage", user.getPhotoName());
+            return "redirect:/";
     }
 
     @GetMapping("/logout")

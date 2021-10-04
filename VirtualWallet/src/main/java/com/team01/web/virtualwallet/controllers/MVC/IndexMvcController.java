@@ -61,7 +61,7 @@ public class IndexMvcController {
         try {
             User user = authenticationHelper.tryGetUser(session);
             return user.getWallet().getBalance();
-        } catch (AuthenticationFailureException e) {
+        } catch (AuthenticationFailureException | ResponseStatusException e) {
             return 0;
         }
     }
@@ -74,7 +74,7 @@ public class IndexMvcController {
                     .stream()
                     .map(transactionModelMapper::toDto)
                     .collect(Collectors.toList());
-        } catch (AuthenticationFailureException e) {
+        } catch (AuthenticationFailureException | ResponseStatusException e) {
             return List.of();
         }
     }
@@ -87,7 +87,7 @@ public class IndexMvcController {
                     .map(transferModelMapper::toDto)
                     .collect(Collectors.toList());
 
-        } catch (AuthenticationFailureException e) {
+        } catch (AuthenticationFailureException | ResponseStatusException e) {
             return List.of();
         }
     }
@@ -100,7 +100,6 @@ public class IndexMvcController {
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
-
     }
 
 }

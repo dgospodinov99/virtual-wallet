@@ -55,7 +55,7 @@ public class AdminProfileMvcController {
         try {
             authenticationHelper.tryGetAdmin(session);
             return true;
-        } catch (AuthenticationFailureException | UnauthorizedOperationException e) {
+        } catch (UnauthorizedOperationException e) {
             return false;
         }
     }
@@ -86,16 +86,14 @@ public class AdminProfileMvcController {
     public String showAdminPage(HttpSession session, Model model) {
         try {
             authenticationHelper.tryGetAdmin(session);
-
-            model.addAttribute("searchUser", new SearchUserMvcDto());
-            model.addAttribute("blockDto", new BlockUserDto());
-            model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
-            return "admin-menu";
-        } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
+        } catch (UnauthorizedOperationException e) {
             model.addAttribute("error", e.getMessage());
             return "error401";
         }
-
+        model.addAttribute("searchUser", new SearchUserMvcDto());
+        model.addAttribute("blockDto", new BlockUserDto());
+        model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
+        return "admin-menu";
     }
 
     @GetMapping("/users/search")
@@ -105,23 +103,23 @@ public class AdminProfileMvcController {
             Model model) {
         try {
             authenticationHelper.tryGetAdmin(session);
-
-            var params = new FilterUserParams()
-                    .setPhoneNumber(dto.getPhoneNumber())
-                    .setUsername(dto.getUsername())
-                    .setEmail(dto.getEmail());
-
-            var filtered = userService.filterUsers(params)
-                    .stream()
-                    .map(user -> userModelMapper.toDto(user))
-                    .collect(Collectors.toList());
-            model.addAttribute("usersDto", filtered);
-            model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
-
-            return "admin-menu";
-        } catch (AuthenticationFailureException | UnauthorizedOperationException e) {
+        } catch (UnauthorizedOperationException e) {
+            model.addAttribute("error", e.getMessage());
             return "error401";
         }
+        var params = new FilterUserParams()
+                .setPhoneNumber(dto.getPhoneNumber())
+                .setUsername(dto.getUsername())
+                .setEmail(dto.getEmail());
+
+        var filtered = userService.filterUsers(params)
+                .stream()
+                .map(user -> userModelMapper.toDto(user))
+                .collect(Collectors.toList());
+
+        model.addAttribute("usersDto", filtered);
+        model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
+        return "admin-menu";
     }
 
 
@@ -130,16 +128,16 @@ public class AdminProfileMvcController {
             @ModelAttribute("blockDto") BlockUserDto dto,
             HttpSession session,
             Model model) {
+        User user;
         try {
-            User user = authenticationHelper.tryGetAdmin(session);
-            userService.blockUserByAdmin(dto.getUsername(), user);
-            model.addAttribute("searchUser", new SearchUserMvcDto());
-            model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
-
-            return "redirect:/myaccount/admin";
-        } catch (AuthenticationFailureException | UnauthorizedOperationException e) {
+            user = authenticationHelper.tryGetAdmin(session);
+        } catch (UnauthorizedOperationException e) {
             return "error401";
         }
+        userService.blockUserByAdmin(dto.getUsername(), user);
+        model.addAttribute("searchUser", new SearchUserMvcDto());
+        model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
+        return "redirect:/myaccount/admin";
     }
 
 
@@ -148,16 +146,16 @@ public class AdminProfileMvcController {
             @ModelAttribute("blockDto") BlockUserDto dto,
             HttpSession session,
             Model model) {
+        User user;
         try {
-            User user = authenticationHelper.tryGetUser(session);
-            userService.unblockUserByAdmin(dto.getUsername(), user);
-            model.addAttribute("search", new SearchUserMvcDto());
-            model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
-
-            return "redirect:/myaccount/admin";
-        } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            user = authenticationHelper.tryGetAdmin(session);
+        } catch (UnauthorizedOperationException e) {
+            return "error401";
         }
+        userService.unblockUserByAdmin(dto.getUsername(), user);
+        model.addAttribute("search", new SearchUserMvcDto());
+        model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
+        return "redirect:/myaccount/admin";
     }
 
     @GetMapping("/transactions/search")
@@ -166,11 +164,16 @@ public class AdminProfileMvcController {
             HttpSession session,
             Model model) {
 
+        try {
+            authenticationHelper.tryGetAdmin(session);
+        } catch (UnauthorizedOperationException e) {
+            return "error401";
+        }
+
         Optional<LocalDateTime> startDate = dto.getStartDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getStartDate()));
         Optional<LocalDateTime> endDate = dto.getEndDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getEndDate()));
         Optional<Integer> senderId = dto.getSenderId() != -1 ? Optional.of(dto.getSenderId()) : Optional.empty();
         Optional<Integer> receiverId = dto.getReceiverId() != -1 ? Optional.of(dto.getReceiverId()) : Optional.empty();
-
 
         var params = new FilterTransactionByAdminParams()
                 .setEndDate(endDate)
@@ -186,7 +189,6 @@ public class AdminProfileMvcController {
 
         model.addAttribute("transactions", filtered);
         model.addAttribute("searchUser", new SearchUserMvcDto());
-
         return "admin-menu";
     }
 
@@ -194,5 +196,4 @@ public class AdminProfileMvcController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         return LocalDateTime.parse(date, formatter);
     }
-
 }

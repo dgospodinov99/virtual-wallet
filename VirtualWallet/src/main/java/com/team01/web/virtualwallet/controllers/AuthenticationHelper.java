@@ -40,7 +40,7 @@ public class AuthenticationHelper {
     public User tryGetUser(HttpSession session) {
         String currentUser = (String) session.getAttribute("currentUser");
         if (currentUser == null) {
-            throw new AuthenticationFailureException(UNAUTHORIZED_USER);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, UNAUTHORIZED_USER);
         }
 
         return userService.getByUsername(currentUser);
