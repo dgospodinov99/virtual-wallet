@@ -148,7 +148,7 @@ public class CardMvcController {
             model.addAttribute("cardId", id);
             model.addAttribute("card", dto);
             return "card-update";
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | AuthenticationFailureException e) {
             model.addAttribute("errors", e.getMessage());
             return "error404";
         }
