@@ -60,6 +60,7 @@ public class UserProfileMvcController {
             model.addAttribute("user", user);
             return "profile-user";
         } catch (AuthenticationFailureException e) {
+            model.addAttribute("error", e.getMessage());
             return "error401";
         }
     }

@@ -95,6 +95,7 @@ public class TransactionMvcController {
             model.addAttribute("transactions", transactions);
             return "transactions";
         } catch (AuthenticationFailureException e) {
+            model.addAttribute("error", e.getMessage());
             return "error401";
         }
 
@@ -144,6 +145,7 @@ public class TransactionMvcController {
             model.addAttribute("searchUser", new SearchUserMvcDto());
             return "transaction-new";
         } catch (AuthenticationFailureException e) {
+            model.addAttribute("error", e.getMessage());
             return "error401";
         }
 
@@ -184,6 +186,7 @@ public class TransactionMvcController {
             model.addAttribute("receiverUsername", userService.getById(receiverId).getUsername());
             return "transaction-finalize";
         } catch (AuthenticationFailureException e) {
+            model.addAttribute("error", e.getMessage());
             return "error401";
         }
 
@@ -228,6 +231,7 @@ public class TransactionMvcController {
             return "transaction-verify";
 
         } catch (AuthenticationFailureException e) {
+            model.addAttribute("error", e.getMessage());
             return "error401";
         }
     }

@@ -92,6 +92,7 @@ public class AdminProfileMvcController {
             model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
             return "admin-menu";
         } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
+            model.addAttribute("error", e.getMessage());
             return "error401";
         }
 

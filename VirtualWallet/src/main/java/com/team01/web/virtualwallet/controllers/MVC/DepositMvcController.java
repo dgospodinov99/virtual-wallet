@@ -81,6 +81,7 @@ public class DepositMvcController {
             model.addAttribute("deposit", new DepositDto());
             return "deposit";
         } catch (AuthenticationFailureException e){
+            model.addAttribute("error", e.getMessage());
             return "error401";
         }
     }
@@ -88,7 +89,8 @@ public class DepositMvcController {
     @PostMapping()
     public String handleDeposit(@Valid @ModelAttribute("deposit") DepositDto dto,
                                 BindingResult bindingResult,
-                                HttpSession session) {
+                                HttpSession session,
+                                Model model) {
         if (bindingResult.hasErrors()) {
             return "deposit";
         }
@@ -106,6 +108,7 @@ public class DepositMvcController {
 
             return "redirect:/";
         } catch (AuthenticationFailureException e){
+            model.addAttribute("error", e.getMessage());
             return "error401";
         } catch (BadLuckException | IOException e) {
             bindingResult.rejectValue("amount", "auth_error", e.getMessage());

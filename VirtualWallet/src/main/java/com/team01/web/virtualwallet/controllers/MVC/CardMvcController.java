@@ -72,11 +72,12 @@ public class CardMvcController {
 
 
     @GetMapping()
-    public String showCards(HttpSession session) {
+    public String showCards(HttpSession session, Model model) {
         try {
             authenticationHelper.tryGetUser(session);
             return "cards";
         } catch (AuthenticationFailureException e) {
+            model.addAttribute("error", e.getMessage());
             return "error401";
         }
     }
@@ -86,6 +87,7 @@ public class CardMvcController {
         try {
             authenticationHelper.tryGetUser(session);
         } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
+            model.addAttribute("error", e.getMessage());
             return "error401";
         }
         model.addAttribute("card", new CreateCardDto());
@@ -136,6 +138,7 @@ public class CardMvcController {
         try {
             authenticationHelper.tryGetUser(session);
         } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
+            model.addAttribute("error", e.getMessage());
             return "error401";
         }
 
