@@ -116,18 +116,4 @@ public class TokenServiceTests {
         //Assert
         Assertions.assertFalse(mockService.getById(1).isActive());
     }
-
-//    @Test
-//    public void isCorrectToken_Should_Return_True_When_Valid() {
-//        //Arrange
-//        var token = createMockToken();
-//        String tokenName = token.getToken();
-//        Mockito.when(mockRepository.getByToken(tokenName))
-//                .thenReturn(token);
-//        //Act
-//        mockService.isCorrectToken(token, tokenName);
-//        //Assert
-//        Assertions.assertTrue(mockService.isCorrectToken(token, tokenName));
-//    }
-
 }

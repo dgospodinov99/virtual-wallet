@@ -1,7 +1,10 @@
 package com.team01.web.virtualwallet.controllers.MVC;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
-import com.team01.web.virtualwallet.exceptions.*;
+import com.team01.web.virtualwallet.exceptions.AuthenticationFailureException;
+import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
+import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
+import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.CardDto;
@@ -10,12 +13,10 @@ import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.CardModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -52,44 +53,28 @@ public class CardMvcController {
         try {
             authenticationHelper.tryGetAdmin(session);
             return true;
-        } catch (AuthenticationFailureException | UnauthorizedOperationException e) {
+        } catch (UnauthorizedOperationException e) {
             return false;
         }
     }
 
-
     @ModelAttribute("cards")
     public List<CardDto> populateUserCards(HttpSession session) {
-        try {
-            return authenticationHelper.tryGetUser(session).getCards()
-                    .stream()
-                    .map(card -> modelMapper.toDto(card))
-                    .collect(Collectors.toList());
-        } catch (AuthenticationFailureException e){
-            return List.of();
-        }
+        return authenticationHelper.tryGetUser(session).getCards()
+                .stream()
+                .map(card -> modelMapper.toDto(card))
+                .collect(Collectors.toList());
     }
-
 
     @GetMapping()
     public String showCards(HttpSession session, Model model) {
-        try {
-            authenticationHelper.tryGetUser(session);
-            return "cards";
-        } catch (AuthenticationFailureException e) {
-            model.addAttribute("error", e.getMessage());
-            return "error401";
-        }
+        authenticationHelper.tryGetUser(session);
+        return "cards";
     }
 
     @GetMapping("/new")
     public String showNewCardPage(Model model, HttpSession session) {
-        try {
-            authenticationHelper.tryGetUser(session);
-        } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
-            model.addAttribute("error", e.getMessage());
-            return "error401";
-        }
+        authenticationHelper.tryGetUser(session);
         model.addAttribute("card", new CreateCardDto());
         return "card-new";
     }
@@ -100,12 +85,7 @@ public class CardMvcController {
             BindingResult errors,
             Model model,
             HttpSession session) {
-        User user;
-        try {
-            user = authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            return "error401";
-        }
+        User user = authenticationHelper.tryGetUser(session);
 
         if (errors.hasErrors()) {
             return "card-new";
@@ -135,8 +115,9 @@ public class CardMvcController {
 
     @GetMapping("/{id}/update")
     public String showEditCardPage(@PathVariable int id, Model model, HttpSession session) {
+
         try {
-            authenticationHelper.tryGetUser(session);
+            User user = authenticationHelper.tryGetUser(session);
         } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
             model.addAttribute("error", e.getMessage());
             return "error401";
@@ -160,13 +141,8 @@ public class CardMvcController {
                              BindingResult errors,
                              Model model,
                              HttpSession session) {
+        User user = authenticationHelper.tryGetUser(session);
 
-        User user;
-        try {
-            user = authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            return "error401";
-        }
         if (errors.hasErrors()) {
             return "card-update";
         }
@@ -191,13 +167,7 @@ public class CardMvcController {
     @GetMapping("/{id}/delete")
     public String deleteCard(@PathVariable int id, Model model, HttpSession session) {
         try {
-            User user;
-            try {
-                user = authenticationHelper.tryGetUser(session);
-            } catch (AuthenticationFailureException e) {
-                return "error401";
-            }
-
+            User user = authenticationHelper.tryGetUser(session);
             cardService.delete(id, user);
 
             return "redirect:/myaccount/cards";
