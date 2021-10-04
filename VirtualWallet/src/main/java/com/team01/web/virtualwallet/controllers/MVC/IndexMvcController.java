@@ -2,6 +2,7 @@ package com.team01.web.virtualwallet.controllers.MVC;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.AuthenticationFailureException;
+import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.TransactionDto;
 import com.team01.web.virtualwallet.models.dto.TransferDto;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -41,17 +43,6 @@ public class IndexMvcController {
         this.authenticationHelper = authenticationHelper;
     }
 
-    @GetMapping
-    public String showHomePage(HttpSession session) {
-        try {
-            authenticationHelper.tryGetUser(session);
-            return "index";
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        }
-
-    }
-
     @ModelAttribute("isAuthenticated")
     public boolean populateIsAuthenticated(HttpSession session) {
         return session.getAttribute("currentUser") != null;
@@ -60,13 +51,12 @@ public class IndexMvcController {
     @ModelAttribute("isAdmin")
     public boolean populateIsAdmin(HttpSession session) {
         try {
-            return authenticationHelper.tryGetUser(session).isAdmin();
-        } catch (AuthenticationFailureException e) {
-            showHomePage(session);
+            authenticationHelper.tryGetAdmin(session);
+            return true;
+        } catch (AuthenticationFailureException | UnauthorizedOperationException e) {
             return false;
         }
     }
-
 
     @ModelAttribute("balance")
     public double populateBalance(HttpSession session) {
@@ -74,7 +64,6 @@ public class IndexMvcController {
             User user = authenticationHelper.tryGetUser(session);
             return user.getWallet().getBalance();
         } catch (AuthenticationFailureException e) {
-            showHomePage(session);
             return 0;
         }
     }
@@ -88,11 +77,9 @@ public class IndexMvcController {
                     .map(transactionModelMapper::toDto)
                     .collect(Collectors.toList());
         } catch (AuthenticationFailureException e) {
-            showHomePage(session);
             return List.of();
         }
     }
-
 
     @ModelAttribute("transfers")
     public List<TransferDto> populateTransfers(HttpSession session) {
@@ -103,9 +90,19 @@ public class IndexMvcController {
                     .collect(Collectors.toList());
 
         } catch (AuthenticationFailureException e) {
-            showHomePage(session);
             return List.of();
         }
+    }
+
+    @GetMapping
+    public String showHomePage(HttpSession session) {
+        try {
+            authenticationHelper.tryGetUser(session);
+            return "index";
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
     }
 
 }

@@ -3,6 +3,7 @@ package com.team01.web.virtualwallet.controllers.MVC;
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.AuthenticationFailureException;
 import com.team01.web.virtualwallet.exceptions.BadLuckException;
+import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.User;
@@ -49,31 +50,40 @@ public class DepositMvcController {
         this.authenticationHelper = authenticationHelper;
     }
 
-    @GetMapping()
-    public String showDeposit(Model model) {
-        model.addAttribute("deposit", new DepositDto());
-        return "deposit";
-    }
-
-    @ModelAttribute("user")
-    public User populateUser(HttpSession session) {
-        try {
-            return authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e){
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
-        }
-    }
-
-    @ModelAttribute("cards")
-    public Set<Card> populateCards(HttpSession session) {
-        return populateUser(session).getCards();
-    }
-
     @ModelAttribute("isAuthenticated")
     public boolean populateIsAuthenticated(HttpSession session) {
         return session.getAttribute("currentUser") != null;
     }
 
+    @ModelAttribute("isAdmin")
+    public boolean populateIsAdmin(HttpSession session) {
+        try {
+            authenticationHelper.tryGetAdmin(session);
+            return true;
+        } catch (AuthenticationFailureException | UnauthorizedOperationException e) {
+            return false;
+        }
+    }
+
+    @ModelAttribute("cards")
+    public Set<Card> populateCards(HttpSession session) {
+        try {
+            return authenticationHelper.tryGetUser(session).getCards();
+        } catch (AuthenticationFailureException e){
+            return Set.of();
+        }
+    }
+
+    @GetMapping()
+    public String showDeposit(HttpSession session, Model model) {
+        try {
+            authenticationHelper.tryGetUser(session);
+            model.addAttribute("deposit", new DepositDto());
+            return "deposit";
+        } catch (AuthenticationFailureException e){
+            return "error401";
+        }
+    }
 
     @PostMapping()
     public String handleDeposit(@Valid @ModelAttribute("deposit") DepositDto dto,
@@ -95,6 +105,8 @@ public class DepositMvcController {
             }
 
             return "redirect:/";
+        } catch (AuthenticationFailureException e){
+            return "error401";
         } catch (BadLuckException | IOException e) {
             bindingResult.rejectValue("amount", "auth_error", e.getMessage());
             return "deposit";

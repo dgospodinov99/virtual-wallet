@@ -47,23 +47,27 @@ public class CardMvcController {
         return session.getAttribute("currentUser") != null;
     }
 
-    @ModelAttribute("user")
-    public User populateUser(HttpSession session, Model model) {
+    @ModelAttribute("isAdmin")
+    public boolean populateIsAdmin(HttpSession session) {
         try {
-            User user = authenticationHelper.tryGetUser(session);
-            model.addAttribute("isAdmin", user.isAdmin());
-            return user;
-        } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            authenticationHelper.tryGetAdmin(session);
+            return true;
+        } catch (AuthenticationFailureException | UnauthorizedOperationException e) {
+            return false;
         }
     }
 
+
     @ModelAttribute("cards")
     public List<CardDto> populateUserCards(HttpSession session) {
-        return authenticationHelper.tryGetUser(session).getCards()
-                .stream()
-                .map(card -> modelMapper.toDto(card))
-                .collect(Collectors.toList());
+        try {
+            return authenticationHelper.tryGetUser(session).getCards()
+                    .stream()
+                    .map(card -> modelMapper.toDto(card))
+                    .collect(Collectors.toList());
+        } catch (AuthenticationFailureException e){
+            return List.of();
+        }
     }
 
 
@@ -73,7 +77,7 @@ public class CardMvcController {
             authenticationHelper.tryGetUser(session);
             return "cards";
         } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
+            return "error401";
         }
     }
 

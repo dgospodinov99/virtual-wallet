@@ -43,41 +43,37 @@ public class UserProfileMvcController {
         return session.getAttribute("currentUser") != null;
     }
 
-
-    @ModelAttribute("user")
-    public User populateUser(HttpSession session) {
-        try {
-            return authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
-    }
-
     @ModelAttribute("isAdmin")
     public boolean populateIsAdmin(HttpSession session) {
         try {
-            return authenticationHelper.tryGetUser(session).isAdmin();
-        } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            authenticationHelper.tryGetAdmin(session);
+            return true;
+        } catch (AuthenticationFailureException | UnauthorizedOperationException e) {
+            return false;
         }
     }
 
-
     @GetMapping
-    public String showUserProfile() {
-        return "profile-user";
+    public String showUserProfile(HttpSession session, Model model) {
+        try {
+            User user = authenticationHelper.tryGetUser(session);
+            model.addAttribute("user", user);
+            return "profile-user";
+        } catch (AuthenticationFailureException e) {
+            return "error401";
+        }
     }
 
     @GetMapping("/update")
     public String showEditPage(Model model, HttpSession session) {
+        User user;
         try {
-            authenticationHelper.tryGetUser(session);
-        } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
+            user = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
             return "error401";
         }
 
         try {
-            User user = populateUser(session);
             UpdateUserDto dto = modelMapper.toUpdateDto(user);
             model.addAttribute("dto", dto);
             return "profile-user-update";
@@ -103,7 +99,7 @@ public class UserProfileMvcController {
         }
 
         try {
-            User user = modelMapper.fromDto(dto, populateUser(session).getId());
+            User user = modelMapper.fromDto(dto, executor.getId());
             userService.update(user);
 
             return "redirect:/myaccount";
@@ -124,7 +120,6 @@ public class UserProfileMvcController {
         }
 
         try {
-            User user = populateUser(session);
             model.addAttribute("dto", new ChangePasswordDto());
             return "profile-user-password-update";
         } catch (EntityNotFoundException e) {
@@ -134,16 +129,17 @@ public class UserProfileMvcController {
     }
 
     @PostMapping("/update/password")
-    public String updateUser(@Valid @ModelAttribute("dto") ChangePasswordDto dto,
-                             BindingResult errors,
-                             Model model,
-                             HttpSession session) {
+    public String updateUserPassword(@Valid @ModelAttribute("dto") ChangePasswordDto dto,
+                                     BindingResult errors,
+                                     Model model,
+                                     HttpSession session) {
         User executor;
         try {
             executor = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
             return "error401";
         }
+
         if (errors.hasErrors()) {
             return "profile-user-password-update";
         }

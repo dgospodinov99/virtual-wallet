@@ -16,7 +16,8 @@ import javax.servlet.http.HttpSession;
 public class AuthenticationHelper {
 
     private static final String WRONG_USERNAME_OR_PASSWORD = "Wrong username or password.";
-    private static final String UNAUTHORIZED = "This resource requires admin rights!";
+    private static final String UNAUTHORIZED_ADMIN = "This resource requires admin rights!";
+    private static final String UNAUTHORIZED_USER = "The requested resource requires authentication.";
     private final String AUTHORIZATION_HEADER_NAME = "Authorization";
 
     private final UserService userService;
@@ -27,11 +28,11 @@ public class AuthenticationHelper {
 
     public User tryGetUser(HttpHeaders headers) {
         if (!headers.containsKey(AUTHORIZATION_HEADER_NAME)) {
-            throw new AuthenticationFailureException("The requested resource requires authentication.");
+            throw new AuthenticationFailureException(UNAUTHORIZED_USER);
         }
         String username = headers.getFirst(AUTHORIZATION_HEADER_NAME);
         if (username.isBlank()) {
-            throw new AuthenticationFailureException("The requested resource requires administrator rights.");
+            throw new AuthenticationFailureException(UNAUTHORIZED_ADMIN);
         }
         return userService.getByUsername(username);
     }
@@ -39,16 +40,26 @@ public class AuthenticationHelper {
     public User tryGetUser(HttpSession session) {
         String currentUser = (String) session.getAttribute("currentUser");
         if (currentUser == null) {
-            throw new AuthenticationFailureException(UNAUTHORIZED);
+            throw new AuthenticationFailureException(UNAUTHORIZED_USER);
         }
 
         return userService.getByUsername(currentUser);
     }
 
+    public User tryGetAdmin(HttpSession session) {
+        User user = tryGetUser(session);
+        if (!user.isAdmin()) {
+            throw new UnauthorizedOperationException(UNAUTHORIZED_ADMIN);
+        }
+
+        return user;
+    }
+
+
     public User tryGetAdmin(HttpHeaders headers) {
         User user = tryGetUser(headers);
         if (!user.isAdmin()) {
-            throw new UnauthorizedOperationException(UNAUTHORIZED);
+            throw new UnauthorizedOperationException(UNAUTHORIZED_ADMIN);
         }
 
         return user;

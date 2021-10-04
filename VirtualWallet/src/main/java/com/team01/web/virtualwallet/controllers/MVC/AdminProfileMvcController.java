@@ -2,6 +2,7 @@ package com.team01.web.virtualwallet.controllers.MVC;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.AuthenticationFailureException;
+import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.*;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
@@ -52,9 +53,10 @@ public class AdminProfileMvcController {
     @ModelAttribute("isAdmin")
     public boolean populateIsAdmin(HttpSession session) {
         try {
-            return authenticationHelper.tryGetUser(session).isAdmin();
-        } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            authenticationHelper.tryGetAdmin(session);
+            return true;
+        } catch (AuthenticationFailureException | UnauthorizedOperationException e) {
+            return false;
         }
     }
 
@@ -82,15 +84,17 @@ public class AdminProfileMvcController {
 
     @GetMapping("")
     public String showAdminPage(HttpSession session, Model model) {
-        User user = authenticationHelper.tryGetUser(session);
+        try {
+            authenticationHelper.tryGetAdmin(session);
 
-        if (!user.isAdmin()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Must be admin to view this!");
+            model.addAttribute("searchUser", new SearchUserMvcDto());
+            model.addAttribute("blockDto", new BlockUserDto());
+            model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
+            return "admin-menu";
+        } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
+            return "error401";
         }
-        model.addAttribute("searchUser", new SearchUserMvcDto());
-        model.addAttribute("blockDto", new BlockUserDto());
-        model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
-        return "admin-menu";
+
     }
 
     @GetMapping("/users/search")
@@ -98,20 +102,25 @@ public class AdminProfileMvcController {
             @ModelAttribute("searchUser") SearchUserMvcDto dto,
             HttpSession session,
             Model model) {
+        try {
+            authenticationHelper.tryGetAdmin(session);
 
-        var params = new FilterUserParams()
-                .setPhoneNumber(dto.getPhoneNumber())
-                .setUsername(dto.getUsername())
-                .setEmail(dto.getEmail());
+            var params = new FilterUserParams()
+                    .setPhoneNumber(dto.getPhoneNumber())
+                    .setUsername(dto.getUsername())
+                    .setEmail(dto.getEmail());
 
-        var filtered = userService.filterUsers(params)
-                .stream()
-                .map(user -> userModelMapper.toDto(user))
-                .collect(Collectors.toList());
-        model.addAttribute("usersDto", filtered);
-        model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
+            var filtered = userService.filterUsers(params)
+                    .stream()
+                    .map(user -> userModelMapper.toDto(user))
+                    .collect(Collectors.toList());
+            model.addAttribute("usersDto", filtered);
+            model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
 
-        return "admin-menu";
+            return "admin-menu";
+        } catch (AuthenticationFailureException | UnauthorizedOperationException e) {
+            return "error401";
+        }
     }
 
 
@@ -121,14 +130,14 @@ public class AdminProfileMvcController {
             HttpSession session,
             Model model) {
         try {
-            User user = authenticationHelper.tryGetUser(session);
+            User user = authenticationHelper.tryGetAdmin(session);
             userService.blockUserByAdmin(dto.getUsername(), user);
             model.addAttribute("searchUser", new SearchUserMvcDto());
             model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
 
             return "redirect:/myaccount/admin";
-        } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (AuthenticationFailureException | UnauthorizedOperationException e) {
+            return "error401";
         }
     }
 
