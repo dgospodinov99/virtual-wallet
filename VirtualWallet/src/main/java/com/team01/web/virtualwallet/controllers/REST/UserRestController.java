@@ -11,6 +11,7 @@ import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.CardModelMapper;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.BindingResult;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@ApiOperation(value = "/api/users", tags = "User Controller")
 @RestController
 @RequestMapping("/api/users")
 public class UserRestController {
@@ -48,6 +50,7 @@ public class UserRestController {
         this.globalExceptionHandler = globalExceptionHandler;
     }
 
+    @ApiOperation(value = "Get All Users", response = Iterable.class)
     @GetMapping
     public List<UserDto> getAll(@RequestHeader HttpHeaders headers) {
         authenticationHelper.tryGetAdmin(headers);
@@ -56,13 +59,14 @@ public class UserRestController {
                 .collect(Collectors.toList());
     }
 
+    @ApiOperation(value = "Get User by ID", response = UserDto.class)
     @GetMapping("/{id}")
     public UserDto getById(@PathVariable int id, @RequestHeader HttpHeaders headers) {
         authenticationHelper.tryGetAdmin(headers);
         return modelMapper.toDto(service.getById(id));
     }
 
-
+    @ApiOperation(value = "Filter Users by Username,Email,Phone#", response = Iterable.class)
     @GetMapping("/filter")
     public List<UserDto> filter(
             @RequestParam(required = false) String username,
@@ -85,6 +89,7 @@ public class UserRestController {
                 .collect(Collectors.toList());
     }
 
+    @ApiOperation(value = "Get all transaction for one User", response = Iterable.class)
     @GetMapping("/{id}/transactions")
     public List<TransactionDto> getUserTransfers(@PathVariable int id,
                                                  @RequestHeader HttpHeaders headers,
@@ -98,6 +103,7 @@ public class UserRestController {
                 .collect(Collectors.toList());
     }
 
+    @ApiOperation(value = "Get all Cards that belong to the User", response = Iterable.class)
     @GetMapping("/{id}/cards")
     public List<CardDto> getUserCards(@PathVariable int id,
                                       @RequestHeader HttpHeaders headers) {
@@ -111,6 +117,7 @@ public class UserRestController {
 
     }
 
+    @ApiOperation(value = "Create a User", response = UserDto.class)
     @PostMapping
     public UserDto create(@Valid @RequestBody CreateUserDto dto, BindingResult result) {
         globalExceptionHandler.checkValidFields(result);
@@ -119,6 +126,7 @@ public class UserRestController {
         return modelMapper.toDto(user);
     }
 
+    @ApiOperation(value = "Update a User by ID", response = UserDto.class)
     @PutMapping("/{id}")
     public UserDto update(@PathVariable int id, @Valid @RequestBody UpdateUserDto dto, BindingResult result, @RequestHeader HttpHeaders headers) {
         authenticationHelper.tryGetUser(headers);
@@ -129,6 +137,7 @@ public class UserRestController {
         return modelMapper.toDto(user);
     }
 
+    @ApiOperation(value = "Block a User by ID - Only Admins", response = UserDto.class)
     @PutMapping("/block")
     public UserDto blockUser(@RequestBody BlockUserDto dto, @RequestHeader HttpHeaders headers) {
         User executor = authenticationHelper.tryGetAdmin(headers);
@@ -136,6 +145,7 @@ public class UserRestController {
         return modelMapper.toDto(user);
     }
 
+    @ApiOperation(value = "Unblock a User by ID - Only Admins", response = UserDto.class)
     @PutMapping("/unblock")
     public UserDto unblock(@RequestBody BlockUserDto dto, @RequestHeader HttpHeaders headers) {
         User executor = authenticationHelper.tryGetAdmin(headers);
@@ -143,6 +153,7 @@ public class UserRestController {
         return modelMapper.toDto(user);
     }
 
+    @ApiOperation(value = "Delete a User by ID", response = CardDto.class)
     @DeleteMapping("/{id}")
     public UserDto delete(@PathVariable int id, @RequestHeader HttpHeaders headers) {
         authenticationHelper.tryGetAdmin(headers);
