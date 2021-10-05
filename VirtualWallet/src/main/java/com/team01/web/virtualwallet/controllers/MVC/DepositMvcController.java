@@ -3,6 +3,7 @@ package com.team01.web.virtualwallet.controllers.MVC;
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.AuthenticationFailureException;
 import com.team01.web.virtualwallet.exceptions.BadLuckException;
+import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.Transfer;
@@ -101,6 +102,9 @@ public class DepositMvcController {
             }
 
             return "redirect:/";
+        } catch (EntityNotFoundException e) {
+            bindingResult.rejectValue("cardId", "card_error", "Invalid card!");
+            return "deposit";
         } catch (BadLuckException | IOException e) {
             bindingResult.rejectValue("amount", "auth_error", e.getMessage());
             return "deposit";
