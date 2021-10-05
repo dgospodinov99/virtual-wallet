@@ -57,14 +57,6 @@ public class AdminProfileMvcController {
         }
     }
 
-    @ModelAttribute("usersDto")
-    public List<UserDto> populateUsersDto() {
-        return userService.getAll()
-                .stream()
-                .map(user -> userModelMapper.toDto(user))
-                .collect(Collectors.toList());
-    }
-
     @ModelAttribute("users")
     public List<User> populateUsers() {
         return userService.getAll();
@@ -109,12 +101,9 @@ public class AdminProfileMvcController {
                 .setUsername(dto.getUsername())
                 .setEmail(dto.getEmail());
 
-        var filtered = userService.filterUsers(params)
-                .stream()
-                .map(user -> userModelMapper.toDto(user))
-                .collect(Collectors.toList());
+        var filtered = userService.filterUsers(params);
 
-        model.addAttribute("usersDto", filtered);
+        model.addAttribute("users", filtered);
         model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
         return "admin-menu";
     }
@@ -150,6 +139,23 @@ public class AdminProfileMvcController {
             return "error401";
         }
         userService.unblockUserByAdmin(dto.getUsername(), user);
+        model.addAttribute("search", new SearchUserMvcDto());
+        model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
+        return "redirect:/myaccount/admin";
+    }
+
+    @PostMapping("/promote")
+    public String makeUserAdmin(
+            @ModelAttribute("blockDto") BlockUserDto dto,
+            HttpSession session,
+            Model model) {
+        User user;
+        try {
+            user = authenticationHelper.tryGetAdmin(session);
+        } catch (UnauthorizedOperationException e) {
+            return "error401";
+        }
+        userService.makeAdmin(dto.getUsername(), user);
         model.addAttribute("search", new SearchUserMvcDto());
         model.addAttribute("filterTransaction", new AdminFilterTransactionMvcDto());
         return "redirect:/myaccount/admin";
