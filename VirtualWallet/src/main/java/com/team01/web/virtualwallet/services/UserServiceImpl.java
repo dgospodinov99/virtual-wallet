@@ -136,7 +136,7 @@ public class UserServiceImpl extends BaseGetServiceImpl<User> implements UserSer
         verifyAdmin(executor);
         User userToMakeAdmin = getByUsername(username);
         userToMakeAdmin.getRoles().add(roleService.getByName("Administrator"));
-        update(userToMakeAdmin);
+        userRepository.update(userToMakeAdmin);
     }
 
     private void verifyAdmin(User executor) {

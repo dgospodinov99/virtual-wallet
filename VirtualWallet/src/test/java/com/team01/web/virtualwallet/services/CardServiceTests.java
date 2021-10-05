@@ -133,6 +133,10 @@ public class CardServiceTests {
     public void create_Should_Throw_When_Card_Exists() {
         //Arrange, Act, Assert
         var card = createMockCard();
+        var card2 = createMockCard();
+        card2.setId(2);
+        Mockito.when(mockRepository.getByCardNumber(card.getCardNumber()))
+                .thenReturn(card2);
         Assertions.assertThrows(DuplicateEntityException.class,
                 () -> mockService.create(card));
     }
