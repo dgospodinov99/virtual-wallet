@@ -24,4 +24,9 @@ public class Helpers {
             throw new UnauthorizedOperationException(INVALID_CARD_OWNER);
         }
     }
+
+    public static LocalDateTime stringToLocalDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        return LocalDateTime.parse(date, formatter);
+    }
 }

@@ -12,6 +12,7 @@ import com.team01.web.virtualwallet.services.contracts.EmailService;
 import com.team01.web.virtualwallet.services.contracts.TokenService;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
+import com.team01.web.virtualwallet.services.utils.Helpers;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -106,8 +106,8 @@ public class TransactionMvcController {
 
         dto.setWalletId(user.getWallet().getId());
         Optional<TransactionDirection> direction = dto.getDirection() == null ? Optional.empty() : Optional.of(dto.getDirection());
-        Optional<LocalDateTime> startDate = dto.getStartDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getStartDate()));
-        Optional<LocalDateTime> endDate = dto.getEndDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getEndDate()));
+        Optional<LocalDateTime> startDate = dto.getStartDate().isEmpty() ? Optional.empty() : Optional.of(Helpers.stringToLocalDate(dto.getStartDate()));
+        Optional<LocalDateTime> endDate = dto.getEndDate().isEmpty() ? Optional.empty() : Optional.of(Helpers.stringToLocalDate(dto.getEndDate()));
 
         var params = new FilterTransactionsByUserParams()
                 .setEndDate(endDate)
@@ -124,11 +124,6 @@ public class TransactionMvcController {
         model.addAttribute("transactions", filtered);
         return "transactions";
 
-    }
-
-    private LocalDateTime stringToLocalDate(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        return LocalDateTime.parse(date, formatter);
     }
 
     @GetMapping("/new")
