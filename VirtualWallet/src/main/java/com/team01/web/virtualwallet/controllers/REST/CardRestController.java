@@ -9,6 +9,7 @@ import com.team01.web.virtualwallet.models.dto.CreateCardDto;
 import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.CardModelMapper;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.BindingResult;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@ApiOperation(value = "/api/cards", tags = "Cards Controller")
 @RestController
 @RequestMapping("/api/cards")
 public class CardRestController {
@@ -42,6 +44,7 @@ public class CardRestController {
         this.globalExceptionHandler = globalExceptionHandler;
     }
 
+    @ApiOperation(value = "Get All Cards", response = Iterable.class)
     @GetMapping()
     public List<CardDto> getAll(@RequestHeader HttpHeaders headers) {
         authenticationHelper.tryGetAdmin(headers);
@@ -50,12 +53,14 @@ public class CardRestController {
                 .collect(Collectors.toList());
     }
 
+    @ApiOperation(value = "Get a Card by ID", response = CardDto.class)
     @GetMapping("/{id}")
     public CardDto getById(@PathVariable int id, @RequestHeader HttpHeaders headers) {
         authenticationHelper.tryGetAdmin(headers);
         return modelMapper.toDto(cardService.getById(id));
     }
 
+    @ApiOperation(value = "Update a Card by ID", response = CardDto.class)
     @PutMapping("/{id}")
     public CardDto update(@PathVariable int id, @RequestHeader HttpHeaders headers, @Valid @RequestBody CreateCardDto dto, BindingResult result) {
         globalExceptionHandler.checkValidFields(result);
@@ -67,6 +72,7 @@ public class CardRestController {
         return modelMapper.toDto(card);
     }
 
+    @ApiOperation(value = "Create a Card", response = CardDto.class)
     @PostMapping
     public CardDto create(@RequestHeader HttpHeaders headers, @Valid @RequestBody CreateCardDto dto, BindingResult result) {
         globalExceptionHandler.checkValidFields(result);
@@ -83,6 +89,7 @@ public class CardRestController {
         return modelMapper.toDto(card);
     }
 
+    @ApiOperation(value = "Delete a Card by ID", response = CardDto.class)
     @DeleteMapping("/{id}")
     public CardDto delete(@PathVariable int id, @RequestHeader HttpHeaders headers) {
         User executor = authenticationHelper.tryGetUser(headers);

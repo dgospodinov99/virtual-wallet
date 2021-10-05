@@ -12,6 +12,7 @@ import com.team01.web.virtualwallet.services.contracts.EmailService;
 import com.team01.web.virtualwallet.services.contracts.TokenService;
 import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
+import com.team01.web.virtualwallet.services.utils.Helpers;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
 import com.team01.web.virtualwallet.services.utils.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,13 +70,11 @@ public class TransactionMvcController {
 
     @ModelAttribute("users")
     public List<User> populateUsersList(HttpSession session) {
-        try {
-            var users = userService.getAll();
-            users.remove(authenticationHelper.tryGetUser(session));
-            return users;
-        } catch (AuthenticationFailureException e) {
-            return List.of();
-        }
+
+        var users = userService.getAll();
+        users.remove(authenticationHelper.tryGetUser(session));
+        return users;
+
 
     }
 
@@ -87,70 +85,55 @@ public class TransactionMvcController {
 
     @GetMapping("")
     public String showActivity(HttpSession session, Model model) {
-        try {
-            User user = authenticationHelper.tryGetUser(session);
 
-            var transactions = transactionService.getUserTransactions(user, user)
-                    .stream()
-                    .map(transaction -> transactionModelMapper.toDto(transaction))
-                    .collect(Collectors.toList());
+        User user = authenticationHelper.tryGetUser(session);
 
-            model.addAttribute("transactions", transactions);
-            return "transactions";
-        } catch (AuthenticationFailureException e) {
-            model.addAttribute("error", e.getMessage());
-            return "error401";
-        }
+        var transactions = transactionService.getUserTransactions(user, user)
+                .stream()
+                .map(transaction -> transactionModelMapper.toDto(transaction))
+                .collect(Collectors.toList());
+
+        model.addAttribute("transactions", transactions);
+        return "transactions";
+
 
     }
 
     @GetMapping("/filter")
     public String filterTransactions(@ModelAttribute("filterDto") FilterTransactionMvcDto dto, HttpSession session, Model model) {
 
+        User user = authenticationHelper.tryGetUser(session);
 
-        try {
-            User user = authenticationHelper.tryGetUser(session);
-            dto.setWalletId(user.getWallet().getId());
-            Optional<TransactionDirection> direction = dto.getDirection() == null ? Optional.empty() : Optional.of(dto.getDirection());
-            Optional<LocalDateTime> startDate = dto.getStartDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getStartDate()));
-            Optional<LocalDateTime> endDate = dto.getEndDate().isEmpty() ? Optional.empty() : Optional.of(stringToLocalDate(dto.getEndDate()));
+        dto.setWalletId(user.getWallet().getId());
+        Optional<TransactionDirection> direction = dto.getDirection() == null ? Optional.empty() : Optional.of(dto.getDirection());
+        Optional<LocalDateTime> startDate = dto.getStartDate().isEmpty() ? Optional.empty() : Optional.of(Helpers.stringToLocalDate(dto.getStartDate()));
+        Optional<LocalDateTime> endDate = dto.getEndDate().isEmpty() ? Optional.empty() : Optional.of(Helpers.stringToLocalDate(dto.getEndDate()));
 
+        var params = new FilterTransactionsByUserParams()
+                .setEndDate(endDate)
+                .setStartDate(startDate)
+                .setDirection(direction)
+                .setWalletId(Optional.of(dto.getWalletId()));
 
-            var params = new FilterTransactionsByUserParams()
-                    .setEndDate(endDate)
-                    .setStartDate(startDate)
-                    .setDirection(direction)
-                    .setWalletId(Optional.of(dto.getWalletId()));
-
-            var filtered = transactionService.userFilterTransactions(params)
-                    .stream()
-                    .map(transaction -> transactionModelMapper.toDto(transaction))
-                    .collect(Collectors.toList());
+        var filtered = transactionService.userFilterTransactions(params)
+                .stream()
+                .map(transaction -> transactionModelMapper.toDto(transaction))
+                .collect(Collectors.toList());
 
 
-            model.addAttribute("transactions", filtered);
-            return "transactions";
-        } catch (AuthenticationFailureException e) {
-            return "error401";
-        }
-    }
+        model.addAttribute("transactions", filtered);
+        return "transactions";
 
-    private LocalDateTime stringToLocalDate(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        return LocalDateTime.parse(date, formatter);
     }
 
     @GetMapping("/new")
     public String showTransaction(Model model, HttpSession session) {
-        try {
-            authenticationHelper.tryGetUser(session);
-            model.addAttribute("transaction", new CreateTransactionDto());
-            model.addAttribute("searchUser", new SearchUserMvcDto());
-            return "transaction-new";
-        } catch (AuthenticationFailureException e) {
-            model.addAttribute("error", e.getMessage());
-            return "error401";
-        }
+
+        authenticationHelper.tryGetUser(session);
+        model.addAttribute("transaction", new CreateTransactionDto());
+        model.addAttribute("searchUser", new SearchUserMvcDto());
+        return "transaction-new";
+
 
     }
 
@@ -160,38 +143,32 @@ public class TransactionMvcController {
             HttpSession session,
             Model model) {
 
-        try {
-            User executor = authenticationHelper.tryGetUser(session);
-            var params = new FilterUserParams()
-                    .setPhoneNumber(dto.getPhoneNumber())
-                    .setUsername(dto.getUsername())
-                    .setEmail(dto.getEmail())
-                    .setSortParam(UserSortOptions.valueOfPreview(String.valueOf(dto.getSortParam())));
 
-            var filtered = userService.filterUsers(params);
-            filtered.remove(executor);
-            model.addAttribute("usersDto", filtered);
+        User executor = authenticationHelper.tryGetUser(session);
+        var params = new FilterUserParams()
+                .setPhoneNumber(dto.getPhoneNumber())
+                .setUsername(dto.getUsername())
+                .setEmail(dto.getEmail())
+                .setSortParam(UserSortOptions.valueOfPreview(String.valueOf(dto.getSortParam())));
 
-            return "transaction-new";
-        } catch (AuthenticationFailureException e) {
-            return "error401";
-        }
+        var filtered = userService.filterUsers(params);
+        filtered.remove(executor);
+        model.addAttribute("usersDto", filtered);
+
+        return "transaction-new";
 
     }
 
     @GetMapping("/new/finalize")
     public String showTransactionFinalize(@RequestParam Integer receiverId, Model model, HttpSession session) {
-        try {
-            authenticationHelper.tryGetUser(session);
-            CreateTransactionDto dto = new CreateTransactionDto();
-            dto.setReceiverId(receiverId);
-            model.addAttribute("transaction", dto);
-            model.addAttribute("receiverUsername", userService.getById(receiverId).getUsername());
-            return "transaction-finalize";
-        } catch (AuthenticationFailureException e) {
-            model.addAttribute("error", e.getMessage());
-            return "error401";
-        }
+
+        authenticationHelper.tryGetUser(session);
+        CreateTransactionDto dto = new CreateTransactionDto();
+        dto.setReceiverId(receiverId);
+        model.addAttribute("transaction", dto);
+        model.addAttribute("receiverUsername", userService.getById(receiverId).getUsername());
+        return "transaction-finalize";
+
 
     }
 
@@ -206,8 +183,6 @@ public class TransactionMvcController {
             transaction.setSender(user.getWallet());
             transactionService.create(transaction, user);
             return "redirect:/myaccount/transactions";
-        } catch (AuthenticationFailureException e) {
-            return "error401";
         } catch (InvalidTransferException e) {
             model.addAttribute("receiverUsername", userService.getById(dto.getReceiverId()).getUsername());
             bindingResult.rejectValue("amount", "amount_error", e.getMessage());
@@ -228,18 +203,12 @@ public class TransactionMvcController {
     @GetMapping("/verify")
     public String showTransactionVerification(Model model,
                                               HttpSession session) {
-        try {
-            authenticationHelper.tryGetUser(session);
-            User receiver = userService.getById((Integer) session.getAttribute("receiverId"));
-            var largeDTO = transactionModelMapper.toLargeDto((CreateTransactionDto) session.getAttribute("createDto"));
-            model.addAttribute("transactionDto", largeDTO);
-            model.addAttribute("receiverUsername", receiver.getUsername());
-            return "transaction-verify";
-
-        } catch (AuthenticationFailureException e) {
-            model.addAttribute("error", e.getMessage());
-            return "error401";
-        }
+        authenticationHelper.tryGetUser(session);
+        User receiver = userService.getById((Integer) session.getAttribute("receiverId"));
+        var largeDTO = transactionModelMapper.toLargeDto((CreateTransactionDto) session.getAttribute("createDto"));
+        model.addAttribute("transactionDto", largeDTO);
+        model.addAttribute("receiverUsername", receiver.getUsername());
+        return "transaction-verify";
     }
 
     @PostMapping("/new/finalize/verify")

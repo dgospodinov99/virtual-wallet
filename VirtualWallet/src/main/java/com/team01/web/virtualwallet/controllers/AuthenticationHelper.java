@@ -28,7 +28,7 @@ public class AuthenticationHelper {
 
     public User tryGetUser(HttpHeaders headers) {
         if (!headers.containsKey(AUTHORIZATION_HEADER_NAME)) {
-            throw new AuthenticationFailureException(UNAUTHORIZED_USER);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,UNAUTHORIZED_USER);
         }
         String username = headers.getFirst(AUTHORIZATION_HEADER_NAME);
         if (username.isBlank()) {

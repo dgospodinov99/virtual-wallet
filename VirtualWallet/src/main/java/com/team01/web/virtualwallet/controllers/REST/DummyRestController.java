@@ -3,6 +3,7 @@ package com.team01.web.virtualwallet.controllers.REST;
 import com.team01.web.virtualwallet.exceptions.BadLuckException;
 import com.team01.web.virtualwallet.models.dto.DummyDto;
 import com.team01.web.virtualwallet.services.contracts.DummyService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 
+@ApiOperation(value = "/dummy", tags = "Dummy Bank Controller")
 @RestController
 @RequestMapping("/dummy")
 public class DummyRestController {
@@ -23,6 +25,7 @@ public class DummyRestController {
         this.dummyService = dummyService;
     }
 
+    @ApiOperation(value = "Handle & Validate Deposit", response = ResponseEntity.class)
     @PostMapping
     public ResponseEntity<String> depositMoney(@RequestBody DummyDto dto){
         try {

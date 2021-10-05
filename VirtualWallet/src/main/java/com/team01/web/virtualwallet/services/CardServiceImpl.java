@@ -7,6 +7,7 @@ import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.repositories.contracts.CardRepository;
 import com.team01.web.virtualwallet.services.contracts.CardService;
+import com.team01.web.virtualwallet.services.utils.Helpers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +50,7 @@ public class CardServiceImpl extends BaseGetServiceImpl<Card> implements CardSer
 
     @Override
     public void update(Card card, User executor) {
-        validateUserIsOwner(executor, card);
+        Helpers.validateUserIsCardOwner(executor,card);
         verifyUniqueCardNumber(card);
         cardRepository.update(card);
     }
@@ -57,7 +58,7 @@ public class CardServiceImpl extends BaseGetServiceImpl<Card> implements CardSer
     @Override
     public void delete(int id, User executor) {
         Card card = getById(id);
-        validateUserIsOwner(executor, card);
+        Helpers.validateUserIsCardOwner(executor,card);
         card.setActive(false);
 
         cardRepository.update(card);
@@ -66,19 +67,16 @@ public class CardServiceImpl extends BaseGetServiceImpl<Card> implements CardSer
     private void verifyUniqueCardNumber(Card card) {
         boolean duplicateCardNumberExists = true;
         try {
-            getByCardNumber(card.getCardNumber());
+            Card duplicate = getByCardNumber(card.getCardNumber());
+            if(duplicate.getId() == card.getId()){
+                duplicateCardNumberExists = false;
+            }
         } catch (EntityNotFoundException e) {
             duplicateCardNumberExists = false;
         }
 
         if (duplicateCardNumberExists) {
             throw new DuplicateEntityException("Card", "number", card.getCardNumber());
-        }
-    }
-
-    private void validateUserIsOwner(User executor, Card card) {
-        if (!executor.isAdmin() && card.getUser().getId() != executor.getId()) {
-            throw new UnauthorizedOperationException(INVALID_CARD_OWNER);
         }
     }
 }

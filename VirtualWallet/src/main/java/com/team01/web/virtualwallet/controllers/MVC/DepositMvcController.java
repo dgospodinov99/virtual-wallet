@@ -67,23 +67,16 @@ public class DepositMvcController {
 
     @ModelAttribute("cards")
     public Set<Card> populateCards(HttpSession session) {
-        try {
+
             return authenticationHelper.tryGetUser(session).getCards();
-        } catch (AuthenticationFailureException e){
-            return Set.of();
-        }
+
     }
 
     @GetMapping()
     public String showDeposit(HttpSession session, Model model) {
-        try {
             authenticationHelper.tryGetUser(session);
             model.addAttribute("deposit", new DepositDto());
             return "deposit";
-        } catch (AuthenticationFailureException e){
-            model.addAttribute("error", e.getMessage());
-            return "error401";
-        }
     }
 
     @PostMapping()
@@ -98,6 +91,7 @@ public class DepositMvcController {
         try {
             User user = authenticationHelper.tryGetUser(session);
             Transfer transfer = transferModelMapper.fromDto(dto, user.getWallet());
+
             HttpHeaders headers = new HttpHeaders();
             HttpEntity<DummyDto> entity = new HttpEntity<>(transferModelMapper.transferToDummyDto(transfer), headers);
             RestTemplate template = new RestTemplate();
@@ -107,9 +101,6 @@ public class DepositMvcController {
             }
 
             return "redirect:/";
-        } catch (AuthenticationFailureException e){
-            model.addAttribute("error", e.getMessage());
-            return "error401";
         } catch (BadLuckException | IOException e) {
             bindingResult.rejectValue("amount", "auth_error", e.getMessage());
             return "deposit";
