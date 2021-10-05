@@ -4,6 +4,7 @@ import com.team01.web.virtualwallet.exceptions.DuplicateEntityException;
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
 import com.team01.web.virtualwallet.exceptions.InvalidPasswordException;
 import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.team01.web.virtualwallet.models.Role;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.team01.web.virtualwallet.Helpers.*;
+import static com.team01.web.virtualwallet.Helpers.createMockUser;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTests {
@@ -27,6 +29,9 @@ public class UserServiceTests {
 
     @Mock
     private CardServiceImpl mockCardService;
+
+    @Mock
+    private RoleServiceImpl mockRoleService;
 
     @InjectMocks
     private UserServiceImpl mockService;
@@ -196,6 +201,35 @@ public class UserServiceTests {
         //Act, Assert
         Assertions.assertThrows(EntityNotFoundException.class,
                 () -> mockService.blockUserByAdmin(Mockito.anyString(), createMockAdmin()));
+    }
+
+    @Test
+    public void makeAdmin_Should_Throw_When_User_Not_Admin() {
+        var executor = createMockUser();
+        var user = createMockUser();
+        //Arrange
+
+        //Act, Assert
+        Assertions.assertThrows(UnauthorizedOperationException.class,
+                () -> mockService.makeAdmin(user.getUsername(), executor));
+    }
+
+    @Test
+    public void makeAdmin_Should_Call_Repo_When_Valid() {
+        //Arrange
+        var executor = createMockAdmin();
+        var user = createMockUser();
+        Mockito.when(mockService.getByUsername(user.getUsername()))
+                .thenReturn(user);
+        Mockito.when(mockRoleService.getByName("Administrator"))
+                .thenReturn(createMockRole());
+
+        //Act
+        mockService.makeAdmin(user.getUsername(), executor);
+
+        //Assert
+        Mockito.verify(mockRepository, Mockito.times(1))
+                .update(user);
     }
 
     @Test

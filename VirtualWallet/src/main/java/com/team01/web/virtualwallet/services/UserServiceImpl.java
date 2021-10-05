@@ -10,6 +10,7 @@ import com.team01.web.virtualwallet.models.Wallet;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.UserRepository;
 import com.team01.web.virtualwallet.services.contracts.CardService;
+import com.team01.web.virtualwallet.services.contracts.RoleService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +33,16 @@ public class UserServiceImpl extends BaseGetServiceImpl<User> implements UserSer
     private final UserRepository userRepository;
     private final WalletService walletService;
     private final CardService cardService;
+    private final RoleService roleService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, WalletService walletService, CardService cardService) {
+    public UserServiceImpl(UserRepository userRepository, WalletService walletService, CardService cardService, RoleService roleService) {
         super(userRepository);
         this.userRepository = userRepository;
         this.walletService = walletService;
         this.cardService = cardService;
 
+        this.roleService = roleService;
     }
 
     @Override
@@ -77,12 +80,6 @@ public class UserServiceImpl extends BaseGetServiceImpl<User> implements UserSer
         userToUnBlock.setBlocked(false);
         userRepository.update(userToUnBlock);
         return userToUnBlock;
-    }
-
-    private void verifyAdmin(User executor) {
-        if (!executor.isAdmin()) {
-            throw new UnauthorizedOperationException(USER_NOT_ADMIN_MESSAGE);
-        }
     }
 
     @Override
@@ -132,6 +129,20 @@ public class UserServiceImpl extends BaseGetServiceImpl<User> implements UserSer
         isPasswordValid(newPassword);
         user.setPassword(newPassword);
         userRepository.update(user);
+    }
+
+    @Override
+    public void makeAdmin(String username, User executor) {
+        verifyAdmin(executor);
+        User userToMakeAdmin = getByUsername(username);
+        userToMakeAdmin.getRoles().add(roleService.getByName("Administrator"));
+        userRepository.update(userToMakeAdmin);
+    }
+
+    private void verifyAdmin(User executor) {
+        if (!executor.isAdmin()) {
+            throw new UnauthorizedOperationException(USER_NOT_ADMIN_MESSAGE);
+        }
     }
 
     private void isPasswordValid(String password) {

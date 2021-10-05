@@ -118,7 +118,6 @@ public class UserProfileMvcController {
                                      HttpSession session) {
         User executor = authenticationHelper.tryGetUser(session);
 
-
         if (errors.hasErrors()) {
             return "profile-user-password-update";
         }

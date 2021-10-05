@@ -29,4 +29,6 @@ public interface UserService extends BaseGetService<User> {
     void delete(int id);
 
     void updatePassword(User user, String newPassword);
+
+    void makeAdmin(String username, User executor);
 }
