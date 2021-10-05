@@ -2,19 +2,19 @@
 
 # Virtual Wallet
 
-###A project by Team 1 Dian Gospodinov & Bojidar Velichkov
+### A project by Team 1 Dian Gospodinov & Bojidar Velichkov
 
 Transfer money straight from your debit/credit card into your virtual wallet and make 
 quick and easy transactions to your friends!
 
-###How to take make use of our application?
+### How to take make use of our application?
 
 - Register with just an email, username and password.
 - You will receive a verification email, to prove that it is valid.
 - Follow the link to activate your account.
 - You are now able to make transactions!
 
-###Features of the program
+### Features of the program
 
 - If you ever encounter a problem, you will receive a proper 
 <span style="color: #36b9cc">notification</span>
@@ -47,7 +47,7 @@ own <kbd>Admin Menu</kbd>, where you can search through all users and transactio
 <kbd style="background-color: #4e73df; color: #fff; border: 1px">Unblock</kbd>a user 
 if you notice suspicious activity.
 
-###Authentication
+### Authentication
 
 **Public part** 
 
@@ -98,10 +98,10 @@ except to make **transactions**.
 <kbd style="background-color: #4e73df; color: #fff; border: 1px">Filter</kbd> it by **period**,
 **sender**, **recipient** and **sort** them by <kbd>Amount</kbd> or <kbd>Date</kbd>.
 
-###Database Visualization
+### Database Visualization
 
 <img src="https://gitlab.com/team-123/virtual-wallet/-/raw/main/database/Database%20Visualization.png">
 
-###Swagger
+### Swagger Documentation
 
 <a href="http://localhost:8080/swagger-ui/">http://localhost:8080/swagger-ui/ </a> 
