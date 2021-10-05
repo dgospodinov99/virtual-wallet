@@ -12,6 +12,7 @@ import com.team01.web.virtualwallet.models.dto.CreateCardDto;
 import com.team01.web.virtualwallet.services.contracts.CardService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.CardModelMapper;
+import com.team01.web.virtualwallet.services.utils.Helpers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -115,9 +116,9 @@ public class CardMvcController {
 
     @GetMapping("/{id}/update")
     public String showEditCardPage(@PathVariable int id, Model model, HttpSession session) {
-
+        User user;
         try {
-            User user = authenticationHelper.tryGetUser(session);
+            user = authenticationHelper.tryGetUser(session);
         } catch (UnauthorizedOperationException | AuthenticationFailureException e) {
             model.addAttribute("error", e.getMessage());
             return "error401";
@@ -126,9 +127,12 @@ public class CardMvcController {
         try {
             Card card = cardService.getById(id);
             CreateCardDto dto = modelMapper.toCreateDto(card);
+            Helpers.validateUserIsCardOwner(user, card);
             model.addAttribute("cardId", id);
             model.addAttribute("card", dto);
             return "card-update";
+        } catch (UnauthorizedOperationException e) {
+            return "error401";
         } catch (EntityNotFoundException | AuthenticationFailureException e) {
             model.addAttribute("errors", e.getMessage());
             return "error404";
