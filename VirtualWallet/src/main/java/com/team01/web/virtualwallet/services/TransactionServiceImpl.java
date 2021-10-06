@@ -63,9 +63,6 @@ public class TransactionServiceImpl extends BaseGetServiceImpl<Transaction> impl
         validateUserNotBlocked(executor);
         validateBalance(transaction.getSender(), transaction.getAmount());
         validateTransaction(executor.getWallet(), transaction.getReceiver());
-        if (transaction.getAmount() > LARGE_TRANSACTION_AMOUNT) {
-            throw new LargeTransactionDetectedException(LARGE_TRANSACTION_MESSAGE);
-        }
         walletService.deposit(transaction.getReceiver(), transaction.getAmount()); //add money to receiver
         walletService.withdraw(transaction.getSender(), transaction.getAmount());  //remove money from sender
 
@@ -73,14 +70,10 @@ public class TransactionServiceImpl extends BaseGetServiceImpl<Transaction> impl
     }
 
     @Override
-    public void createLargeTransaction(Transaction transaction, User executor) {
-        validateUser(executor, transaction.getSender());
-        validateUserNotBlocked(executor);
-        validateBalance(transaction.getSender(), transaction.getAmount());
-        validateTransaction(executor.getWallet(), transaction.getReceiver());
-        walletService.deposit(transaction.getReceiver(), transaction.getAmount()); //add money to receiver
-        walletService.withdraw(transaction.getSender(), transaction.getAmount());  //remove money from sender
-        transactionRepository.create(transaction);
+    public void checkForLargeTransaction(Transaction transaction) {
+        if (transaction.getAmount() > LARGE_TRANSACTION_AMOUNT) {
+            throw new LargeTransactionDetectedException(LARGE_TRANSACTION_MESSAGE);
+        }
     }
 
     private void validateBalance(Wallet sender, double amount) {

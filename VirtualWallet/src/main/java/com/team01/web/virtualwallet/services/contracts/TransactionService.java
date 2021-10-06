@@ -19,5 +19,5 @@ public interface TransactionService extends BaseGetService<Transaction> {
 
     void create(Transaction transaction, User executor);
 
-    void createLargeTransaction(Transaction transaction, User executor);
+    void checkForLargeTransaction(Transaction transaction);
 }

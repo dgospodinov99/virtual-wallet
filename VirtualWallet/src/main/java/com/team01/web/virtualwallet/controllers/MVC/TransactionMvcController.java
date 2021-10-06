@@ -14,7 +14,6 @@ import com.team01.web.virtualwallet.services.contracts.TransactionService;
 import com.team01.web.virtualwallet.services.contracts.UserService;
 import com.team01.web.virtualwallet.services.utils.Helpers;
 import com.team01.web.virtualwallet.services.utils.TransactionModelMapper;
-import com.team01.web.virtualwallet.services.utils.UserModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,7 +40,7 @@ public class TransactionMvcController {
 
     @Autowired
     public TransactionMvcController(UserService userService,
-                                    UserModelMapper userModelMapper, TransactionService transactionService,
+                                    TransactionService transactionService,
                                     TransactionModelMapper transactionModelMapper,
                                     AuthenticationHelper authenticationHelper, EmailService emailService,
                                     TokenService tokenService) {
@@ -172,6 +171,7 @@ public class TransactionMvcController {
 
     }
 
+
     @PostMapping("/new/finalize")
     public String createTransaction(@Valid @ModelAttribute("transaction") CreateTransactionDto dto, BindingResult bindingResult, HttpSession session, Model model) {
         if (bindingResult.hasErrors()) {
@@ -181,6 +181,8 @@ public class TransactionMvcController {
             User user = authenticationHelper.tryGetUser(session);
             Transaction transaction = transactionModelMapper.fromDto(dto);
             transaction.setSender(user.getWallet());
+            transactionService.checkForLargeTransaction(transaction);
+
             transactionService.create(transaction, user);
             return "redirect:/myaccount/transactions";
         } catch (InvalidTransferException e) {
@@ -226,7 +228,7 @@ public class TransactionMvcController {
             transaction.setSender(sender.getWallet());
             Token toValidate = tokenService.getByToken(dto.getToken());
             tokenService.validateCorrectToken(toValidate, sender);
-            transactionService.createLargeTransaction(transaction, sender);
+            transactionService.create(transaction, sender);
             tokenService.delete(toValidate.getId());
             return "redirect:/myaccount/transactions";
         } catch (InvalidTokenException | EntityNotFoundException e) {
