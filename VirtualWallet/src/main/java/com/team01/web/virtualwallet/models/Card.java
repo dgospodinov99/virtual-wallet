@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "cards")
-//@Where(clause = "is_active=1")
 public class Card {
 
     @Id

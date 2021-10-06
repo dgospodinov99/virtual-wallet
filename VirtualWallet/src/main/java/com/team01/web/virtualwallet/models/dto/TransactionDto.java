@@ -1,8 +1,6 @@
 package com.team01.web.virtualwallet.models.dto;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.time.LocalDateTime;
 
 public class TransactionDto {
 

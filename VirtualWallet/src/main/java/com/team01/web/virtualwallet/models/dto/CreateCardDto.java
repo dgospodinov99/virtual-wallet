@@ -1,7 +1,5 @@
 package com.team01.web.virtualwallet.models.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;

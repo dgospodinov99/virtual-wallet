@@ -40,21 +40,6 @@ public class DummyRestController {
 
     }
 
-//    @ApiOperation(value = "Handle & Validate Withdraw", response = ResponseEntity.class)
-//    @PostMapping
-//    public ResponseEntity<String> withdrawMoney(@RequestBody DummyDto dto){
-//        try {
-//            if (dummyService.withdrawMoney(stringToLocalDate(dto.getExpirationDate()), dto.getAmount())) {
-//                return new ResponseEntity(HttpStatus.OK);
-//            } else {
-//                return new ResponseEntity(HttpStatus.BAD_REQUEST);
-//            }
-//        } catch (BadLuckException e) {
-//            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
-//        }
-//
-//    }
-
     private LocalDate stringToLocalDate(String date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         YearMonth localDate = YearMonth.parse(date,formatter);
