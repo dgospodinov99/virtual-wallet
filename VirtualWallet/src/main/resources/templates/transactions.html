@@ -15,7 +15,6 @@
     <link
             href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
             rel="stylesheet">
-
     <!-- Custom styles for this template-->
     <link href="../static/css/sb-admin-2.min.css" th:href="@{/css/sb-admin-2.css}" rel="stylesheet">
 
@@ -176,6 +175,31 @@
 <script th:src="@{/js/demo/chart-pie-demo.js}"></script>
 <script th:src="@{/js/moment.js}"></script>
 
+<script>
+    $(document).ready(function(){
+        $('#dataTable').after('<div id="nav" style="text-align: center; padding: 10px"></div>');
+        var rowsShown = 10;
+        var rowsTotal = $('#dataTable tbody tr').length;
+        var numPages = rowsTotal/rowsShown;
+        for(i = 0;i < numPages;i++) {
+            var pageNum = i + 1;
+            $('#nav').append('<a href="#" rel="'+i+'" class="form-control btn btn-primary btn-user d-sm-inline" >'+pageNum+'</a> ');
+        }
+        $('#dataTable tbody tr').hide();
+        $('#dataTable tbody tr').slice(0, rowsShown).show();
+        $('#nav a:first').addClass('active');
+        $('#nav a').bind('click', function(){
+
+            $('#nav a').removeClass('active');
+            $(this).addClass('active');
+            var currPage = $(this).attr('rel');
+            var startItem = currPage * rowsShown;
+            var endItem = startItem + rowsShown;
+            $('#dataTable tbody tr').css('opacity','0.0').hide().slice(startItem, endItem).
+            css('display','table-row').animate({opacity:1}, 300);
+        });
+    });
+</script>
 
 <!-- Include jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
