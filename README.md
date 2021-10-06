@@ -47,6 +47,9 @@ own <kbd>Admin Menu</kbd>, where you can search through all users and transactio
 <kbd style="background-color: #4e73df; color: #fff; border: 1px">Unblock</kbd>a user 
 if you notice suspicious activity.
 
+- Both **transaction** lists and the **users** list in <kbd>Activity Log</kbd> and <kbd>Admin Menu</kbd>,
+respectively, support pagination.
+
 ### Authentication
 
 **Public part** 

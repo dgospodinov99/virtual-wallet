@@ -48,7 +48,8 @@
             <div class="card shadow mb-4">
                 <div class="collapse multi-collapse" id="collapseUsers">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{admin.menu.all.users}">List of all Users</h6>
+                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{admin.menu.all.users}">List of all
+                            Users</h6>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -92,10 +93,9 @@
                         <div class="row"/>
 
                         <div class="table-responsive">
-                            <table class="table" data-page-length='50'
+                            <table class="table" id="userTable" data-page-length='50'
                                    data-order='[[1, "desc"]]' width="100%" cellspacing="0">
                                 <thead>
-                                <tr>
 
                                     <th scope="col" th:text="#{admin.menu.username}">Username</th>
                                     <th scope="col" th:text="#{admin.menu.email}">Email</th>
@@ -105,20 +105,8 @@
                                     <th scope="col" th:text="#{admin.menu.actions}">Actions</th>
                                     <th scope="col"></th>
 
-                                </tr>
                                 </thead>
 
-                                <tfoot>
-                                <tr>
-                                    <th scope="col" th:text="#{admin.menu.username}">Username</th>
-                                    <th scope="col" th:text="#{admin.menu.email}">Email</th>
-                                    <th scope="col" th:text="#{admin.menu.phone}">Phone#</th>
-                                    <th scope="col" th:text="#{admin.menu.balance}">Balance</th>
-                                    <th scope="col" th:text="#{admin.menu.status}">Status</th>
-                                    <th scope="col" th:text="#{admin.menu.actions}">Actions</th>
-                                    <th scope="col"></th>
-                                </tr>
-                                </tfoot>
                                 <div th:each="user : ${users}">
                                     <tbody>
                                     <tr>
@@ -126,7 +114,9 @@
                                         <td style="color: dodgerblue" th:text="${user.username}">Username</td>
                                         <td style="color: dodgerblue" th:text="${user.email}">Email</td>
                                         <td style="color: dodgerblue" th:text="${user.phoneNumber}">PhoneNumber</td>
-                                        <td style="color: dodgerblue" th:text="${user.getWallet().getBalance()}">100.00</td>
+                                        <td style="color: dodgerblue" th:text="${user.getWallet().getBalance()}">
+                                            100.00
+                                        </td>
 
                                         <td th:if="${user.isBlocked()}" style="color: red" th:text="Blocked">
                                             Status
@@ -179,7 +169,8 @@
             <div class="card shadow mb-4">
                 <div class="collapse multi-collapse" id="collapseTransactions">
                     <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{admin.menu.all.transactions}">List of all Transactions</h6>
+                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{admin.menu.all.transactions}">List of
+                            all Transactions</h6>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -190,10 +181,12 @@
 
                                 <div class="form-group row">
                                     <div class="col-sm-4 mb-3 mb-sm-0">
-                                        <label class="control-label" th:text="#{admin.menu.filter.start.date}">Start Date</label>
+                                        <label class="control-label" th:text="#{admin.menu.filter.start.date}">Start
+                                            Date</label>
                                     </div>
                                     <div class="col-sm-6 mb-3 mb-sm-0">
-                                        <label class="control-label" th:text="#{admin.menu.filter.end.date}">End Date</label>
+                                        <label class="control-label" th:text="#{admin.menu.filter.end.date}">End
+                                            Date</label>
                                     </div>
                                 </div>
 
@@ -207,7 +200,8 @@
                                 <div class="form-group row">
 
                                     <div class="row-cols-10 mb-3 mb-sm-0">
-                                        <label class="control-label" th:text="#{admin.menu.filter.sender}">Sender</label>
+                                        <label class="control-label"
+                                               th:text="#{admin.menu.filter.sender}">Sender</label>
                                         <select class="form-control bg-light border-0 small" th:field="*{senderId}">
                                             <option selected value="-1">Any</option>
                                             <option th:each="user : ${users}"
@@ -220,7 +214,8 @@
                                     <br/>
                                     <br/>
                                     <div class="row-cols-10 mb-3 mb-sm-0">
-                                        <label class="control-label" th:text="#{admin.menu.filter.receiver}">Receiver</label>
+                                        <label class="control-label"
+                                               th:text="#{admin.menu.filter.receiver}">Receiver</label>
                                         <select class="form-control bg-light border-0 small" th:field="*{receiverId}">
                                             <option selected value="-1">Any</option>
                                             <option th:each="user : ${users}"
@@ -251,7 +246,8 @@
                                 <th scope="col" th:text="#{activity.transaction.amount}"
                                     style="user-select: none; cursor: pointer" onclick="sortTableAmount()">
                                 </th>
-                                <th scope="col" th:text="#{activity.transaction.from}" style="user-select: none">From</th>
+                                <th scope="col" th:text="#{activity.transaction.from}" style="user-select: none">From
+                                </th>
                                 <th scope="col" th:text="#{activity.transaction.to}" style="user-select: none">To</th>
                                 <th scope="col" th:text="#{activity.transaction.date}"
                                     style="user-select: none; cursor: pointer" onclick="sortTableDate()">
@@ -332,6 +328,7 @@
 <script th:src="@{/js/demo/chart-pie-demo.js}"></script>
 <script th:src="@{/js/moment.js}"></script>
 <script th:src="@{/js/sort.js}"></script>
+<script th:src="@{/js/pagination.js}"></script>
 
 <!-- Include jQuery -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -341,6 +338,5 @@
         src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
 <link rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
-
 </body>
 </html>
