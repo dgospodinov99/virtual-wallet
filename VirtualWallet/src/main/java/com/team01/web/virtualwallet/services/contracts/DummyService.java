@@ -7,4 +7,6 @@ import java.time.LocalDate;
 public interface DummyService {
 
     boolean depositMoney(LocalDate expDate, double amount);
+
+    boolean withdrawMoney(LocalDate expDate, double amount);
 }

@@ -1,4 +1,4 @@
-package com.team01.web.virtualwallet.services;
+package com.team01.web.virtualwallet.services.storage;
 
 import com.team01.web.virtualwallet.exceptions.StorageException;
 import com.team01.web.virtualwallet.exceptions.StorageFileNotFoundException;

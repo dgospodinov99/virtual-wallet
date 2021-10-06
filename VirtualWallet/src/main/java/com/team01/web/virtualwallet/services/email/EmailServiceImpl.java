@@ -1,4 +1,4 @@
-package com.team01.web.virtualwallet.services;
+package com.team01.web.virtualwallet.services.email;
 
 import com.team01.web.virtualwallet.config.EmailConfig;
 import com.team01.web.virtualwallet.models.Token;
