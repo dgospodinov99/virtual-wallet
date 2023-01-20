@@ -60,8 +60,6 @@ public class User {
     @Column(name = "is_active")
     private Boolean active;
 
-    public User() {
-    }
 
     public int getId() {
         return id;

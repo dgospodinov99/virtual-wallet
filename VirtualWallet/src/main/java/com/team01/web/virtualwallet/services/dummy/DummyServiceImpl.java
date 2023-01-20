@@ -19,7 +19,8 @@ public class DummyServiceImpl implements DummyService {
             throw new BadLuckException("Expired card");
         }
         double random = Math.random()*100;
-        return random > 50;
+//        return random > 50;
+        return true;
     }
 
     @Override

@@ -230,7 +230,7 @@ public class TransactionMvcController {
             tokenService.validateCorrectToken(toValidate, sender);
             transactionService.create(transaction, sender);
             tokenService.delete(toValidate.getId());
-            return "redirect:/myaccount/transactions";
+            return "redirect:/";
         } catch (InvalidTokenException | EntityNotFoundException e) {
             bindingResult.rejectValue("token", "token_error", e.getMessage());
             return "transaction-verify";

@@ -35,7 +35,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<JsonResponse>(getJson(e,request,HttpStatus.CONFLICT), HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(value = {DateTimeException.class, InvalidUserInput.class, BadLuckException.class, InvalidPasswordException.class})
+    @ExceptionHandler(value = {DateTimeException.class, InvalidUserInput.class, BadLuckException.class, InvalidPasswordException.class, BlockedUserException.class})
     private ResponseEntity<JsonResponse> badRequest(RuntimeException e, HttpServletRequest request) {
         return new ResponseEntity<JsonResponse>(getJson(e,request,HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
     }

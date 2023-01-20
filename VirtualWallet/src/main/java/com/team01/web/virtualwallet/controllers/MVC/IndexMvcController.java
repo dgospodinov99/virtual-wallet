@@ -2,6 +2,8 @@ package com.team01.web.virtualwallet.controllers.MVC;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.team01.web.virtualwallet.models.Transaction;
+import com.team01.web.virtualwallet.models.Transfer;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.TransactionDto;
 import com.team01.web.virtualwallet.models.dto.TransferDto;
@@ -18,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.http.HttpSession;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -53,6 +57,7 @@ public class IndexMvcController {
             model.addAttribute("transactions", populateTransactions(session));
             model.addAttribute("balance", populateBalance(session));
             model.addAttribute("isAdmin", populateIsAdmin(session));
+            model.addAttribute("earnings", populateEarnings(session));
             return "index";
         } catch (ResponseStatusException e) {
             return "redirect:/auth/login";
@@ -77,6 +82,38 @@ public class IndexMvcController {
 
     }
 
+    public Map<String, Double> populateEarnings(HttpSession session) {
+        User user = authenticationHelper.tryGetUser(session);
+        User mockUser = new User();
+
+        List<Transaction> earnings = transactionService.getUserTransactions(user, user);
+        List<Transfer> transfers = transferService.getUserLatestTransfers(user);
+        double income = 0;
+        double outcome = 0;
+        double deposit = 0;
+        Map<String, Double> data = new LinkedHashMap<>();
+
+        if (!earnings.isEmpty()) {
+            for (Transaction transaction : earnings) {
+                if (transaction.getSender().getId() == user.getId()) {
+                    outcome += transaction.getAmount();
+                } else {
+                    income += transaction.getAmount();
+                }
+            }   
+            data.put("Income ", income);
+            data.put("Outcome ", outcome);
+        }
+
+        if (!transfers.isEmpty()) {
+            for (Transfer transfer : transfers) {
+                deposit += transfer.getAmount();
+            }
+            data.put("Deposits", deposit);
+        }
+
+        return data;
+    }
     public List<TransactionDto> populateTransactions(HttpSession session) {
 
         User user = authenticationHelper.tryGetUser(session);

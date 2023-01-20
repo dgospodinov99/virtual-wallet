@@ -24,7 +24,7 @@
 
 <body class="bg-gradient-primary">
 
-    <div class="container">
+    <div class="container w-100 h-100">
 
         <!-- Outer Row -->
         <div class="row justify-content-center">
@@ -35,11 +35,13 @@
                     <div class="card-body p-0">
                         <!-- Nested Row within Card Body -->
                         <div class="row">
-                            <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                            <div class="col-lg-6 d-none d-lg-block">
+                                <img th:src="@{https://source.unsplash.com/9Huby3g9fN0/450x450}">
+                            </div>
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h2 class="h4 text-gray-900 mb-4">Welcome Back to Virtual Wallet!</h2>
+                                        <h2 class="h4 text-gray-900 mb-4">Welcome to Virtual Wallet!</h2>
                                     </div>
                                     <form action="#" th:action="@{/auth/login}" th:object="${login}" method="post"
                                           class="user">
@@ -61,7 +63,6 @@
                                                th:value="Login">
 
                                         <hr>
-
                                     </form>
                                     <hr>
                                     <div class="text-center">
@@ -72,11 +73,8 @@
                         </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
     <!-- Bootstrap core JavaScript-->

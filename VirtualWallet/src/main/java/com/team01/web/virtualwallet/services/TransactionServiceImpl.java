@@ -1,7 +1,6 @@
 package com.team01.web.virtualwallet.services;
 
 import com.team01.web.virtualwallet.exceptions.*;
-import com.team01.web.virtualwallet.models.Token;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.Wallet;
@@ -13,7 +12,6 @@ import com.team01.web.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -96,7 +94,7 @@ public class TransactionServiceImpl extends BaseGetServiceImpl<Transaction> impl
 
     private void validateTransaction(Wallet sender, Wallet receiver) {
         if (sender.getId() == receiver.getId()) {
-            throw new InvalidUserInput("Ain't gonna happen");
+            throw new InvalidUserInput("You can't transfer money to yourself :)");
         }
     }
 }

@@ -20,11 +20,16 @@
     <link href="../static/css/sb-admin-2.min.css" th:href="@{/css/sb-admin-2.css}" rel="stylesheet">
 
 </head>
-
+<script th:src="@{/vendor/chart.js/Chart.js}"></script>
+<script th:src="@{/vendor/chart.js/Chart.min.js}"></script>
+<script th:src="@{/vendor/chart.js/Chart.bundle.js}"></script>
 <body id="page-top">
 <!-- Page Wrapper -->
 
 <div id="wrapper">
+
+    <!-- Sidebar -->
+    <div th:replace="/fragments/sidebar.html :: sidebar"/>
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
@@ -45,8 +50,8 @@
                 <!-- Content Row -->
                 <div class="row">
 
-                    <!-- Balance Card Example -->
-                    <div class="col-xl-3 col-md-6 mb-4">
+                    <!-- Balance Card -->
+                    <div class="col-xl-4 col-md-6 mb-4">
                         <div class="card border-left-success shadow h-100 py-2">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
@@ -60,10 +65,10 @@
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             <a href="#" th:href="@{/myaccount/deposit}"
                                                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                                                <i class="fas fa-download fa-sm text-white-10"></i>  Deposit</a>
+                                                <i class="fas fa-download fa-sm text-white-10"></i> Deposit</a>
                                             <a href="#" th:href="@{/myaccount/transactions/new}"
                                                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
-                                                <i class="fas fa-upload fa-sm text-white-10"></i>  Send</a>
+                                                <i class="fas fa-upload fa-sm text-white-10"></i> Send</a>
                                         </div>
                                     </div>
                                     <div class="col-auto">
@@ -74,92 +79,182 @@
                         </div>
                     </div>
 
+
                 </div>
                 <!-- /.container-fluid -->
 
                 <!-- Content Row -->
+
                 <div class="row">
-                    <!-- Latest Transactions -->
-                    <div class="col-xl-3 col-lg-5">
+
+                    <!-- Pie Chart -->
+                    <div class="col-xl-4 col-lg-5">
                         <div class="card shadow mb-4">
-                            <!-- Card Header - Dropdown -->
-                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary" th:text="#{index.latest.transactions}">Latest Transactions</h6>
+                            <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Revenue</h6>
                             </div>
                             <!-- Card Body -->
-                            <div th:if="${transactions.isEmpty()}" class="card-body">
-                                <div class="row" style="color: black" th:text="#{index.transactions.empty}">No Transactions</div>
+                            <div class="card-body">
+                                <div th:if="${earnings.isEmpty()}" class="card-body">
+                                    <div class="row" style="color: black" th:text="#{index.revenue.empty}">No
+                                        Revenue
+                                    </div>
+                                </div>
+                                <div th:unless="${earnings.isEmpty()}" class="card-body">
+                                    <div class="chart-pie pt-4 pb-2">
+                                        <canvas id="myPieChart"></canvas>
+                                    </div>
+                                    <script th:inline="javascript">
+                                        /*<![CDATA[*/
+                                        var ctx = document.getElementById("myPieChart");
+                                        var myPieChart = new Chart(ctx, {
+                                            type: 'doughnut',
+                                            data: {
+                                                labels: ["Income", "Outcome", "Deposit"],
+                                                datasets: [{
+                                                    data: [[${earnings.values()}]],
+                                                    backgroundColor: ['#1cc88a', '#db523d', '#858796'],
+                                                    hoverBackgroundColor: ['#1cc88a', '#db523d', '#858796'],
+                                                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                                                }],
+                                            },
+                                            options: {
+                                                maintainAspectRatio: false,
+                                                tooltips: {
+                                                    backgroundColor: "rgb(255,255,255)",
+                                                    bodyFontColor: "#858796",
+                                                    borderColor: '#dddfeb',
+                                                    borderWidth: 1,
+                                                    xPadding: 15,
+                                                    yPadding: 15,
+                                                    displayColors: false,
+                                                    caretPadding: 10,
+                                                },
+                                                legend: {
+                                                    display: false
+                                                },
+                                                cutoutPercentage: 80,
+                                            },
+                                        });
+                                        /*]]>*/
+                                    </script>
+                                    <div class="mt-4 text-center small">
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle text-body"></i> Deposit
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle text-success"></i> Income
+                                        </span>
+                                        <span class="mr-2">
+                                            <i class="fas fa-circle text-danger"></i> Outcome
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+                    </div>
 
-                            <div th:unless="${transactions.isEmpty()}" class="card-body"
-                                 th:each="transaction : ${transactions}">
-                                <div th:if="${transaction.sender} == ${session.currentUser}">
-                                    <div class="row">
-                                        <div class="col-5" style="color: red" th:text="${transaction.amount}">Transfer
-                                            1
+                    <!-- Latest Transactions -->
+                    <div class="col-xl-4 col-lg-4">
+                        <div class="card shadow mb-4">
+
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary" th:text="#{index.latest.transactions}">
+                                    Latest Transactions</h6>
+                            </div>
+                            <!-- Card Body -->
+                            <div class="card-body">
+                                <div th:if="${transactions.isEmpty()}" class="card-body">
+                                    <div class="row" style="color: black" th:text="#{index.transactions.empty}">No
+                                        Transactions
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5" style="color: green; font-size: 16px"></div>
+                                </div>
+                                <div th:unless="${transactions.isEmpty()}" class="card-body"
+                                     th:each="transaction : ${transactions}">
+                                    <div th:if="${transaction.sender} == ${session.currentUser}">
+                                        <div class="row">
+                                            <div class="col-5" style="color: red; font-size: 16px"
+                                                 th:text="${transaction.amount}">Transfer
+                                                1
+                                            </div>
+                                            <div class="col-5" style="color: dodgerblue; font-size: 16px"
+                                                 th:text="${transaction.timestamp}">Timestamp 1
+                                            </div>
                                         </div>
-                                        <div class="col-5" style="color: dodgerblue; font-size: 12px"
-                                             th:text="${transaction.timestamp}">Timestamp 1
+                                    </div>
+                                    <div th:unless="${transaction.sender} == ${session.currentUser}">
+                                        <div class="row">
+                                            <div class="col-5" style="color: green; font-size: 16px"
+                                                 th:text="${transaction.amount}">Transfer 1
+                                            </div>
+                                            <div class="col-5" style="color: dodgerblue; font-size: 16px"
+                                                 th:text="${transaction.timestamp}">Timestamp 1
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div th:unless="${transaction.sender} == ${session.currentUser}">
-                                    <div class="row">
-                                        <div class="col-5" style="color: green" th:text="${transaction.amount}">Transfer 1</div>
-                                        <div class="col-5" style="color: dodgerblue; font-size: 12px" th:text="${transaction.timestamp}">Timestamp 1</div>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
 
                     </div>
 
                     <!-- Latest Transfers -->
-                    <div class="col-xl-3 col-lg-5">
+                    <div class="col-xl-4 col-lg-5">
                         <div class="card shadow mb-4">
                             <!-- Card Header - Dropdown -->
                             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary" th:text="#{index.latest.transfers}">Latest Transfers</h6>
+                                <h6 class="m-0 font-weight-bold text-primary" th:text="#{index.latest.transfers}">Latest
+                                    Transfers</h6>
                             </div>
                             <!-- Card Body -->
-                            <div th:if="${transfers.isEmpty()}" class="card-body">
-                                <div class="row" style="color: black" th:text="#{index.transfers.empty}">No Transfers</div>
-                            </div>
+                            <div class="card-body">
+                                <div th:if="${transfers.isEmpty()}" class="card-body">
+                                    <div class="row" style="color: black; font-size: 16px"
+                                         th:text="#{index.transfers.empty}">No Transfers
+                                    </div>
+                                </div>
 
-                            <div th:unless="${transfers.isEmpty()}" class="card-body" th:each="transfer : ${transfers}">
-                                <div class="row">
-                                    <div class="col-5" style="color: black" th:text="${transfer.amount}">Transfer 1</div>
-                                    <div class="col-5" style="color: dodgerblue; font-size: 12px" th:text="${transfer.timestamp}">Timestamp 1</div>
+                                <div th:unless="${transfers.isEmpty()}" class="card-body"
+                                     th:each="transfer : ${transfers}">
+                                    <div class="row">
+                                        <div class="col-5" style="color: black; font-size: 16px"
+                                             th:text="${transfer.amount}">Transfer 1
+                                        </div>
+                                        <div class="col-5" style="color: dodgerblue; font-size: 16px"
+                                             th:text="${transfer.timestamp}">Timestamp 1
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
-
                 </div>
                 <!-- /.container-fluid -->
-
             </div>
             <!-- End of Main Content -->
-
-
         </div>
-        <!-- End of Content Wrapper -->
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>© Virtual Wallet 2023</span>
+                </div>
+            </div>
+        </footer>
+        <!-- End of Footer -->
+
 
     </div>
-    <!-- End of Page Wrapper -->
+    <!-- End of Content Wrapper -->
 
 </div>
-<!-- Footer -->
-<footer class="sticky-footer bg-white">
-    <div class="container my-auto">
-        <div class="copyright text-center my-auto">
-            <span>Team01 © Virtual Wallet 2021</span>
-        </div>
-    </div>
-</footer>
-<!-- End of Footer -->
+<!-- End of Page Wrapper -->
+
 
 <!-- Logout Modal-->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
@@ -192,11 +287,9 @@
 <script th:src="@{/js/sb-admin-2.min.js}"></script>
 
 <!-- Page level plugins -->
+<script th:src="@{/vendor/chart.js/Chart.js}"></script>
 <script th:src="@{/vendor/chart.js/Chart.min.js}"></script>
-
-<!-- Page level custom scripts -->
-<script th:src="@{/js/demo/chart-area-demo.js}"></script>
-<script th:src="@{/js/demo/chart-pie-demo.js}"></script>
+<script th:src="@{/vendor/chart.js/Chart.bundle.js}"></script>
 
 </body>
 

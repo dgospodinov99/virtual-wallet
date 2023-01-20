@@ -1,6 +1,7 @@
 package com.team01.web.virtualwallet.repositories;
 
 import com.team01.web.virtualwallet.exceptions.EntityNotFoundException;
+import com.team01.web.virtualwallet.models.Card;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.FilterUserParams;
 import com.team01.web.virtualwallet.repositories.contracts.BaseGetRepository;
@@ -21,6 +22,18 @@ public class UserRepositoryImpl extends BaseModifyRepositoryImpl<User> implement
     @Autowired
     public UserRepositoryImpl(SessionFactory sessionFactory) {
         super(User.class, sessionFactory);
+    }
+
+    @Override
+    public List<User> getAll() {
+        try (Session session = getSessionFactory().openSession()) {
+            Query<User> query = session.createQuery("from User where active = true", User.class);
+            List<User> result = query.list();
+            if (result.size() == 0) {
+                throw new EntityNotFoundException("User");
+            }
+            return result;
+        }
     }
 
     @Override

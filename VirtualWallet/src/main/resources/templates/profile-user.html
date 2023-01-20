@@ -32,6 +32,8 @@
 
 <div id="wrapper">
 
+    <div th:replace="/fragments/sidebar.html :: sidebar"/>
+
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
 
@@ -115,6 +117,15 @@
             </div>
             <!-- End of Main Content -->
 
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>© Virtual Wallet 2023</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
 
         </div>
         <!-- End of Content Wrapper -->
@@ -123,15 +134,6 @@
     <!-- End of Page Wrapper -->
 
 </div>
-<!-- Footer -->
-<footer class="sticky-footer bg-white">
-    <div class="container my-auto">
-        <div class="copyright text-center my-auto">
-            <span>Team01 © Virtual Wallet 2021</span>
-        </div>
-    </div>
-</footer>
-<!-- End of Footer -->
 
 <!-- Logout Modal-->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"

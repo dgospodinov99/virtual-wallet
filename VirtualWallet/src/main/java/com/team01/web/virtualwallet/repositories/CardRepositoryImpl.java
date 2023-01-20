@@ -20,6 +20,18 @@ public class CardRepositoryImpl extends BaseModifyRepositoryImpl<Card> implement
     }
 
     @Override
+    public List<Card> getAll() {
+        try (Session session = getSessionFactory().openSession()) {
+            Query<Card> query = session.createQuery("from Card where active = true", Card.class);
+            List<Card> result = query.list();
+            if (result.size() == 0) {
+                throw new EntityNotFoundException("Card");
+            }
+            return result;
+        }
+    }
+
+    @Override
     public Card getByCardNumber(String cardNumber) {
         try (Session session = getSessionFactory().openSession()) {
             Query<Card> query = session.createQuery("from Card where cardNumber = :cardNumber", Card.class);

@@ -2,6 +2,7 @@ package com.team01.web.virtualwallet.controllers.REST;
 
 import com.team01.web.virtualwallet.controllers.AuthenticationHelper;
 import com.team01.web.virtualwallet.controllers.GlobalExceptionHandler;
+import com.team01.web.virtualwallet.exceptions.BlockedUserException;
 import com.team01.web.virtualwallet.models.Transaction;
 import com.team01.web.virtualwallet.models.User;
 import com.team01.web.virtualwallet.models.dto.CardDto;
